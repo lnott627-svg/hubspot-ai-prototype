@@ -9,12 +9,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --navbar:       #2e3338;
-    --sidebar:      var(--navbar);
-    --sidebar-hover:rgba(255,255,255,.07);
-    --sidebar-active:rgba(255,255,255,.14);
-    --sidebar-text: #e4e8ed;
-    --sidebar-text-muted: #9297a3;
+    --navbar:       #ffffff;
+    --navbar-border:#dfe3eb;
+    --sidebar:      #ffffff;
+    --sidebar-hover:#f5f8fa;
+    --sidebar-active:#eaf0f6;
+    --sidebar-text: #33475b;
+    --sidebar-text-muted: #7c98b6;
     --bg:           #f5f8fa;
     --surface:      #ffffff;
     --orange:       #ff7a59;
@@ -35,7 +36,7 @@
   body {
     margin: 0;
     font-family: var(--font);
-    font-weight: 300;
+    font-weight: 400;
     color: var(--text);
     background: var(--bg);
     -webkit-font-smoothing: antialiased;
@@ -56,32 +57,33 @@
     align-items: center;
     gap: 18px;
     padding: 0 14px;
-    color: #cbd6e2;
+    color: var(--text);
+    border-bottom: 1px solid var(--navbar-border);
   }
 
   .brand { display: flex; align-items: center; gap: 4px; flex: 0 0 auto; }
 
   .sprocket { width: 28px; height: 28px; display: block; }
 
-  .brand .chev { font-size: 9px; color: #8496a8; }
+  .brand .chev { font-size: 9px; color: var(--text-muted); }
 
   .navsearch {
     flex: 0 1 340px;
     display: flex;
     align-items: center;
     gap: 8px;
-    background: #2c3641;
-    border: 1px solid #3d4854;
+    background: #f5f8fa;
+    border: 1px solid #cbd6e2;
     border-radius: var(--radius);
     padding: 7px 12px;
     font-size: 13px;
-    color: #97a8ba;
+    color: var(--text-muted);
   }
 
   .navsearch .kbd {
     margin-left: auto;
     font-size: 11px;
-    color: #6d7f92;
+    color: var(--text-muted);
   }
 
   .navbar-spacer { flex: 1; }
@@ -97,7 +99,7 @@
     width: 34px; height: 34px;
     border: none;
     background: transparent;
-    color: #b1c0d1;
+    color: var(--text-muted);
     border-radius: var(--radius);
     display: grid;
     place-items: center;
@@ -105,7 +107,7 @@
     position: relative;
   }
 
-  .nav-icon-btn:hover { background: #2c3641; color: #fff; }
+  .nav-icon-btn:hover { background: #f5f8fa; color: var(--text); }
 
   .nav-icon-btn .dot {
     position: absolute;
@@ -124,7 +126,7 @@
 
   .navbar-divider {
     width: 1px; height: 22px;
-    background: #3d4854;
+    background: var(--border);
     margin: 0 4px;
   }
 
@@ -134,11 +136,11 @@
     gap: 6px;
     padding: 7px 10px;
     font-size: 13px;
-    color: #b1c0d1;
+    color: var(--text);
     border-radius: var(--radius);
   }
 
-  .nav-upgrade:hover { background: #2c3641; color: #fff; }
+  .nav-upgrade:hover { background: #f5f8fa; color: var(--text); }
 
   .nav-assistant {
     display: flex;
@@ -146,12 +148,12 @@
     gap: 6px;
     padding: 7px 10px;
     font-size: 13px;
-    color: #b1c0d1;
+    color: var(--text);
     border-radius: var(--radius);
   }
 
   .nav-assistant .spark { color: var(--orange); }
-  .nav-assistant:hover { background: #2c3641; color: #fff; }
+  .nav-assistant:hover { background: #f5f8fa; color: var(--text); }
 
   .nav-account {
     display: flex;
@@ -160,10 +162,10 @@
     padding: 5px 8px 5px 5px;
     border-radius: var(--radius);
     font-size: 13px;
-    color: #d6dee6;
+    color: var(--text);
   }
 
-  .nav-account:hover { background: #2c3641; }
+  .nav-account:hover { background: #f5f8fa; }
 
   .nav-account .avatar {
     width: 24px; height: 24px;
@@ -175,13 +177,13 @@
 
   /* ---------- Body: sidebar + main ---------- */
 
-  .body { flex: 1; display: flex; min-height: 0; }
+  .body { flex: 1; display: flex; min-height: 0; background: var(--bg); }
 
   .sidebar {
     width: 220px;
     flex: 0 0 220px;
     background: var(--sidebar);
-    border-right: 1px solid rgba(255,255,255,.08);
+    border-right: 1px solid var(--border);
     display: flex;
     flex-direction: column;
     padding: 10px 10px 0;
@@ -191,7 +193,9 @@
   .nav { display: flex; flex-direction: column; gap: 1px; }
 
   .nav-item {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     padding: 8px 12px;
     font-size: 13.5px;
     font-weight: 400;
@@ -199,12 +203,19 @@
     border-radius: var(--radius);
   }
 
+  .nav-ico {
+    width: 18px; height: 18px;
+    flex: 0 0 18px;
+    /* stroke uses currentColor, so the icon follows the item's
+       text color through hover/active states */
+  }
+
   .nav-item:hover { background: var(--sidebar-hover); }
 
   .nav-item.active {
     background: var(--sidebar-active);
-    color: #fff;
-    font-weight: 500;
+    color: var(--text);
+    font-weight: 600;
   }
 
   .nav-item .caret {
@@ -216,12 +227,14 @@
   .nav-more {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 10px;
     padding: 8px 12px;
     font-size: 13.5px;
     color: var(--sidebar-text);
     border-radius: var(--radius);
   }
+
+  .nav-more .caret { margin-left: auto; }
 
   .nav-more:hover { background: var(--sidebar-hover); }
 
@@ -257,7 +270,15 @@
 
   /* ---------- Main ---------- */
 
-  .main { flex: 1; min-width: 0; overflow-y: auto; }
+  .main {
+    flex: 1;
+    min-width: 0;
+    overflow-y: auto;
+    margin: 12px;                 /* gutter on all sides, incl. sidebar side */
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
 
   .page-header {
     display: flex;
@@ -271,7 +292,7 @@
     align-items: center;
     gap: 6px;
     font-size: 22px;
-    font-weight: 500;
+    font-weight: 600;
     color: #1e2a35;
     letter-spacing: -.2px;
   }
@@ -338,7 +359,7 @@
   .tab.active {
     color: #1e2a35;
     font-weight: 500;
-    border-bottom-color: #ff7a59;
+    border-bottom-color: #1e2a35;
   }
 
   .tab-add {
@@ -384,6 +405,23 @@
   .pill:hover { background: #f5f8fa; }
   .pill .caret { font-size: 9px; color: var(--text-muted); }
 
+  /* Borderless text dropdowns — the secondary filters HubSpot renders
+     without a button chrome, just a label + caret with a subtle hover. */
+  .filter-text {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 10px;
+    font-size: 13px;
+    color: var(--text);
+    border: none;
+    background: transparent;
+    border-radius: var(--radius);
+  }
+
+  .filter-text:hover { background: #f5f8fa; }
+  .filter-text .caret { font-size: 9px; color: var(--text); }
+
   .toolbar-divider {
     width: 1px; height: 20px;
     background: var(--border);
@@ -402,6 +440,8 @@
   }
 
   .toolbar-icon:hover { background: #f5f8fa; border-color: var(--border); }
+
+  .toolbar-icon.round { border-radius: 50%; }
 
   .adv-filters { font-size: 13px; color: var(--link); }
   .adv-filters:hover { text-decoration: underline; }
@@ -769,7 +809,7 @@
   .th-sort .arrow { font-size: 10px; }
 
   tbody td {
-    padding: 11px 16px;
+    padding: 14px 16px;
     font-size: 13.5px;
     border-bottom: 1px solid #edf2f7;
     white-space: nowrap;
@@ -785,6 +825,8 @@
   }
 
   .who { display: flex; align-items: center; gap: 10px; }
+
+  .row-chev { color: var(--text-muted); font-size: 11px; flex: 0 0 auto; }
 
   .avatar {
     width: 26px; height: 26px;
@@ -1159,20 +1201,119 @@
     <!-- ============ Sidebar ============ -->
     <aside class="sidebar" id="appSidebar">
       <nav class="nav">
-        <a class="nav-item" href="#">Home</a>
-        <a class="nav-item active" href="#" id="sidebarContactsItem">Contacts</a>
-        <a class="nav-item" href="#">Companies</a>
-        <a class="nav-item" href="#">Deals</a>
-        <a class="nav-item" href="#">AEO</a>
-        <a class="nav-item" href="#">Marketing Emails</a>
-        <a class="nav-item" href="#">Segments</a>
-        <a class="nav-item" href="#">Forms</a>
-        <a class="nav-item" href="#">Website Pages</a>
-        <a class="nav-item" href="#">Blog</a>
-        <a class="nav-item" href="#">Dashboards</a>
-        <div class="nav-more">Campaigns <span class="caret">↑</span></div>
-        <div class="nav-more">Workflows <span class="caret">↑</span></div>
-        <div class="nav-more">More <span class="caret">›</span></div>
+        <a class="nav-item" href="#">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M3 9.5 10 4l7 5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4.5 8.5V16h11V8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8.5 16v-4h3v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Home
+        </a>
+        <a class="nav-item active" href="#" id="sidebarContactsItem">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="10" cy="7" r="2.75" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M4.5 16c0-2.6 2.46-4.5 5.5-4.5s5.5 1.9 5.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Contacts
+        </a>
+        <a class="nav-item" href="#">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M4 16.5V4.5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v12" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M12 8.5h3a1 1 0 0 1 1 1v7" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M2.5 16.5h15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M6.5 6.5h3M6.5 9.5h3M6.5 12.5h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Companies
+        </a>
+        <a class="nav-item" href="#">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M10.5 3.5H5a1.5 1.5 0 0 0-1.5 1.5v5.5c0 .4.16.78.44 1.06l5 5a1.5 1.5 0 0 0 2.12 0l4.94-4.94a1.5 1.5 0 0 0 0-2.12l-5-5A1.5 1.5 0 0 0 10.5 3.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <circle cx="7.5" cy="7.5" r="1.1" fill="currentColor"/>
+          </svg>
+          Deals
+        </a>
+        <a class="nav-item" href="#">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M4.5 8.5 13 5v10L4.5 11.5H3.5a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M13 6.5a2.5 2.5 0 0 1 0 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M5.5 11.5 6.5 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          AEO
+        </a>
+        <a class="nav-item" href="#">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="3" y="5" width="14" height="10" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            <path d="m3.5 6 6.5 5 6.5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Marketing Emails
+        </a>
+        <a class="nav-item" href="#">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M3 6.5 10 3l7 3.5-7 3.5-7-3.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="m3 10 7 3.5L17 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="m3 13.5 7 3.5 7-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Segments
+        </a>
+        <a class="nav-item" href="#">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="4.5" y="3" width="11" height="14" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M8 3.5h4v2H8z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+            <path d="M7.5 9h5M7.5 12h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Forms
+        </a>
+        <a class="nav-item" href="#">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="3" y="4" width="14" height="12" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M3 7.5h14" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="5.3" cy="5.75" r=".6" fill="currentColor"/>
+            <circle cx="7.1" cy="5.75" r=".6" fill="currentColor"/>
+          </svg>
+          Website Pages
+        </a>
+        <a class="nav-item" href="#">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M5 3.5h6l4 4V16a.5.5 0 0 1-.5.5h-9A.5.5 0 0 1 5 16V4a.5.5 0 0 1 .5-.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M11 3.5V7h3.5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="m8 14 1.2-.3 4-4-1-1-4 4z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+          </svg>
+          Blog
+        </a>
+        <a class="nav-item" href="#">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M3 16.5h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <rect x="4" y="9" width="2.6" height="5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <rect x="8.7" y="6" width="2.6" height="8" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <rect x="13.4" y="4" width="2.6" height="10" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+          Dashboards
+        </a>
+        <div class="nav-more">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="10" cy="10" r="6.5" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="10" cy="10" r=".8" fill="currentColor"/>
+          </svg>
+          Campaigns <span class="caret">↑</span>
+        </div>
+        <div class="nav-more">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="5" cy="5" r="1.8" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="5" cy="15" r="1.8" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="15" cy="10" r="1.8" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M6.8 5H12a1.5 1.5 0 0 1 1.5 1.5v2M6.8 15H12a1.5 1.5 0 0 0 1.5-1.5v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Workflows <span class="caret">↑</span>
+        </div>
+        <div class="nav-more">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="4.5" cy="10" r="1.1" fill="currentColor"/>
+            <circle cx="10" cy="10" r="1.1" fill="currentColor"/>
+            <circle cx="15.5" cy="10" r="1.1" fill="currentColor"/>
+          </svg>
+          More <span class="caret">›</span>
+        </div>
       </nav>
 
       <div class="sidebar-fill"></div>
@@ -1218,13 +1359,13 @@
         <div class="pill">☰ Filter</div>
         <div class="pill">↕ Sort by</div>
         <div class="toolbar-divider"></div>
-        <div class="pill">Contact owner <span class="caret">▾</span></div>
-        <div class="pill">Create date <span class="caret">▾</span></div>
-        <div class="pill">Last activity date <span class="caret">▾</span></div>
-        <div class="pill">Lead status <span class="caret">▾</span></div>
+        <div class="filter-text">Contact owner <span class="caret">▾</span></div>
+        <div class="filter-text">Create date <span class="caret">▾</span></div>
+        <div class="filter-text">Last activity date <span class="caret">▾</span></div>
+        <div class="filter-text">Lead status <span class="caret">▾</span></div>
         <button class="pill" id="marketingStatusFilterBtn" type="button">Marketing contact status: All <span class="caret">▾</span></button>
-        <button class="toolbar-icon" type="button">+</button>
-        <button class="toolbar-icon" type="button">✎</button>
+        <button class="toolbar-icon round" type="button">+</button>
+        <button class="toolbar-icon round" type="button">✎</button>
         <a class="adv-filters" href="#">Advanced filters</a>
         <div class="toolbar-spacer"></div>
         <button class="toolbar-icon" type="button">▦</button>
@@ -1909,6 +2050,7 @@
         <td><input class="rowcheck" type="checkbox" data-id="${c.id}" ${state.selectedContactIds.includes(c.id) ? 'checked' : ''} /></td>
         <td>
           <div class="who">
+            <span class="row-chev" aria-hidden="true">›</span>
             <span class="avatar">${initials(c.name)}</span>
             <span class="name">${c.name}</span>
           </div>
