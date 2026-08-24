@@ -1849,7 +1849,15 @@
 
     // T11's countdown is illustrative, not tied to a real clock — this is
     // just a plausible "hours left until midnight" starting point.
-    overageCountdownSeedMinutes: 615 // ~10h 15m — breach at roughly 1:45 PM
+    overageCountdownSeedMinutes: 615, // ~10h 15m — breach at roughly 1:45 PM
+
+    // The monthly cost of breaching the marketing-contact limit. HubSpot
+    // sells additional marketing contacts for Marketing Hub Starter in
+    // blocks of 1,000 at US$50/mo each — crossing the included 1,000 by
+    // even one contact triggers the full $50 block, not a pro-rated
+    // amount. Every dollar figure in the flow reads from here so the
+    // number stays sourced and single-origin.
+    overageMonthlyCostLabel: '$50'
   };
 
   /* =========================================================================
@@ -1910,7 +1918,7 @@
     if (!isOverLimit) return;
 
     document.getElementById('overageBannerText').textContent =
-      `You're ${overage.toLocaleString()} marketing contacts over your limit. Free up capacity before 12:00 AM to avoid a $45/month upgrade.`;
+      `You're ${overage.toLocaleString()} marketing contacts over your limit. Free up capacity before 12:00 AM to avoid a ${CONFIG.overageMonthlyCostLabel}/month upgrade.`;
 
     const hours = Math.floor(state.overageCountdownMinutes / 60);
     const minutes = state.overageCountdownMinutes % 60;
@@ -2329,9 +2337,9 @@
 
     setInterceptTitle('Wait — this will exceed your Marketing Contact limit.');
     financialInterceptBody.innerHTML = `
-      <p>Setting these ${selectedCount} contacts as marketing will push you to ${prospectiveTotal.toLocaleString()} / ${CONFIG.contactLimit.toLocaleString()}. Your subscription will automatically upgrade by $45/month tonight at 12:00 AM.</p>
+      <p>Setting these ${selectedCount} contacts as marketing will push you to ${prospectiveTotal.toLocaleString()} / ${CONFIG.contactLimit.toLocaleString()}. Your subscription will automatically upgrade by ${CONFIG.overageMonthlyCostLabel}/month tonight at 12:00 AM.</p>
       <div class="intercept-actions">
-        <button class="btn btn-primary-orange" id="optimizeDbBtn" type="button">Optimize Database to Save $45/mo</button>
+        <button class="btn btn-primary-orange" id="optimizeDbBtn" type="button">Optimize Database to Save ${CONFIG.overageMonthlyCostLabel}/mo</button>
         <button class="btn btn-outline" id="acceptUpgradeBtn" type="button">Continue &amp; Accept Upgrade</button>
       </div>
     `;
@@ -2432,7 +2440,7 @@
         closeInterceptModal();
         render();
         showToast(
-          `${deletedCount} inactive contacts permanently deleted. ${appliedCount} webinar leads set as marketing. You remain under your limit, saving $45/mo.`,
+          `${deletedCount} inactive contacts permanently deleted. ${appliedCount} webinar leads set as marketing. You remain under your limit, saving ${CONFIG.overageMonthlyCostLabel}/mo.`,
           'success'
         );
       } else {
@@ -2444,7 +2452,7 @@
         closeInterceptModal();
         render();
         showToast(
-          `${deletedCount} inactive contacts permanently deleted. You're back under your limit — the $45/mo upgrade has been avoided.`,
+          `${deletedCount} inactive contacts permanently deleted. You're back under your limit — the ${CONFIG.overageMonthlyCostLabel}/mo upgrade has been avoided.`,
           'success'
         );
       }
@@ -2483,9 +2491,9 @@
     render();
 
     // Neutral toast (no 'success'/'warning' variant) — confirms what
-    // happened without celebrating it, since a $45/mo upgrade is now
+    // happened without celebrating it, since a $50/mo upgrade is now
     // pending.
-    showToast(`${appliedCount} webinar leads set as marketing. You're now over your limit — a $45/mo upgrade is pending.`);
+    showToast(`${appliedCount} webinar leads set as marketing. You're now over your limit — a ${CONFIG.overageMonthlyCostLabel}/mo upgrade is pending.`);
   }
 
   document.getElementById('freeUpCapacityBtn').addEventListener('click', event => {
