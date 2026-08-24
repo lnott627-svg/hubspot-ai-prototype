@@ -1,0 +1,2515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HubSpot — Contacts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --navbar:       #2e3338;
+    --sidebar:      var(--navbar);
+    --sidebar-hover:rgba(255,255,255,.07);
+    --sidebar-active:rgba(255,255,255,.14);
+    --sidebar-text: #e4e8ed;
+    --sidebar-text-muted: #9297a3;
+    --bg:           #f5f8fa;
+    --surface:      #ffffff;
+    --orange:       #ff7a59;
+    --orange-dark:  #e8613c;
+    --text:         #33475b;
+    --text-muted:   #7c98b6;
+    --link:         #0091ae;
+    --border:       #dfe3eb;
+    --radius:       4px;
+    --shadow-card:  0 1px 2px rgba(0,0,0,.05), 0 1px 3px rgba(45,62,80,.08);
+    --shadow-modal: 0 24px 60px rgba(45,62,80,.28), 0 4px 12px rgba(45,62,80,.12);
+    --font: "Lexend Deca", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+
+  body {
+    margin: 0;
+    font-family: var(--font);
+    font-weight: 300;
+    color: var(--text);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  button { font-family: inherit; cursor: pointer; }
+  a { text-decoration: none; }
+
+  .shell { display: flex; flex-direction: column; height: 100vh; }
+
+  /* ---------- Top navbar ---------- */
+
+  .navbar {
+    height: 52px;
+    flex: 0 0 52px;
+    background: var(--navbar);
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 0 14px;
+    color: #cbd6e2;
+  }
+
+  .brand { display: flex; align-items: center; gap: 4px; flex: 0 0 auto; }
+
+  .sprocket { width: 28px; height: 28px; display: block; }
+
+  .brand .chev { font-size: 9px; color: #8496a8; }
+
+  .navsearch {
+    flex: 0 1 340px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #2c3641;
+    border: 1px solid #3d4854;
+    border-radius: var(--radius);
+    padding: 7px 12px;
+    font-size: 13px;
+    color: #97a8ba;
+  }
+
+  .navsearch .kbd {
+    margin-left: auto;
+    font-size: 11px;
+    color: #6d7f92;
+  }
+
+  .navbar-spacer { flex: 1; }
+
+  .navbar-icons {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 0 0 auto;
+  }
+
+  .nav-icon-btn {
+    width: 34px; height: 34px;
+    border: none;
+    background: transparent;
+    color: #b1c0d1;
+    border-radius: var(--radius);
+    display: grid;
+    place-items: center;
+    font-size: 15px;
+    position: relative;
+  }
+
+  .nav-icon-btn:hover { background: #2c3641; color: #fff; }
+
+  .nav-icon-btn .dot {
+    position: absolute;
+    top: 3px; right: 3px;
+    min-width: 14px; height: 14px;
+    padding: 0 3px;
+    background: #f2547d;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 600;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    line-height: 1;
+  }
+
+  .navbar-divider {
+    width: 1px; height: 22px;
+    background: #3d4854;
+    margin: 0 4px;
+  }
+
+  .nav-upgrade {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 10px;
+    font-size: 13px;
+    color: #b1c0d1;
+    border-radius: var(--radius);
+  }
+
+  .nav-upgrade:hover { background: #2c3641; color: #fff; }
+
+  .nav-assistant {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 10px;
+    font-size: 13px;
+    color: #b1c0d1;
+    border-radius: var(--radius);
+  }
+
+  .nav-assistant .spark { color: var(--orange); }
+  .nav-assistant:hover { background: #2c3641; color: #fff; }
+
+  .nav-account {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 8px 5px 5px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    color: #d6dee6;
+  }
+
+  .nav-account:hover { background: #2c3641; }
+
+  .nav-account .avatar {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: #516f90;
+    display: grid; place-items: center;
+    color: #fff; font-size: 11px; font-weight: 500;
+  }
+
+  /* ---------- Body: sidebar + main ---------- */
+
+  .body { flex: 1; display: flex; min-height: 0; }
+
+  .sidebar {
+    width: 220px;
+    flex: 0 0 220px;
+    background: var(--sidebar);
+    border-right: 1px solid rgba(255,255,255,.08);
+    display: flex;
+    flex-direction: column;
+    padding: 10px 10px 0;
+    overflow-y: auto;
+  }
+
+  .nav { display: flex; flex-direction: column; gap: 1px; }
+
+  .nav-item {
+    display: block;
+    padding: 8px 12px;
+    font-size: 13.5px;
+    font-weight: 400;
+    color: var(--sidebar-text);
+    border-radius: var(--radius);
+  }
+
+  .nav-item:hover { background: var(--sidebar-hover); }
+
+  .nav-item.active {
+    background: var(--sidebar-active);
+    color: #fff;
+    font-weight: 500;
+  }
+
+  .nav-item .caret {
+    float: right;
+    color: var(--sidebar-text-muted);
+    font-size: 10px;
+  }
+
+  .nav-more {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    font-size: 13.5px;
+    color: var(--sidebar-text);
+    border-radius: var(--radius);
+  }
+
+  .nav-more:hover { background: var(--sidebar-hover); }
+
+  .sidebar-fill { flex: 1; }
+
+  .setup-card {
+    margin: 10px 0 12px;
+    background: #213343;
+    border-radius: 8px;
+    padding: 14px;
+    color: #fff;
+  }
+
+  .setup-card p {
+    margin: 0 0 12px;
+    font-size: 13px;
+    line-height: 1.4;
+    font-weight: 400;
+  }
+
+  .setup-card button {
+    width: 100%;
+    background: #33475b;
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 8px 0;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .setup-card button:hover { background: #435a71; }
+
+  /* ---------- Main ---------- */
+
+  .main { flex: 1; min-width: 0; overflow-y: auto; }
+
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 28px 0;
+  }
+
+  .page-title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 22px;
+    font-weight: 500;
+    color: #1e2a35;
+    letter-spacing: -.2px;
+  }
+
+  .page-title .caret { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+
+  .page-actions { display: flex; align-items: center; gap: 8px; }
+
+  .icon-btn {
+    width: 32px; height: 32px;
+    border: 1px solid #cbd6e2;
+    background: #fff;
+    border-radius: var(--radius);
+    display: grid;
+    place-items: center;
+    color: var(--text);
+    font-size: 14px;
+  }
+
+  .icon-btn:hover { background: #f5f8fa; }
+
+  .btn {
+    border: none;
+    border-radius: var(--radius);
+    padding: 8px 16px;
+    font-size: 13.5px;
+    font-weight: 500;
+    transition: background .12s ease, transform .05s ease;
+  }
+
+  .btn:active { transform: translateY(1px); }
+
+  .btn-dark { background: #213343; color: #fff; display: flex; align-items: center; gap: 7px; }
+  .btn-dark:hover { background: #33475b; }
+  .btn-dark:disabled { background: #7a8ea3; cursor: default; transform: none; }
+
+  .btn .spinner {
+    width: 12px; height: 12px;
+    border: 2px solid rgba(255,255,255,.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin .7s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ---------- Tabs ---------- */
+
+  .tabs {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: 16px 28px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tab {
+    padding-bottom: 11px;
+    font-size: 13.5px;
+    color: var(--text-muted);
+    border-bottom: 2px solid transparent;
+  }
+
+  .tab.active {
+    color: #1e2a35;
+    font-weight: 500;
+    border-bottom-color: #ff7a59;
+  }
+
+  .tab-add {
+    padding-bottom: 11px;
+    color: var(--text-muted);
+    font-size: 15px;
+  }
+
+  /* ---------- Toolbar ---------- */
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    flex-wrap: wrap;
+  }
+
+  .search-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border: 1px solid #cbd6e2;
+    border-radius: 20px;
+    font-size: 13px;
+    color: var(--text-muted);
+    min-width: 220px;
+  }
+
+  .pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 13px;
+    font-size: 13px;
+    color: var(--text);
+    border: 1px solid #cbd6e2;
+    border-radius: 20px;
+    background: #fff;
+  }
+
+  .pill:hover { background: #f5f8fa; }
+  .pill .caret { font-size: 9px; color: var(--text-muted); }
+
+  .toolbar-divider {
+    width: 1px; height: 20px;
+    background: var(--border);
+    margin: 0 2px;
+  }
+
+  .toolbar-icon {
+    width: 30px; height: 30px;
+    border: 1px solid transparent;
+    background: transparent;
+    border-radius: var(--radius);
+    display: grid;
+    place-items: center;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+
+  .toolbar-icon:hover { background: #f5f8fa; border-color: var(--border); }
+
+  .adv-filters { font-size: 13px; color: var(--link); }
+  .adv-filters:hover { text-decoration: underline; }
+
+  .toolbar-spacer { flex: 1; }
+
+  /* ---------- Table card ---------- */
+
+  .table-wrap { padding: 0 28px 24px; }
+
+  /* ---------- Data integration page (T2) ---------- */
+
+  .di-page { padding: 24px 28px; }
+
+  .di-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin: 24px 0 28px;
+  }
+
+  .di-card {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .di-card-icon { font-size: 32px; line-height: 1; margin-bottom: 4px; }
+
+  .di-card h3 { margin: 0; font-size: 16px; font-weight: 600; color: #1e2a35; }
+
+  .di-card p { margin: 0; font-size: 13px; line-height: 1.5; color: var(--text-muted); flex: 1; }
+
+  .di-card p a { color: var(--link); text-decoration: underline; }
+
+  .di-card .btn { align-self: flex-start; margin-top: 4px; }
+
+  .di-beta-badge {
+    position: absolute;
+    top: 14px; right: 14px;
+    background: #7c5cff;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 12px;
+  }
+
+  .di-monitor {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .di-monitor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .di-monitor-header h2 { margin: 0; font-size: 17px; font-weight: 600; color: #1e2a35; }
+
+  .di-error-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: #fdeced;
+    border: 1px solid #f5c6cb;
+    border-radius: 6px;
+    padding: 14px 16px;
+    font-size: 13.5px;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+
+  .di-error-banner a { color: #c0143c; text-decoration: underline; font-weight: 500; }
+
+  .di-error-dismiss {
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: var(--text-muted);
+    flex: 0 0 auto;
+  }
+
+  .di-subtabs {
+    display: flex;
+    gap: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .di-subtab {
+    padding: 10px 2px;
+    font-size: 13.5px;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+  }
+
+  .di-subtab.active { color: #1e2a35; font-weight: 500; border-bottom-color: #1e2a35; }
+
+  /* ---------- Import wizard (T3+) ---------- */
+  /* Real HubSpot's quick-import wizard hides the top nav and sidebar
+     entirely. This prototype deliberately keeps both visible instead, so
+     a reviewer can navigate to Contacts mid-flow to check whether
+     records landed and return without losing wizard state — a usability
+     call made in preference over that one pixel-parity point. */
+
+  .wizard-body {
+    display: flex;
+    gap: 64px;
+    padding: 48px 64px 40px;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  .wizard-main { flex: 1 1 600px; min-width: 0; }
+  .wizard-rail { flex: 0 0 320px; }
+
+  .wizard-step-label { font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
+  .wizard-title { font-size: 28px; font-weight: 500; color: #1e2a35; margin: 0 0 16px; line-height: 1.3; }
+  .wizard-copy { font-size: 14px; line-height: 1.6; color: var(--text); margin: 0 0 16px; }
+  .wizard-link { font-size: 13.5px; color: var(--link); text-decoration: underline; }
+
+  .upload-zone {
+    position: relative;
+    margin-top: 28px;
+    border: 1px dashed #cbd6e2;
+    border-radius: 8px;
+    padding: 32px;
+    text-align: center;
+  }
+
+  .upload-zone-close { position: absolute; top: 10px; right: 14px; color: var(--text-muted); font-size: 15px; }
+  .upload-icon { font-size: 28px; margin-bottom: 10px; }
+  .upload-filename { font-size: 14px; color: var(--text); }
+  .upload-filesize { font-size: 12.5px; color: var(--text-muted); margin-top: 4px; }
+
+  .wizard-field { margin-top: 32px; }
+  .wizard-field label { display: block; font-size: 14px; font-weight: 600; color: #1e2a35; margin-bottom: 6px; }
+  .wizard-field-help { font-size: 13px; color: var(--text-muted); margin: 0 0 10px; line-height: 1.5; }
+  .wizard-field-help a { color: var(--link); text-decoration: underline; }
+
+  .wizard-select {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text);
+    border: 1px solid #cbd6e2;
+    border-radius: var(--radius);
+    background: #fff;
+  }
+
+  .wizard-hint { margin-top: 28px; font-size: 13px; line-height: 1.6; color: var(--text-muted); }
+  .wizard-hint strong { color: var(--text); }
+
+  .wizard-rail h2 { font-size: 17px; font-weight: 600; color: #1e2a35; margin: 0 0 16px; }
+
+  .wizard-accordion { border-top: 1px solid var(--border); padding: 14px 0; }
+  .wizard-accordion-head { font-size: 13.5px; font-weight: 600; color: #1e2a35; display: flex; align-items: center; gap: 8px; }
+  .wizard-accordion-head .caret { font-size: 11px; color: var(--text-muted); }
+  .wizard-accordion-body { margin-top: 10px; padding-left: 20px; }
+  .wizard-accordion-body p { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin: 0 0 12px; }
+
+  .wizard-footer {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 64px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .wizard-cancel { font-size: 13.5px; color: var(--link); font-weight: 500; }
+  .wizard-footer-right { display: flex; align-items: center; gap: 14px; }
+  .wizard-tip { font-size: 12.5px; color: var(--text-muted); }
+  .wizard-footer-left { display: flex; align-items: center; gap: 18px; }
+  .wizard-back { background: none; border: none; font-size: 13.5px; font-weight: 500; color: var(--text); padding: 0; }
+
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+  /* ---------- Import wizard: Step 2 mapping table (T4) ---------- */
+
+  .wizard-main-full { flex: 1 1 auto; width: 100%; }
+
+  .mapping-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 24px 0 16px;
+  }
+
+  .mapping-search {
+    flex-direction: row-reverse; /* magnifier on the right, matching the reference */
+    justify-content: space-between;
+    width: 240px;
+  }
+
+  .mapping-card { overflow: visible; } /* let the property popover escape the card's clipped corners */
+
+  .mapping-table { width: 100%; border-collapse: collapse; }
+
+  .mapping-table thead th {
+    text-align: left;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text);
+    padding: 12px 16px;
+    background: #f5f8fa;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .mapping-table .info-icon { color: var(--text-muted); font-size: 11px; margin-left: 3px; }
+
+  .mapping-table tbody td {
+    padding: 14px 16px;
+    font-size: 13.5px;
+    color: var(--text);
+    border-bottom: 1px solid #edf2f7;
+    vertical-align: top;
+  }
+
+  .mapping-table tbody tr:last-child td { border-bottom: none; }
+
+  .preview-info { color: var(--text-muted); line-height: 1.6; }
+
+  .mapped-check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: #2fa66a;
+    color: #fff;
+    font-size: 12px;
+  }
+
+  .property-cell { position: relative; }
+
+  .property-select {
+    width: 100%;
+    max-width: 220px;
+    padding: 8px 10px;
+    font-size: 13.5px;
+    font-family: inherit;
+    color: var(--text);
+    text-align: left;
+    border: 1px solid #cbd6e2;
+    border-radius: var(--radius);
+    background: #fff;
+  }
+
+  button.property-select { cursor: pointer; }
+
+  .property-popover {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: calc(100% + 14px);
+    width: 260px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: var(--shadow-modal);
+    padding: 16px;
+    z-index: 30;
+  }
+
+  .property-popover.open { display: block; }
+
+  .property-popover-title { font-size: 14.5px; font-weight: 600; color: #1e2a35; margin-bottom: 6px; }
+  .property-popover-note { font-size: 12.5px; color: var(--text-muted); line-height: 1.5; margin: 0 0 14px; }
+  .property-popover-section { margin-bottom: 12px; font-size: 13px; }
+  .property-popover-label { font-size: 11.5px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .03em; margin-bottom: 2px; }
+  .property-popover-link { font-size: 12.5px; color: var(--link); text-decoration: underline; }
+
+  /* ---------- Import wizard: Step 3 of 3 (T5) ---------- */
+
+  .consent-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 20px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--text);
+  }
+
+  .consent-check input { margin-top: 3px; width: 15px; height: 15px; flex: 0 0 auto; accent-color: var(--link); }
+
+  .wizard-hint-spaced { margin-top: 40px; }
+
+  .wizard-rail-center { text-align: center; }
+  .wizard-illustration { font-size: 64px; margin-bottom: 20px; }
+  .wizard-rail-title { font-size: 18px; font-weight: 600; color: #1e2a35; margin: 0 0 8px; }
+  .wizard-rail-copy { font-size: 13.5px; color: var(--text-muted); margin: 0; }
+
+  /* ---------- Import detail page (T6) ---------- */
+
+  .id-breadcrumb { display: block; font-size: 13px; color: var(--link); text-decoration: underline; margin-bottom: 10px; }
+  .id-meta { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+  .id-processing-banner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #eaf6ff;
+    border: 1px solid #b7e0fb;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin: 0 28px 20px;
+    font-size: 13.5px;
+    color: var(--text);
+  }
+
+  .id-processing-banner .spinner-lg { width: 22px; height: 22px; border-width: 3px; flex: 0 0 auto; }
+  .id-processing-banner p { margin: 0; }
+
+  .id-summary-card { padding: 20px; margin-bottom: 16px; }
+  .id-summary-card h2 { margin: 0 0 18px; font-size: 16px; font-weight: 600; color: #1e2a35; }
+
+  .id-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .id-stat-value { font-size: 26px; font-weight: 500; color: #1e2a35; }
+  .id-stat-label { font-size: 11px; font-weight: 600; letter-spacing: .03em; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; }
+
+  .id-tabs { display: flex; gap: 20px; padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .id-tab { padding: 8px 2px; font-size: 13.5px; font-weight: 500; color: #1e2a35; border-bottom: 2px solid #1e2a35; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+  }
+
+  table { width: 100%; border-collapse: collapse; }
+
+  thead th {
+    text-align: left;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-muted);
+    padding: 10px 16px;
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  thead th.checkcol { width: 40px; }
+
+  .th-sort { display: inline-flex; align-items: center; gap: 4px; color: #1e2a35; }
+  .th-sort .arrow { font-size: 10px; }
+
+  tbody td {
+    padding: 11px 16px;
+    font-size: 13.5px;
+    border-bottom: 1px solid #edf2f7;
+    white-space: nowrap;
+    color: var(--text);
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: #f8fbfd; }
+
+  .rowcheck {
+    width: 15px; height: 15px;
+    accent-color: var(--link);
+  }
+
+  .who { display: flex; align-items: center; gap: 10px; }
+
+  .avatar {
+    width: 26px; height: 26px;
+    flex: 0 0 26px;
+    border-radius: 50%;
+    background: #dfe3eb;
+    color: #516f90;
+    display: grid; place-items: center;
+    font-size: 10.5px; font-weight: 600;
+  }
+
+  .name { color: var(--link); font-weight: 400; }
+  .elink { color: var(--link); }
+  .elink .ext { font-size: 10px; opacity: .7; margin-left: 3px; }
+  .muted { color: var(--text-muted); }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    background: #fff;
+  }
+
+  .footer-actions { display: flex; align-items: center; gap: 8px; }
+
+  .footer-btn {
+    padding: 6px 12px;
+    font-size: 12.5px;
+    color: var(--text);
+    border: 1px solid #cbd6e2;
+    border-radius: 20px;
+    background: #fff;
+  }
+
+  .footer-btn:hover { background: #f5f8fa; }
+
+  .footer-icon {
+    width: 28px; height: 28px;
+    border: 1px solid #cbd6e2;
+    border-radius: 50%;
+    background: #fff;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .footer-icon:hover { background: #f5f8fa; }
+
+  /* ---------- Marketing contact status + bulk selection (T7) ---------- */
+
+  .status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    font-size: 11.5px;
+    font-weight: 600;
+    border-radius: 12px;
+    white-space: nowrap;
+  }
+
+  .status-badge.marketing { background: #e5f8f0; color: #17663f; }
+  .status-badge.non-marketing { background: #eef1f4; color: var(--text-muted); }
+
+  .bulk-bar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 28px;
+    background: #eaf0f6;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .bulk-bar-count { font-size: 13.5px; font-weight: 600; color: var(--text); }
+  .bulk-bar-actions { display: flex; gap: 8px; }
+  .bulk-bar-clear { margin-left: auto; background: none; border: none; font-size: 18px; color: var(--text-muted); }
+
+  /* ---------- Modal (unchanged look) ---------- */
+
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(45,62,80,.55);
+    backdrop-filter: blur(2px);
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    z-index: 50;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .18s ease;
+  }
+
+  .overlay.open { opacity: 1; pointer-events: auto; }
+
+  .modal {
+    width: 100%;
+    max-width: 460px;
+    background: var(--surface);
+    border-radius: 12px;
+    box-shadow: var(--shadow-modal);
+    overflow: hidden;
+    transform: translateY(10px) scale(.985);
+    transition: transform .18s ease;
+    display: flex;
+    flex-direction: column;
+    max-height: min(640px, 90vh);
+  }
+
+  .overlay.open .modal { transform: none; }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .breeze-mark {
+    width: 32px; height: 32px;
+    flex: 0 0 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ff7a59, #f2547d 55%, #7c5cff);
+    display: grid; place-items: center;
+    color: #fff; font-size: 15px;
+  }
+
+  .modal-title { font-size: 15px; font-weight: 500; line-height: 1.3; }
+
+  .modal-close {
+    margin-left: auto;
+    background: none;
+    border: none;
+    font-size: 20px;
+    line-height: 1;
+    color: var(--text-muted);
+    padding: 4px 6px;
+    border-radius: 4px;
+  }
+
+  .modal-close:hover { background: #f0f4f8; color: var(--text); }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 28px;
+    transform: translate(-50%, 14px);
+    background: var(--text);
+    color: #fff;
+    font-size: 13px;
+    padding: 11px 18px;
+    border-radius: 6px;
+    box-shadow: var(--shadow-modal);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease, transform .2s ease;
+    z-index: 60;
+  }
+
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  .btn-outline { background: #fff; color: var(--text); border: 1px solid #cbd6e2; }
+  .btn-outline:hover { background: #f5f8fa; }
+
+  .btn-primary-orange { background: var(--orange); color: #fff; }
+  .btn-primary-orange:hover { background: var(--orange-dark); }
+  .btn-primary-orange:disabled { background: #f3b9a7; cursor: default; }
+
+  /* ---------- Financial intercept modal (T8) ---------- */
+
+  .intercept-body { padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+  .intercept-body p { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--text); }
+  .intercept-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+  /* ---------- AI scan loading + triage dashboard (T9) ---------- */
+
+  .intercept-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 30px 10px;
+    text-align: center;
+  }
+
+  .spinner-lg {
+    width: 30px; height: 30px;
+    border: 3px solid #eaf0f6;
+    border-top-color: var(--orange);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
+
+  .triage-banner {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: #9a5b13;
+  }
+
+  .triage-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+
+  .triage-check { margin-top: 3px; width: 15px; height: 15px; accent-color: var(--orange); flex: 0 0 auto; }
+  .triage-label { font-size: 13.5px; color: var(--text); line-height: 1.4; }
+  .triage-note { display: block; font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  /* ---------- Marketing contact overage banner (T11) ---------- */
+
+  .overage-banner {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 28px;
+    background: #fff7ed;
+    border-bottom: 1px solid #fed7aa;
+    font-size: 14px;
+    color: #7a4a12;
+  }
+
+  .overage-countdown { margin-left: 10px; font-weight: 600; color: #9a5b13; }
+
+  .toast.success { background: #17663f; }
+  .toast.warning { background: #a3510c; }
+
+  /* ---------- Add contacts dropdown ---------- */
+
+  .dropdown-wrap { position: relative; }
+
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    min-width: 200px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    box-shadow: var(--shadow-modal);
+    padding: 6px;
+    display: none;
+    z-index: 40;
+  }
+
+  .dropdown-menu.open { display: block; }
+
+  .dropdown-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 9px 10px;
+    font-size: 13.5px;
+    color: var(--text);
+    border-radius: 4px;
+  }
+
+  .dropdown-item:hover:not(:disabled) { background: var(--bg); }
+
+  .dropdown-item:disabled {
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+
+  /* ---------- Quota usage banner ---------- */
+  /* A full-width strip between the top nav and the page body, showing how
+     close the account is to its record limit. Its numbers come from
+     render() — see renderQuotaBanner() in the script below. */
+
+  .quota-banner {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 28px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    color: var(--text);
+  }
+
+  .quota-banner-text strong { font-weight: 600; }
+
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .navsearch { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ============ Top navbar ============ -->
+  <header class="navbar" id="appNavbar">
+    <div class="brand">
+      <svg class="sprocket" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-label="HubSpot">
+        <line x1="27" y1="18" x2="27" y2="47" style="stroke:var(--orange); stroke-width:9; stroke-linecap:round" />
+        <line x1="27" y1="47" x2="62" y2="65" style="stroke:var(--orange); stroke-width:9; stroke-linecap:round" />
+        <circle cx="27" cy="18" r="8" style="fill:var(--orange)" />
+        <circle cx="27" cy="47" r="10" style="fill:var(--orange)" />
+        <circle cx="68" cy="69" r="22" style="fill:none; stroke:var(--orange); stroke-width:9" />
+      </svg>
+      <span class="chev">▾</span>
+    </div>
+
+    <div class="navsearch">
+      <span>⌕</span>
+      <span>Find or Ask</span>
+    </div>
+
+    <div class="navbar-spacer"></div>
+
+    <div class="navbar-icons">
+      <button class="nav-icon-btn" type="button" title="Create">+</button>
+      <a class="nav-upgrade" href="#"><span>⬆</span> Upgrade</a>
+      <div class="navbar-divider"></div>
+      <button class="nav-icon-btn" type="button" title="Calling">☎</button>
+      <button class="nav-icon-btn" type="button" title="Marketplace">⌂</button>
+      <button class="nav-icon-btn" type="button" title="Help">?</button>
+      <button class="nav-icon-btn" type="button" title="Settings">⚙</button>
+      <button class="nav-icon-btn" type="button" title="Notifications">
+        🔔<span class="dot">10</span>
+      </button>
+      <div class="navbar-divider"></div>
+      <a class="nav-assistant" href="#"><span class="spark">✦</span> Assistant</a>
+      <button class="nav-account" type="button">
+        <span class="avatar">EM</span>
+        <span>En Media</span>
+        <span class="chev">▾</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============ Quota usage banner ============ -->
+  <div class="quota-banner" id="quotaBanner">
+    <div class="quota-banner-text" id="quotaBannerText"></div>
+    <button class="btn btn-outline" id="quotaUpgradeBtn" type="button">Upgrade</button>
+  </div>
+
+  <!-- ============ Marketing contact overage banner (T11, NEW) ============ -->
+  <!-- Hidden whenever state.contactCount is at or under CONFIG.contactLimit. -->
+  <div class="overage-banner" id="overageBanner" hidden>
+    <div class="overage-banner-text">
+      <span id="overageBannerText"></span>
+      <span class="overage-countdown" id="overageCountdown"></span>
+    </div>
+    <button class="btn btn-dark btn-sm" id="freeUpCapacityBtn" type="button">Free up capacity</button>
+  </div>
+
+  <div class="body">
+
+    <!-- ============ Sidebar ============ -->
+    <aside class="sidebar" id="appSidebar">
+      <nav class="nav">
+        <a class="nav-item" href="#">Home</a>
+        <a class="nav-item active" href="#" id="sidebarContactsItem">Contacts</a>
+        <a class="nav-item" href="#">Companies</a>
+        <a class="nav-item" href="#">Deals</a>
+        <a class="nav-item" href="#">AEO</a>
+        <a class="nav-item" href="#">Marketing Emails</a>
+        <a class="nav-item" href="#">Segments</a>
+        <a class="nav-item" href="#">Forms</a>
+        <a class="nav-item" href="#">Website Pages</a>
+        <a class="nav-item" href="#">Blog</a>
+        <a class="nav-item" href="#">Dashboards</a>
+        <div class="nav-more">Campaigns <span class="caret">↑</span></div>
+        <div class="nav-more">Workflows <span class="caret">↑</span></div>
+        <div class="nav-more">More <span class="caret">›</span></div>
+      </nav>
+
+      <div class="sidebar-fill"></div>
+
+      <div class="setup-card">
+        <p>Complete your setup and reach your goals faster.</p>
+        <button type="button">Continue</button>
+      </div>
+    </aside>
+
+    <!-- ============ Main ============ -->
+    <main class="main">
+
+      <!-- ============ Contacts page ============ -->
+      <div class="page" id="contactsPage">
+
+      <div class="page-header">
+        <div class="page-title">Contacts <span class="caret">▾</span></div>
+        <div class="page-actions">
+          <button class="icon-btn" type="button" title="More">⋮</button>
+          <button class="icon-btn" type="button" title="View">⛃</button>
+          <div class="dropdown-wrap" id="addContactsWrap">
+            <button class="btn btn-dark" id="addContactsBtn" type="button" aria-haspopup="true" aria-expanded="false">
+              Add contacts <span class="caret">▾</span>
+            </button>
+            <div class="dropdown-menu" id="addContactsMenu" role="menu">
+              <button class="dropdown-item" id="createContactOption" type="button" role="menuitem" disabled>Create new contact</button>
+              <button class="dropdown-item" id="importContactsOption" type="button" role="menuitem">Import contacts</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <span class="tab active">All contacts</span>
+        <span class="tab">My contacts</span>
+        <span class="tab">Unassigned contacts</span>
+        <span class="tab-add">+</span>
+      </div>
+
+      <div class="toolbar" id="contactsToolbar">
+        <div class="search-input"><span>⌕</span> Search ( / )</div>
+        <div class="pill">☰ Filter</div>
+        <div class="pill">↕ Sort by</div>
+        <div class="toolbar-divider"></div>
+        <div class="pill">Contact owner <span class="caret">▾</span></div>
+        <div class="pill">Create date <span class="caret">▾</span></div>
+        <div class="pill">Last activity date <span class="caret">▾</span></div>
+        <div class="pill">Lead status <span class="caret">▾</span></div>
+        <button class="pill" id="marketingStatusFilterBtn" type="button">Marketing contact status: All <span class="caret">▾</span></button>
+        <button class="toolbar-icon" type="button">+</button>
+        <button class="toolbar-icon" type="button">✎</button>
+        <a class="adv-filters" href="#">Advanced filters</a>
+        <div class="toolbar-spacer"></div>
+        <button class="toolbar-icon" type="button">▦</button>
+        <button class="toolbar-icon" type="button">⚙</button>
+      </div>
+
+      <div class="bulk-bar" id="bulkBar" hidden>
+        <span class="bulk-bar-count" id="bulkBarCount"></span>
+        <div class="bulk-bar-actions">
+          <button class="btn btn-outline btn-sm" type="button" disabled>Delete</button>
+          <button class="btn btn-dark btn-sm" id="setAsMarketingBtn" type="button">Set as marketing</button>
+        </div>
+        <button class="bulk-bar-clear" id="bulkBarClear" type="button" aria-label="Clear selection">×</button>
+      </div>
+
+      <div class="table-wrap">
+        <div class="card">
+          <div style="overflow-x:auto">
+            <table>
+              <thead>
+                <tr>
+                  <th class="checkcol"><input class="rowcheck" type="checkbox" id="selectAllCheckbox" /></th>
+                  <th><span class="th-sort">Name <span class="arrow">↑</span></span></th>
+                  <th>Email</th>
+                  <th>Phone Number</th>
+                  <th>Contact owner</th>
+                  <th>Primary company</th>
+                  <th>Marketing contact status</th>
+                </tr>
+              </thead>
+              <tbody id="contactRows"></tbody>
+            </table>
+          </div>
+
+          <div class="card-footer">
+            <span><span id="footerCount"></span> <span id="footerCountLabel"></span></span>
+            <div class="footer-actions">
+              <button class="footer-icon" type="button" title="Refresh">↻</button>
+              <button class="footer-btn" type="button">Export</button>
+              <button class="footer-btn" type="button">Clone</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      </div>
+      <!-- /Contacts page -->
+
+      <!-- ============ Data integration page ============ -->
+      <div class="page di-page" id="dataIntegrationPage" hidden>
+
+        <div class="page-header">
+          <div class="page-title">Data integration</div>
+        </div>
+
+        <div class="di-cards">
+          <div class="di-card">
+            <div class="di-card-icon">
+              <svg width="32" height="32" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M5 2.5h7l3 3v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-14a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                <path d="M12 2.5v3h3" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                <line x1="6.5" y1="11" x2="13.5" y2="11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                <line x1="6.5" y1="14" x2="13.5" y2="14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3>Import a file</h3>
+            <p>One-time import from a file—directly into your CRM.</p>
+            <button class="btn btn-outline" id="importDataBtn" type="button">Import data</button>
+          </div>
+          <div class="di-card">
+            <div class="di-card-icon">
+              <svg width="32" height="32" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M8.5 11.5a3 3 0 0 0 4.24 0l2-2a3 3 0 0 0-4.24-4.24l-1 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M11.5 8.5a3 3 0 0 0-4.24 0l-2 2a3 3 0 0 0 4.24 4.24l1-1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3>Sync from apps</h3>
+            <p>Keep data synced between your CRM and external apps.</p>
+            <button class="btn btn-outline" type="button">Connect an app</button>
+          </div>
+          <div class="di-card">
+            <div class="di-card-icon">
+              <svg width="32" height="32" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M15.5 8a5.5 5.5 0 0 0-9.9-3.3M4.5 12a5.5 5.5 0 0 0 9.9 3.3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M15.5 4.5V8h-3.5M4.5 15.5V12H8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3>Transfer your data</h3>
+            <p>Seamlessly transfer your data using the Smart Transfer tool. <a href="#">Learn more ↗</a></p>
+            <button class="btn btn-outline" type="button">Transfer data</button>
+          </div>
+          <div class="di-card">
+            <span class="di-beta-badge">Beta</span>
+            <div class="di-card-icon">
+              <svg width="32" height="32" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.5"/>
+                <circle cx="10" cy="10" r="4" stroke="currentColor" stroke-width="1.5"/>
+                <circle cx="10" cy="10" r="1" fill="currentColor" stroke="none"/>
+              </svg>
+            </div>
+            <h3>Make sense of intent data</h3>
+            <p>Aggregate and score cross-channel engagement to uncover who's ready to buy.</p>
+            <button class="btn btn-outline" type="button">
+              Upgrade to Data Hub
+              <svg width="13" height="13" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="margin-left:5px;vertical-align:-2px">
+                <rect x="4.5" y="9" width="11" height="8" rx="1.2" stroke="currentColor" stroke-width="1.5"/>
+                <path d="M7 9V6.5a3 3 0 0 1 6 0V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="di-monitor">
+          <div class="di-monitor-header">
+            <h2>Monitor your imports &amp; syncs</h2>
+            <button class="btn btn-outline" type="button">Connected apps</button>
+          </div>
+
+          <div class="di-error-banner">
+            <span><strong>Your last import has some errors.</strong> <a href="#">See errors.</a> Need help? <a href="#">Learn about fixing import errors ↗</a>.</span>
+            <button class="di-error-dismiss" type="button" aria-label="Dismiss">×</button>
+          </div>
+
+          <div class="di-subtabs">
+            <button class="di-subtab active" type="button">File imports</button>
+            <button class="di-subtab" type="button">App syncs</button>
+            <button class="di-subtab" type="button">Data studio syncs</button>
+          </div>
+        </div>
+
+      </div>
+      <!-- /Data integration page -->
+
+      <!-- ============ Import wizard: Step 1 of 3 (T3) ============ -->
+      <div class="page wizard-page" id="importStep1Page" hidden>
+
+        <div class="wizard-body">
+          <div class="wizard-main">
+            <div class="wizard-step-label">Step 1 of 3</div>
+            <h1 class="wizard-title">Upload a file to create and update contacts</h1>
+            <p class="wizard-copy">With contacts to start with, you can get a feel for our tools and get set up for success. If we find any duplicate contacts, we'll remove them for you.</p>
+            <a class="wizard-link" href="#">View import property requirements</a>
+
+            <div class="upload-zone">
+              <span class="upload-zone-close" aria-hidden="true">×</span>
+              <div class="upload-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M7 17.5a4 4 0 0 1-.7-7.94A5.5 5.5 0 0 1 17 8.06 4.5 4.5 0 0 1 16.5 17.5H7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                  <path d="M12 11v6.5M9.5 13.5 12 11l2.5 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="upload-filename">File uploaded: <strong id="uploadFileName"></strong></div>
+              <div class="upload-filesize" id="uploadFileSize"></div>
+            </div>
+
+            <div class="wizard-field">
+              <label for="importLanguage">Select the language of the column headers in your file</label>
+              <p class="wizard-field-help">Identifying the language of the column headers in your file allows us to accurately map them to existing HubSpot properties. <a href="#">Learn more ↗</a></p>
+              <select id="importLanguage" class="wizard-select">
+                <option>English</option>
+              </select>
+            </div>
+
+            <div class="wizard-hint">
+              <svg width="15" height="15" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="vertical-align:-2px;margin-right:2px">
+                <path d="M7 14.5h6M8 17h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M10 2.5a5.5 5.5 0 0 0-3 10.1c.5.4.8 1 .8 1.65v.25h4.4v-.25c0-.65.3-1.25.8-1.65A5.5 5.5 0 0 0 10 2.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+              </svg>
+              <strong>Looking for advanced features?</strong> To import with other objects or advanced features, such as data enrichment, segmentation, marketing contacts and more, continue in the <a href="#">advanced import flow ↗</a>.
+            </div>
+          </div>
+
+          <div class="wizard-rail">
+            <h2>Don't have a file ready?</h2>
+            <div class="wizard-accordion open">
+              <div class="wizard-accordion-head"><span class="caret">▾</span> Start with our sample template</div>
+              <div class="wizard-accordion-body">
+                <p>Download our template and add your contacts to it, or apply the format to your own spreadsheet.</p>
+                <button class="btn btn-outline" type="button">Download template ⬇</button>
+              </div>
+            </div>
+            <div class="wizard-accordion">
+              <div class="wizard-accordion-head"><span class="caret">›</span> Update your file from Google Sheets</div>
+            </div>
+            <div class="wizard-accordion">
+              <div class="wizard-accordion-head"><span class="caret">›</span> Sync data to HubSpot from another app</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="wizard-footer">
+          <a class="wizard-cancel" href="#" id="wizardStep1Cancel">Cancel</a>
+          <div class="wizard-footer-right">
+            <span class="wizard-tip">Tip: press Enter/Return ↵ to continue</span>
+            <button class="btn btn-dark" id="wizardStep1Next" type="button">Next <span class="chev-right">›</span></button>
+          </div>
+        </div>
+
+      </div>
+      <!-- /Import wizard: Step 1 of 3 -->
+
+      <!-- ============ Import wizard: Step 2 of 3 (T4) ============ -->
+      <div class="page wizard-page" id="importStep2Page" hidden>
+
+        <div class="wizard-body wizard-body-wide">
+          <div class="wizard-main wizard-main-full">
+            <div class="wizard-step-label">Step 2 of 3</div>
+            <h1 class="wizard-title">Match your data to our contact properties</h1>
+            <p class="wizard-copy">We've mapped the columns in your file to HubSpot <a href="#">contact properties</a>. You can check that everything looks right, and make changes if you need to. If we couldn't find a match for a column, you can choose or create a property.</p>
+
+            <div class="mapping-toolbar">
+              <div class="pill">All mapped statuses <span class="caret">▾</span></div>
+              <div class="search-input mapping-search"><span>Search columns</span><span>⌕</span></div>
+            </div>
+
+            <div class="card mapping-card">
+              <table class="mapping-table">
+                <thead>
+                  <tr>
+                    <th>Column header from file</th>
+                    <th>Preview Information <span class="info-icon" title="Preview Information">ⓘ</span></th>
+                    <th>Mapped</th>
+                    <th>Import</th>
+                    <th>HubSpot property</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>First Name</td>
+                    <td class="preview-info">Test<br>Test<br>Test</td>
+                    <td><span class="mapped-check">✓</span></td>
+                    <td><input type="checkbox" class="rowcheck" checked /></td>
+                    <td><select class="property-select"><option>✳ First Name</option></select></td>
+                  </tr>
+                  <tr>
+                    <td>Last Name</td>
+                    <td class="preview-info">User<br>User<br>User</td>
+                    <td><span class="mapped-check">✓</span></td>
+                    <td><input type="checkbox" class="rowcheck" checked /></td>
+                    <td class="property-cell">
+                      <button class="property-select" id="lastNamePropertyBtn" type="button" aria-haspopup="true" aria-expanded="false">✳ Last Name</button>
+                      <div class="property-popover" id="lastNamePopover" role="dialog" aria-label="Last Name property details">
+                        <div class="property-popover-title">✳ Last Name</div>
+                        <p class="property-popover-note">This property can be used to create new records.</p>
+                        <div class="property-popover-section">
+                          <div class="property-popover-label">Usage</div>
+                          <div id="lastNameUsage"></div>
+                        </div>
+                        <div class="property-popover-section">
+                          <div class="property-popover-label">Type</div>
+                          <div>Single-line text</div>
+                        </div>
+                        <div class="property-popover-section">
+                          <div class="property-popover-label">Description</div>
+                          <div>A contact's last name</div>
+                        </div>
+                        <a href="#" class="property-popover-link">View property details</a>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Email</td>
+                    <td class="preview-info"><button class="btn btn-outline btn-sm" type="button">✎ Edit column values</button></td>
+                    <td><span class="mapped-check">✓</span></td>
+                    <td><input type="checkbox" class="rowcheck" checked /></td>
+                    <td><select class="property-select"><option>Email</option></select></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="wizard-footer">
+          <div class="wizard-footer-left">
+            <button class="wizard-back" id="wizardStep2Back" type="button">‹ Back</button>
+            <a class="wizard-cancel" href="#" id="wizardStep2Cancel">Cancel</a>
+          </div>
+          <button class="btn btn-dark" id="wizardStep2Next" type="button">Next <span class="chev-right">›</span></button>
+        </div>
+
+      </div>
+      <!-- /Import wizard: Step 2 of 3 -->
+
+      <!-- ============ Import wizard: Step 3 of 3 (T5) ============ -->
+      <div class="page wizard-page" id="importStep3Page" hidden>
+
+        <div class="wizard-body">
+          <div class="wizard-main">
+            <div class="wizard-step-label">Step 3 of 3</div>
+            <h1 class="wizard-title">Give your import a name</h1>
+            <p class="wizard-copy">This will make it easier for you to find it later</p>
+
+            <div class="wizard-field">
+              <label for="importNameInput">Import name *</label>
+              <input type="text" id="importNameInput" class="wizard-select" />
+            </div>
+
+            <label class="consent-check">
+              <input type="checkbox" id="consentCheckbox" />
+              <span>* I agree that all contacts in this import are expecting to hear from my organization. I have a prior relationship with these contacts and have emailed them at least once in the past year. I can confirm this list wasn't purchased, rented, appended, or provided by a third party.</span>
+            </label>
+
+            <div class="wizard-hint wizard-hint-spaced">
+              <svg width="15" height="15" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="vertical-align:-2px;margin-right:2px">
+                <path d="M7 14.5h6M8 17h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M10 2.5a5.5 5.5 0 0 0-3 10.1c.5.4.8 1 .8 1.65v.25h4.4v-.25c0-.65.3-1.25.8-1.65A5.5 5.5 0 0 0 10 2.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+              </svg>
+              <strong>Looking for advanced features?</strong> To import with other objects or advanced features, such as data enrichment, segmentation, marketing contacts and more, continue in the <a href="#">advanced import flow ↗</a>.
+            </div>
+          </div>
+
+          <div class="wizard-rail wizard-rail-center">
+            <div class="wizard-illustration">
+              <svg width="64" height="64" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <rect x="2" y="3" width="16" height="11" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+                <line x1="7" y1="17" x2="13" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <line x1="10" y1="14" x2="10" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h2 class="wizard-rail-title">You're almost ready to start</h2>
+            <p class="wizard-rail-copy">Your information is safe and secure in HubSpot.</p>
+          </div>
+        </div>
+
+        <div class="wizard-footer">
+          <div class="wizard-footer-left">
+            <button class="wizard-back" id="wizardStep3Back" type="button">‹ Back</button>
+            <a class="wizard-cancel" href="#" id="wizardStep3Cancel">Cancel</a>
+          </div>
+          <div class="wizard-footer-right">
+            <span class="wizard-tip">Tip: press Enter/Return ↵ to continue</span>
+            <button class="btn btn-dark" id="finishImportBtn" type="button" disabled>Finish import</button>
+          </div>
+        </div>
+
+      </div>
+      <!-- /Import wizard: Step 3 of 3 -->
+
+      <!-- ============ Import detail page (T6) ============ -->
+      <div class="page" id="importDetailPage" hidden>
+
+        <div class="page-header">
+          <div>
+            <a class="id-breadcrumb" href="#" id="idBackLink">‹ Back to Import History</a>
+            <div class="page-title" id="idImportName"></div>
+            <div class="id-meta" id="idImportMeta"></div>
+          </div>
+        </div>
+
+        <div class="id-processing-banner" id="idProcessingBanner">
+          <div class="spinner-lg"></div>
+          <p>Your import is processing. We'll send you an email when your import is finished.</p>
+        </div>
+
+        <div class="table-wrap">
+          <div class="card id-summary-card">
+            <h2>Summary</h2>
+            <div class="id-stats">
+              <div class="id-stat">
+                <div class="id-stat-value" id="statImportRows">--</div>
+                <div class="id-stat-label">Import rows</div>
+              </div>
+              <div class="id-stat">
+                <div class="id-stat-value" id="statNewRecords">--</div>
+                <div class="id-stat-label">New records</div>
+              </div>
+              <div class="id-stat">
+                <div class="id-stat-value" id="statUpdatedRecords">--</div>
+                <div class="id-stat-label">Updated records</div>
+              </div>
+              <div class="id-stat">
+                <div class="id-stat-value" id="statNewAssociations">--</div>
+                <div class="id-stat-label">New associations</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="id-tabs">
+            <span class="id-tab">Errors (0)</span>
+          </div>
+        </div>
+
+      </div>
+      <!-- /Import detail page -->
+
+    </main>
+  </div>
+</div>
+
+<!-- ============ Financial intercept + triage modal (T8–T9, NEW) ============ -->
+<!-- One modal shell reused across steps: T8's warning screen and T9's
+     triage dashboard are both rendered into #financialInterceptBody, the
+     same way the app's earlier flow screens swapped content in place. -->
+<div class="overlay" id="financialInterceptOverlay" role="dialog" aria-modal="true" aria-labelledby="financialInterceptTitle">
+  <div class="modal" style="max-width:520px">
+
+    <div class="modal-header">
+      <div class="breeze-mark">✦</div>
+      <div>
+        <div class="modal-title" id="financialInterceptTitle">Breeze AI</div>
+      </div>
+      <button class="modal-close" id="financialInterceptClose" type="button" aria-label="Close">×</button>
+    </div>
+
+    <div class="intercept-body" id="financialInterceptBody"></div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  /* =========================================================================
+     SECTION 1: CONFIG
+     Every tunable number and copy string used by the app shell lives here.
+     Nothing else in the file should contain a literal number like 985 or
+     950 — it should read it from CONFIG (or from `state`, which starts
+     from CONFIG's values). This makes the whole demo re-tunable from one
+     place, and makes "where did this number come from" always answerable.
+     ========================================================================= */
+
+  const CONFIG = {
+    // Both tiers share this same hard record limit in this demo — they
+    // just hit it in different ways, which is the whole point of the
+    // two flows we'll build in later screens.
+    contactLimit: 1000,
+
+    // Per-mode starting point ("baseline") for the counter pill, plus the
+    // label that pill uses — Free and Starter track two different kinds
+    // of limit (all contacts vs. marketing contacts), so the wording
+    // must not blur them together.
+    modes: {
+      free: {
+        label: 'Free Tier',
+        baseline: 985,
+        counterLabel: 'contacts'
+      },
+      starter: {
+        label: 'Starter Tier',
+        baseline: 950,
+        counterLabel: 'marketing contacts'
+      }
+    },
+
+    // The product name the quota banner offers as the upgrade path.
+    bannerUpgradeProduct: 'Starter Customer Platform',
+
+    // The 8 contacts the table always starts with, regardless of mode.
+    // marketingStatus tags each contact as 'Marketing' or 'Non-marketing'.
+    // The 8 seed contacts represent the existing marketing base — records
+    // imported later (see generateImportedContacts) start non-marketing.
+    seedContacts: [
+      { name: 'Amara Osei',      email: 'amara.osei@northwind.io',   phone: '--',              owner: 'No owner', company: 'Northwind Logistics', marketingStatus: 'Marketing' },
+      { name: 'Daniel Vega',     email: 'd.vega@brightpath.co',      phone: '(415) 555-0142',  owner: 'No owner', company: 'Brightpath Co.',       marketingStatus: 'Marketing' },
+      { name: 'Priya Raman',     email: 'priya@lumenworks.com',      phone: '--',              owner: 'No owner', company: 'Lumen Works',          marketingStatus: 'Marketing' },
+      { name: 'Tomas Ferreira',  email: 'tomas.f@sablegroup.net',    phone: '(212) 555-0187',  owner: 'No owner', company: 'Sable Group',          marketingStatus: 'Marketing' },
+      { name: 'Nina Halvorsen',  email: 'nina.h@fjordanalytics.no',  phone: '--',              owner: 'No owner', company: 'Fjord Analytics',      marketingStatus: 'Marketing' },
+      { name: 'Marcus Bell',     email: 'm.bell@coastalhvac.com',    phone: '(305) 555-0113',  owner: 'No owner', company: 'Coastal HVAC',         marketingStatus: 'Marketing' },
+      { name: 'Yuki Tanaka',     email: 'y.tanaka@kaizenlabs.jp',    phone: '--',              owner: 'No owner', company: 'Kaizen Labs',           marketingStatus: 'Marketing' },
+      { name: 'Elena Duarte',    email: 'elena@verdepack.mx',        phone: '(650) 555-0176',  owner: 'No owner', company: 'Verde Packaging',      marketingStatus: 'Marketing' }
+    ],
+
+    // The file the Starter flow simulates importing. rowCount is what
+    // later screens use to calculate the Marketing Contact breach
+    // (baseline + rowCount vs. contactLimit) — it gets copied into
+    // state.pendingImport the moment the import starts (T2 → T3).
+    pendingImport: {
+      fileName: 'Q3_Webinar_Leads.csv',
+      rowCount: 100,
+      fileSizeLabel: '6.1 KB' // approximate — not shown in any reference, just plausible flavor text
+    },
+
+    // T9's triage categories — drawn from the existing marketing base
+    // (engagement data), not the newly imported non-marketing contacts.
+    // A fresh "checked" copy of this is built each time the screen opens.
+    triageCategories: [
+      { count: 30, label: '30 Hard Bounced Contacts',  detail: 'Permanently failed email delivery' },
+      { count: 25, label: '25 Unengaged Contacts',     detail: 'Zero opens, clicks, or site visits in the last 12 months' }
+    ],
+
+    // T11's countdown is illustrative, not tied to a real clock — this is
+    // just a plausible "hours left until midnight" starting point.
+    overageCountdownSeedMinutes: 615 // ~10h 15m — breach at roughly 1:45 PM
+  };
+
+  /* =========================================================================
+     SECTION 2: STATE
+     The single source of truth for everything the current screen shows.
+     Later screens (the mode toggle, the Free/Starter flows) will change
+     these values and then call render() — they should never reach into
+     the DOM directly to update a number themselves.
+     ========================================================================= */
+
+  const state = {
+    // This build boots directly into Starter mode — there's no toggle to
+    // switch out of it, and no Free-tier flow left to switch into.
+    mode: 'starter', // 'free' | 'starter' — which pricing tier we're simulating
+    contactCount: CONFIG.modes.starter.baseline, // the live count shown in the pill + banner
+    // Working copy of the table rows. Each gets a stable id here (not
+    // stored in CONFIG) so bulk-selection can track rows regardless of
+    // how the array gets re-sorted or added to later.
+    contacts: CONFIG.seedContacts.map((contact, i) => ({ ...contact, id: `seed-${i + 1}` })),
+    view: 'contacts', // 'contacts' | 'data-integration' | 'import-step1' — which page is shown
+    pendingImport: null, // set to a copy of CONFIG.pendingImport once an import starts
+    importStatus: null, // null | 'processing' | 'complete' — drives the import detail page
+    contactViewFilter: 'all', // 'all' | 'non-marketing' — which rows the contacts table shows
+    selectedContactIds: [], // ids of currently checked rows, for the bulk action bar
+    overageCountdownMinutes: null, // null when under limit; minutes-to-midnight while over it (T11)
+
+    // Increments each time an import completes. Contact ids are scoped to
+    // the run that created them (see generateImportedContacts) so a
+    // second import in the same session can't collide with the first —
+    // living in state, not a module-level variable, means a future reset
+    // (e.g. a mode switch) would clear it along with everything else.
+    importRunCount: 0
+  };
+
+  /* =========================================================================
+     SECTION 3: RENDER
+     render() is the only function allowed to write these particular
+     pieces of the DOM. Anything that changes `state` should finish by
+     calling render() (or one of its three helpers) instead of poking an
+     element directly — that way there's exactly one place to look if a
+     number on screen is ever wrong.
+     ========================================================================= */
+
+  function render() {
+    renderPage();
+    renderQuotaBanner();
+    renderCounterPill();
+    renderContactsTable();
+    renderOverageBanner();
+  }
+
+  // Shows the amber "over your limit" banner whenever the marketing
+  // count exceeds the tier limit (T11) — hidden the rest of the time.
+  function renderOverageBanner() {
+    const overage = state.contactCount - CONFIG.contactLimit;
+    const isOverLimit = overage > 0;
+    document.getElementById('overageBanner').hidden = !isOverLimit;
+    if (!isOverLimit) return;
+
+    document.getElementById('overageBannerText').textContent =
+      `You're ${overage.toLocaleString()} marketing contacts over your limit. Free up capacity before 12:00 AM to avoid a $45/month upgrade.`;
+
+    const hours = Math.floor(state.overageCountdownMinutes / 60);
+    const minutes = state.overageCountdownMinutes % 60;
+    document.getElementById('overageCountdown').textContent = `${hours}h ${minutes}m`;
+  }
+
+  // Shows whichever page matches state.view and hides the rest. This is
+  // the whole "router" this app needs — no navigation library required,
+  // just toggling which page div is visible and keeping the sidebar's
+  // active item in sync with it.
+  function renderPage() {
+    const onContactsPage = state.view === 'contacts';
+    const onDataIntegrationPage = state.view === 'data-integration';
+    const onImportStep1Page = state.view === 'import-step1';
+    const onImportStep2Page = state.view === 'import-step2';
+    const onImportStep3Page = state.view === 'import-step3';
+    const onImportDetailPage = state.view === 'import-detail';
+
+    document.getElementById('contactsPage').hidden = !onContactsPage;
+    document.getElementById('dataIntegrationPage').hidden = !onDataIntegrationPage;
+    document.getElementById('importStep1Page').hidden = !onImportStep1Page;
+    document.getElementById('importStep2Page').hidden = !onImportStep2Page;
+    document.getElementById('importStep3Page').hidden = !onImportStep3Page;
+    document.getElementById('importDetailPage').hidden = !onImportDetailPage;
+    document.getElementById('sidebarContactsItem').classList.toggle('active', onContactsPage);
+
+    renderImportStep1();
+    renderImportStep2();
+    renderImportDetail();
+  }
+
+  // Fills in the uploaded-file details on the Step 1 wizard screen from
+  // state.pendingImport. Safe to call even when that page is hidden or
+  // no import has started yet — it just has nothing to do in that case.
+  function renderImportStep1() {
+    if (!state.pendingImport) return;
+    document.getElementById('uploadFileName').textContent = state.pendingImport.fileName;
+    document.getElementById('uploadFileSize').textContent = state.pendingImport.fileSizeLabel;
+  }
+
+  // Fills in the "Usage" figure on the Last Name property popover from
+  // the live contact count, instead of hardcoding the reference's 820.
+  function renderImportStep2() {
+    document.getElementById('lastNameUsage').textContent =
+      `${state.contactCount.toLocaleString()} contacts have values`;
+  }
+
+  // Drives the import detail page: shows "--" placeholders while
+  // state.importStatus is 'processing', then the real summary numbers
+  // once it flips to 'complete'. All four numbers derive from
+  // state.pendingImport.rowCount rather than being written as literals.
+  function renderImportDetail() {
+    if (!state.pendingImport) return;
+
+    document.getElementById('idImportName').textContent = state.pendingImport.fileName;
+    document.getElementById('idImportMeta').textContent = 'Imported just now by En Media';
+
+    const isProcessing = state.importStatus === 'processing';
+    document.getElementById('idProcessingBanner').hidden = !isProcessing;
+
+    const rows = state.pendingImport.rowCount;
+    document.getElementById('statImportRows').textContent = isProcessing ? '--' : rows.toLocaleString();
+    // Every imported row is a brand-new contact in this demo — nothing in
+    // the seed data overlaps with the webinar list, so NEW == total rows
+    // and UPDATED is always 0. No company/deal associations are simulated.
+    document.getElementById('statNewRecords').textContent = isProcessing ? '--' : rows.toLocaleString();
+    document.getElementById('statUpdatedRecords').textContent = isProcessing ? '--' : '0';
+    document.getElementById('statNewAssociations').textContent = isProcessing ? '--' : '0';
+  }
+
+  // Builds the batch of contact records an import creates. They start
+  // Non-marketing, per the manifest revision: HubSpot's quick import flow
+  // has no Marketing Contacts control, so imported records never touch
+  // the marketing-contact quota on their own.
+  //
+  // runNumber scopes each row's id to the import that created it
+  // (webinar-1-1, webinar-2-1, ...), so a second import in the same
+  // session can't collide with ids from the first — without it, running
+  // the flow twice would produce two different contacts both named
+  // "webinar-1", and selecting one in the bulk-select table would
+  // silently select both.
+  function generateImportedContacts(count, runNumber) {
+    const contacts = [];
+    for (let i = 1; i <= count; i++) {
+      contacts.push({
+        id: `webinar-${runNumber}-${i}`,
+        name: `Webinar Lead ${i}`,
+        email: `lead${i}@q3webinar.example.com`,
+        phone: '--',
+        owner: 'No owner',
+        company: '--',
+        marketingStatus: 'Non-marketing'
+      });
+    }
+    return contacts;
+  }
+
+  // The banner text is built from a template so the two numbers in it
+  // (used vs. limit) always match whatever render() was last called with.
+  function renderQuotaBanner() {
+    const textEl = document.getElementById('quotaBannerText');
+    textEl.innerHTML =
+      `You've used <strong>${state.contactCount.toLocaleString()}</strong> of ${CONFIG.contactLimit.toLocaleString()} contacts.  ` +
+      `Create more contacts with ${CONFIG.bannerUpgradeProduct}.`;
+  }
+
+  // The pill shows both the count AND its label, because "contacts" and
+  // "marketing contacts" are two different HubSpot limits — swapping the
+  // label when the mode changes keeps that distinction visible.
+  function renderCounterPill() {
+    const modeConfig = CONFIG.modes[state.mode];
+    document.getElementById('footerCount').textContent = state.contactCount.toLocaleString();
+    document.getElementById('footerCountLabel').textContent = modeConfig.counterLabel;
+  }
+
+  // Turns "Sarah Jenkins" into "SJ" for the little round avatar badge.
+  function initials(name) {
+    return name.split(' ').map(part => part[0]).join('').slice(0, 2).toUpperCase();
+  }
+
+  // Returns the contacts the table should currently show, applying
+  // state.contactViewFilter. This is what "a filtered view" means here —
+  // the underlying state.contacts array is never trimmed, just displayed
+  // selectively.
+  function visibleContacts() {
+    if (state.contactViewFilter === 'non-marketing') {
+      return state.contacts.filter(c => c.marketingStatus === 'Non-marketing');
+    }
+    return state.contacts;
+  }
+
+  function renderContactsTable() {
+    const rows = visibleContacts();
+
+    document.getElementById('contactRows').innerHTML = rows.map(c => `
+      <tr>
+        <td><input class="rowcheck" type="checkbox" data-id="${c.id}" ${state.selectedContactIds.includes(c.id) ? 'checked' : ''} /></td>
+        <td>
+          <div class="who">
+            <span class="avatar">${initials(c.name)}</span>
+            <span class="name">${c.name}</span>
+          </div>
+        </td>
+        <td><span class="elink">${c.email}<span class="ext">↗</span></span></td>
+        <td class="muted">${c.phone}</td>
+        <td class="muted">${c.owner}</td>
+        <td>${c.company}</td>
+        <td><span class="status-badge ${c.marketingStatus === 'Marketing' ? 'marketing' : 'non-marketing'}">${c.marketingStatus}</span></td>
+      </tr>
+    `).join('');
+
+    // Re-attach listeners after every render — innerHTML wipes whatever
+    // was there before, checkboxes included.
+    document.querySelectorAll('#contactRows .rowcheck').forEach(checkbox => {
+      checkbox.addEventListener('change', () => toggleContactSelection(checkbox.dataset.id, checkbox.checked));
+    });
+
+    renderSelectAllCheckbox(rows);
+    renderBulkBar();
+  }
+
+  // Adds or removes one contact id from the selection, then re-renders
+  // just the bits that depend on it (not the whole table — that would
+  // wipe the checkbox the user just clicked mid-interaction).
+  function toggleContactSelection(id, isSelected) {
+    if (isSelected) {
+      if (!state.selectedContactIds.includes(id)) state.selectedContactIds.push(id);
+    } else {
+      state.selectedContactIds = state.selectedContactIds.filter(existingId => existingId !== id);
+    }
+    renderSelectAllCheckbox(visibleContacts());
+    renderBulkBar();
+  }
+
+  // The header checkbox reflects whether every currently visible row is
+  // selected — checked, unchecked, or indeterminate (some but not all).
+  function renderSelectAllCheckbox(rows) {
+    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+    const selectedVisibleCount = rows.filter(c => state.selectedContactIds.includes(c.id)).length;
+    selectAllCheckbox.checked = rows.length > 0 && selectedVisibleCount === rows.length;
+    selectAllCheckbox.indeterminate = selectedVisibleCount > 0 && selectedVisibleCount < rows.length;
+  }
+
+  // Shows the bulk action bar (replacing the toolbar) whenever at least
+  // one row is selected, with a count that always matches the selection.
+  function renderBulkBar() {
+    const count = state.selectedContactIds.length;
+    document.getElementById('contactsToolbar').hidden = count > 0;
+    document.getElementById('bulkBar').hidden = count === 0;
+    document.getElementById('bulkBarCount').textContent = `${count.toLocaleString()} selected`;
+  }
+
+  /* =========================================================================
+     SECTION 4: BROWSER HISTORY
+     Every forward navigation goes through navigateTo() instead of setting
+     state.view directly, so the browser back button steps through the
+     flow (wizard Step 3 -> Step 2 -> Step 1 -> data integration ->
+     contacts) rather than leaving the prototype outright. No router
+     library — just history.pushState per transition and a popstate
+     listener that reads the previous screen straight off the entry being
+     returned to.
+     ========================================================================= */
+
+  // The base entry, so once there's nothing left to pop, Back falls
+  // through to whatever was open before the prototype loaded.
+  history.replaceState({ view: state.view }, '', location.href);
+
+  function navigateTo(view) {
+    state.view = view;
+    history.pushState({ view }, '', location.href);
+    render();
+  }
+
+  window.addEventListener('popstate', event => {
+    // event.state is exactly what was pushed for the entry being
+    // returned to — the previous screen. A null state (the base entry,
+    // or a page loaded fresh) falls back to the root screen.
+    state.view = event.state ? event.state.view : 'contacts';
+    render();
+  });
+
+  // The sidebar's Contacts link is live from every screen, including
+  // mid-wizard — it doesn't touch state.pendingImport or anything else,
+  // so leaving the flow to check the table and coming back (via this
+  // link or the browser back button) never loses progress.
+  document.getElementById('sidebarContactsItem').addEventListener('click', event => {
+    event.preventDefault();
+    navigateTo('contacts');
+  });
+
+  /* =========================================================================
+     SECTION 5: TOAST NOTIFICATIONS
+     A small message that slides up at the bottom of the screen. `variant`
+     controls its color: 'success' (green), 'warning' (amber), or omitted
+     for the default dark style. Not used by S0 itself, but the Gemini
+     diagnostics chat below needs it, and later screens will too.
+     ========================================================================= */
+
+  function showToast(message, variant) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.remove('success', 'warning');
+    if (variant) toast.classList.add(variant);
+    toast.classList.add('show');
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => toast.classList.remove('show'), 3600);
+  }
+
+  /* =========================================================================
+     SECTION 6: "ADD CONTACTS" DROPDOWN (T1)
+     Only "Import contacts" is live here — the Free Tier flow that
+     "Create new contact" used to open is paused, not deleted, so that
+     option stays visible in the menu but disabled rather than removed.
+     ========================================================================= */
+
+  const addContactsWrap = document.getElementById('addContactsWrap');
+  const addContactsBtn = document.getElementById('addContactsBtn');
+  const addContactsMenu = document.getElementById('addContactsMenu');
+
+  function openAddContactsMenu() {
+    addContactsMenu.classList.add('open');
+    addContactsBtn.setAttribute('aria-expanded', 'true');
+  }
+
+  function closeAddContactsMenu() {
+    addContactsMenu.classList.remove('open');
+    addContactsBtn.setAttribute('aria-expanded', 'false');
+  }
+
+  addContactsBtn.addEventListener('click', event => {
+    event.stopPropagation(); // don't let this click immediately re-trigger the outside-click closer below
+    const isOpen = addContactsMenu.classList.contains('open');
+    if (isOpen) closeAddContactsMenu(); else openAddContactsMenu();
+  });
+
+  // Clicking anywhere outside the dropdown closes it.
+  document.addEventListener('click', event => {
+    if (!addContactsWrap.contains(event.target)) closeAddContactsMenu();
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') closeAddContactsMenu();
+  });
+
+  document.getElementById('importContactsOption').addEventListener('click', () => {
+    closeAddContactsMenu();
+    navigateTo('data-integration');
+  });
+
+  /* =========================================================================
+     SECTION 7: CONTACTS LIST — BULK SELECTION (T7)
+     The filter pill isolates the imported Non-marketing rows; the header
+     checkbox then selects all of them at once, which is what surfaces
+     the bulk action bar.
+     ========================================================================= */
+
+  document.getElementById('marketingStatusFilterBtn').addEventListener('click', () => {
+    const btn = document.getElementById('marketingStatusFilterBtn');
+    const goingToNonMarketing = state.contactViewFilter === 'all';
+    state.contactViewFilter = goingToNonMarketing ? 'non-marketing' : 'all';
+    btn.innerHTML = goingToNonMarketing
+      ? 'Marketing contact status: Non-marketing <span class="caret">▾</span>'
+      : 'Marketing contact status: All <span class="caret">▾</span>';
+
+    // Changing the filter can hide rows that were selected under the old
+    // one — clear the selection rather than leave invisible rows checked.
+    state.selectedContactIds = [];
+    render();
+  });
+
+  document.getElementById('selectAllCheckbox').addEventListener('change', event => {
+    state.selectedContactIds = event.target.checked ? visibleContacts().map(c => c.id) : [];
+    render();
+  });
+
+  document.getElementById('bulkBarClear').addEventListener('click', () => {
+    state.selectedContactIds = [];
+    render();
+  });
+
+  /* =========================================================================
+     SECTION 8: FINANCIAL INTERCEPT + TRIAGE MODAL (T8–T10, NEW)
+     One modal shell, reused across three steps: the warning (T8), the AI
+     scan + triage dashboard (T9), and its resolution (T10). None of this
+     is a HubSpot reproduction — it's the proposed feature the whole
+     manifest is arguing for.
+     ========================================================================= */
+
+  // A small reusable focus trap: while the modal is open, Tab cycling
+  // stays inside it instead of escaping into the page behind it. Returns
+  // a function that removes the trap, for use on close.
+  function trapFocusWithin(container) {
+    const focusableSelector = 'button:not(:disabled), [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
+    function handleKeydown(event) {
+      if (event.key !== 'Tab') return;
+      const focusable = Array.from(container.querySelectorAll(focusableSelector));
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    container.addEventListener('keydown', handleKeydown);
+    return () => container.removeEventListener('keydown', handleKeydown);
+  }
+
+  const financialInterceptOverlay = document.getElementById('financialInterceptOverlay');
+  const financialInterceptTitle = document.getElementById('financialInterceptTitle');
+  const financialInterceptBody = document.getElementById('financialInterceptBody');
+  let financialInterceptTriggerEl = null; // the element focus returns to on close
+  let releaseFinancialInterceptFocusTrap = null;
+
+  // Which flow opened the triage dashboard — 'pre-emptive' (from T8,
+  // before any billing breach) vs. 'breach-recovery' (from T11's "Free up
+  // capacity", after the upgrade has already applied). They share the
+  // same triage screen but resolve differently: pre-emptive also has to
+  // apply the pending 100 contacts as marketing; breach-recovery doesn't,
+  // because that already happened.
+  let triageOrigin = null;
+
+  // The working copy of CONFIG.triageCategories for the currently open
+  // triage screen, with each row's checked state. Rebuilt fresh every
+  // time the screen opens so a previous run's choices never leak in.
+  let triageWorkingCategories = [];
+
+  function setInterceptTitle(text) {
+    financialInterceptTitle.textContent = text;
+  }
+
+  function openInterceptModal(triggerEl, renderScreenFn) {
+    financialInterceptTriggerEl = triggerEl;
+    financialInterceptOverlay.classList.add('open');
+    releaseFinancialInterceptFocusTrap = trapFocusWithin(financialInterceptOverlay);
+    renderScreenFn();
+  }
+
+  function closeInterceptModal() {
+    financialInterceptOverlay.classList.remove('open');
+    if (releaseFinancialInterceptFocusTrap) releaseFinancialInterceptFocusTrap();
+    if (financialInterceptTriggerEl) financialInterceptTriggerEl.focus();
+  }
+
+  document.getElementById('financialInterceptClose').addEventListener('click', closeInterceptModal);
+
+  financialInterceptOverlay.addEventListener('click', event => {
+    if (event.target === financialInterceptOverlay) closeInterceptModal();
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && financialInterceptOverlay.classList.contains('open')) {
+      closeInterceptModal();
+    }
+  });
+
+  // ---- T8: the warning screen ----
+
+  document.getElementById('setAsMarketingBtn').addEventListener('click', event => {
+    openInterceptModal(event.target, renderInterceptWarningScreen);
+  });
+
+  function renderInterceptWarningScreen() {
+    // Every figure here comes from state — nothing about "1,050" or "100"
+    // is written as a literal.
+    const selectedCount = state.selectedContactIds.length;
+    const prospectiveTotal = state.contactCount + selectedCount;
+
+    setInterceptTitle('Wait — this will exceed your Marketing Contact limit.');
+    financialInterceptBody.innerHTML = `
+      <p>Setting these ${selectedCount} contacts as marketing will push you to ${prospectiveTotal.toLocaleString()} / ${CONFIG.contactLimit.toLocaleString()}. Your subscription will automatically upgrade by $45/month tonight at 12:00 AM.</p>
+      <div class="intercept-actions">
+        <button class="btn btn-primary-orange" id="optimizeDbBtn" type="button">Optimize Database to Save $45/mo</button>
+        <button class="btn btn-outline" id="acceptUpgradeBtn" type="button">Continue &amp; Accept Upgrade</button>
+      </div>
+    `;
+
+    document.getElementById('optimizeDbBtn').addEventListener('click', () => {
+      triageOrigin = 'pre-emptive';
+      runTriageAiScan();
+    });
+    document.getElementById('acceptUpgradeBtn').addEventListener('click', applyBreachPath);
+  }
+
+  // ---- T9: AI scan loading state, then the triage dashboard ----
+
+  function runTriageAiScan() {
+    setInterceptTitle('Breeze AI');
+    financialInterceptBody.innerHTML = `
+      <div class="intercept-loading">
+        <div class="spinner-lg"></div>
+        <p>Breeze AI is scanning your marketing contacts for low-value records…</p>
+      </div>
+    `;
+    setTimeout(renderTriageScreen, 1100);
+  }
+
+  function renderTriageScreen() {
+    triageWorkingCategories = CONFIG.triageCategories.map(cat => ({ ...cat, checked: true }));
+
+    setInterceptTitle('AI Triage: Marketing Contact Cleanup');
+    financialInterceptBody.innerHTML = `
+      <div class="triage-banner">
+        <svg width="15" height="15" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex:0 0 auto;margin-top:1px">
+          <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/>
+          <line x1="10" y1="9" x2="10" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="10" cy="6.3" r="1" fill="currentColor" stroke="none"/>
+        </svg>
+        <span>Note: Setting contacts to 'Non-Marketing' does not free up your quota until your next monthly renewal date. Only permanent deletion frees up capacity today.</span>
+      </div>
+      ${triageWorkingCategories.map(renderTriageRow).join('')}
+      <button class="btn btn-primary-orange" id="executeTriageBtn" type="button"></button>
+    `;
+
+    financialInterceptBody.querySelectorAll('.triage-check').forEach(checkbox => {
+      checkbox.addEventListener('change', () => {
+        triageWorkingCategories[+checkbox.dataset.index].checked = checkbox.checked;
+        updateTriageExecuteLabel();
+      });
+    });
+
+    document.getElementById('executeTriageBtn').addEventListener('click', executeTriage);
+    updateTriageExecuteLabel();
+  }
+
+  function renderTriageRow(category, index) {
+    return `
+      <label class="triage-row">
+        <input type="checkbox" class="triage-check" data-index="${index}" checked />
+        <span class="triage-label">
+          ${category.label}
+          <span class="triage-note">${category.detail}</span>
+        </span>
+      </label>
+    `;
+  }
+
+  function sumChecked(categories) {
+    return categories.filter(cat => cat.checked).reduce((sum, cat) => sum + cat.count, 0);
+  }
+
+  // "Permanently" is load-bearing here — a normal delete just moves
+  // records into the 90-day recycle bin, which does NOT free up quota.
+  function updateTriageExecuteLabel() {
+    const btn = document.getElementById('executeTriageBtn');
+    const n = sumChecked(triageWorkingCategories);
+    btn.textContent = n > 0 ? `Permanently Delete ${n} Contacts & Continue` : 'Select records to delete';
+    btn.disabled = n === 0;
+  }
+
+  // ---- T10: execution + resolution (branches on triageOrigin) ----
+
+  function executeTriage() {
+    const btn = document.getElementById('executeTriageBtn');
+    const deletedCount = sumChecked(triageWorkingCategories);
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Deleting…';
+
+    setTimeout(() => {
+      // The purge happens either way — it's the same 950-contact pool
+      // regardless of which path led here.
+      state.contactCount -= deletedCount;
+
+      if (triageOrigin === 'pre-emptive') {
+        const appliedCount = state.selectedContactIds.length;
+        applySelectedContactsAsMarketing();
+        state.contactCount += appliedCount;
+        state.selectedContactIds = [];
+        state.contactViewFilter = 'all';
+
+        closeInterceptModal();
+        render();
+        showToast(
+          `${deletedCount} inactive contacts permanently deleted. ${appliedCount} webinar leads set as marketing. You remain under your limit, saving $45/mo.`,
+          'success'
+        );
+      } else {
+        // Breach-recovery: the 100 contacts are already marketing (T11
+        // applied that immediately) — purging is the only thing needed
+        // to drop back under the limit and cancel the pending upgrade.
+        state.overageCountdownMinutes = null;
+
+        closeInterceptModal();
+        render();
+        showToast(
+          `${deletedCount} inactive contacts permanently deleted. You're back under your limit — the $45/mo upgrade has been avoided.`,
+          'success'
+        );
+      }
+
+      triageOrigin = null;
+    }, 700);
+  }
+
+  // Flips every currently-selected contact's status to Marketing. Shared
+  // by both the pre-emptive path (T10) and the breach path (T11).
+  function applySelectedContactsAsMarketing() {
+    state.contacts.forEach(contact => {
+      if (state.selectedContactIds.includes(contact.id)) contact.marketingStatus = 'Marketing';
+    });
+  }
+
+  /* =========================================================================
+     SECTION 9: BREACH STATE + REVERSIBLE WINDOW (T11, NEW)
+     Reached via "Continue & Accept Upgrade" on the T8 warning screen. The
+     status change applies immediately here — unlike the pre-emptive path,
+     there's no purge first, which is exactly what puts the account over
+     its limit.
+     ========================================================================= */
+
+  function applyBreachPath() {
+    const appliedCount = state.selectedContactIds.length;
+    applySelectedContactsAsMarketing();
+    state.contactCount += appliedCount;
+    state.selectedContactIds = [];
+    state.contactViewFilter = 'all';
+
+    // Start the (illustrative, non-firing) countdown now that we're over.
+    state.overageCountdownMinutes = CONFIG.overageCountdownSeedMinutes;
+
+    closeInterceptModal();
+    render();
+
+    // Neutral toast (no 'success'/'warning' variant) — confirms what
+    // happened without celebrating it, since a $45/mo upgrade is now
+    // pending.
+    showToast(`${appliedCount} webinar leads set as marketing. You're now over your limit — a $45/mo upgrade is pending.`);
+  }
+
+  document.getElementById('freeUpCapacityBtn').addEventListener('click', event => {
+    triageOrigin = 'breach-recovery';
+    openInterceptModal(event.target, runTriageAiScan);
+  });
+
+  // Ticks the countdown down once a minute purely for display — this is
+  // the "illustrative, non-firing" timer the brief called for. It never
+  // reaches zero and does anything; it's not wired to a real clock.
+  setInterval(() => {
+    if (state.overageCountdownMinutes === null) return;
+    if (state.overageCountdownMinutes > 0) state.overageCountdownMinutes -= 1;
+    renderOverageBanner();
+  }, 60000);
+
+  /* =========================================================================
+     SECTION 10: DATA INTEGRATION HUB (T2)
+     Reached from the "Import contacts" dropdown item above. Only the
+     "Import data" card is live — the other three cards are real HubSpot
+     chrome, reproduced for visual parity but not part of this flow.
+     ========================================================================= */
+
+  document.getElementById('importDataBtn').addEventListener('click', () => {
+    // Starting the import is what makes the payload size ("100 rows")
+    // knowable — copy it into state here so later screens (the financial
+    // intercept in particular) can read it instead of hardcoding it.
+    state.pendingImport = { ...CONFIG.pendingImport };
+    navigateTo('import-step1');
+
+    // Reset Step 3's consent checkbox for a fresh run — otherwise a
+    // second import in the same session would arrive with Finish import
+    // already enabled from a previous attempt.
+    document.getElementById('consentCheckbox').checked = false;
+    document.getElementById('finishImportBtn').disabled = true;
+  });
+
+  /* =========================================================================
+     SECTION 11: IMPORT WIZARD — STEP 1 OF 3 (T3)
+     Upload confirmation + language selection. The file is already shown
+     as uploaded on arrival — this build doesn't simulate the drag/drop
+     interaction itself, just the confirmed state that follows it.
+     ========================================================================= */
+
+  document.getElementById('wizardStep1Cancel').addEventListener('click', event => {
+    event.preventDefault();
+    state.pendingImport = null; // abandon the import so re-entering the flow starts clean
+    navigateTo('data-integration');
+  });
+
+  document.getElementById('wizardStep1Next').addEventListener('click', () => {
+    navigateTo('import-step2');
+  });
+
+  /* =========================================================================
+     SECTION 12: IMPORT WIZARD — STEP 2 OF 3 (T4)
+     Property mapping. No Marketing Contacts checkbox here — the reference
+     confirms that control belongs to HubSpot's advanced import flow, not
+     this quick one, so it's intentionally omitted rather than invented.
+     ========================================================================= */
+
+  document.getElementById('wizardStep2Back').addEventListener('click', () => {
+    // Real "go back one step" — use the actual browser history entry
+    // rather than pushing a new one, so repeated Back/Next round-trips
+    // don't pile up duplicate entries in the stack.
+    history.back();
+  });
+
+  document.getElementById('wizardStep2Cancel').addEventListener('click', event => {
+    event.preventDefault();
+    state.pendingImport = null; // abandon the import so re-entering the flow starts clean
+    navigateTo('data-integration');
+  });
+
+  document.getElementById('wizardStep2Next').addEventListener('click', () => {
+    navigateTo('import-step3');
+
+    // Set the name field once, on entry — re-syncing it on every render()
+    // would fight the user if they go on to edit it themselves.
+    document.getElementById('importNameInput').value = state.pendingImport.fileName;
+  });
+
+  // The Last Name property dropdown opens a small popover with details
+  // about that HubSpot property. It's the only one of the three columns
+  // wired this way — the reference screenshot only shows us this one
+  // popover's contents, so First Name and Email don't get invented ones.
+  const lastNamePropertyBtn = document.getElementById('lastNamePropertyBtn');
+  const lastNamePopover = document.getElementById('lastNamePopover');
+
+  function toggleLastNamePopover(forceOpen) {
+    const isOpen = forceOpen !== undefined ? forceOpen : !lastNamePopover.classList.contains('open');
+    lastNamePopover.classList.toggle('open', isOpen);
+    lastNamePropertyBtn.setAttribute('aria-expanded', String(isOpen));
+  }
+
+  lastNamePropertyBtn.addEventListener('click', event => {
+    event.stopPropagation(); // don't let this click immediately re-trigger the outside-click closer below
+    toggleLastNamePopover();
+  });
+
+  document.addEventListener('click', event => {
+    if (event.target !== lastNamePropertyBtn && !lastNamePopover.contains(event.target)) {
+      toggleLastNamePopover(false);
+    }
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') toggleLastNamePopover(false);
+  });
+
+  /* =========================================================================
+     SECTION 13: IMPORT WIZARD — STEP 3 OF 3 (T5)
+     Import name + required consent. Finish import stays disabled until
+     the checkbox is ticked — that's the one piece of real logic this
+     screen has.
+     ========================================================================= */
+
+  document.getElementById('wizardStep3Back').addEventListener('click', () => {
+    history.back();
+  });
+
+  document.getElementById('wizardStep3Cancel').addEventListener('click', event => {
+    event.preventDefault();
+    state.pendingImport = null; // abandon the import so re-entering the flow starts clean
+    navigateTo('data-integration');
+  });
+
+  document.getElementById('consentCheckbox').addEventListener('change', event => {
+    document.getElementById('finishImportBtn').disabled = !event.target.checked;
+  });
+
+  /* =========================================================================
+     SECTION 14: IMPORT DETAIL PAGE (T6)
+     Finish import proceeds with no intercept — HubSpot's quick flow has
+     no Marketing Contacts control (confirmed at T4), so these records
+     arrive Non-marketing and never touch the marketing-contact quota.
+     ========================================================================= */
+
+  document.getElementById('finishImportBtn').addEventListener('click', () => {
+    state.importStatus = 'processing';
+    navigateTo('import-detail');
+
+    // Long enough to read "Your import is processing...", short enough
+    // that a reviewer doesn't wonder if it's stalled.
+    setTimeout(() => {
+      // The import "completes": the rows become real contact records.
+      // state.contactCount (marketing) is deliberately left untouched —
+      // that's the whole point of this screen.
+      state.importRunCount += 1;
+      state.contacts.unshift(...generateImportedContacts(state.pendingImport.rowCount, state.importRunCount));
+      state.importStatus = 'complete';
+      render();
+    }, 1800);
+  });
+
+  document.getElementById('idBackLink').addEventListener('click', event => {
+    event.preventDefault();
+    navigateTo('data-integration');
+  });
+
+  /* =========================================================================
+     SECTION 15: BOOT
+     ========================================================================= */
+
+  render();
+</script>
+
+</body>
+</html>
