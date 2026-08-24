@@ -160,8 +160,6 @@
     align-items: center;
     gap: 7px;
     padding: 5px 8px 5px 5px;
-    border: none;
-    background: transparent;
     border-radius: var(--radius);
     font-size: 13px;
     color: var(--text);
@@ -990,9 +988,29 @@
     pointer-events: none;
     transition: opacity .2s ease, transform .2s ease;
     z-index: 60;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    max-width: 480px;
   }
 
-  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+
+  .toast-message { line-height: 1.4; }
+
+  .toast-undo-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+  .toast-undo-btn:hover { opacity: .85; }
 
   .btn-outline { background: #fff; color: var(--text); border: 1px solid #cbd6e2; }
   .btn-outline:hover { background: #f5f8fa; }
@@ -1039,18 +1057,123 @@
     color: #9a5b13;
   }
 
-  .triage-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 10px 12px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
+  /* ---------- Optimize Database page (T9, redesigned as a dedicated page
+     rather than an in-modal checklist — every record is individually
+     selectable, not just bulk-actioned by category) ---------- */
+
+  .opt-db-dialogue-card { padding: 16px 18px; margin-bottom: 16px; }
+
+  .opt-db-section {
+    margin-bottom: 16px;
   }
 
-  .triage-check { margin-top: 3px; width: 15px; height: 15px; accent-color: var(--orange); flex: 0 0 auto; }
-  .triage-label { font-size: 13.5px; color: var(--text); line-height: 1.4; }
-  .triage-note { display: block; font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .opt-db-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .opt-db-select-all-label { display: flex; align-items: center; gap: 9px; cursor: pointer; }
+  .opt-db-select-all { width: 15px; height: 15px; accent-color: var(--orange); flex: 0 0 auto; }
+  .opt-db-section-title { font-size: 14px; font-weight: 600; color: var(--text); }
+  .opt-db-section-reason { font-size: 12px; color: var(--text-muted); }
+
+  .opt-db-list { max-height: 260px; overflow-y: auto; }
+
+  .opt-db-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 16px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .opt-db-row:last-child { border-bottom: none; }
+  .opt-db-row:hover { background: #f8fafc; }
+
+  .opt-db-row-check { width: 15px; height: 15px; accent-color: var(--orange); flex: 0 0 auto; }
+  .opt-db-row-avatar {
+    width: 22px; height: 22px; flex: 0 0 22px;
+    border-radius: 50%;
+    background: #dfe3eb;
+    color: #516f90;
+    display: grid; place-items: center;
+    font-size: 9.5px; font-weight: 600;
+  }
+  .opt-db-row-name { font-size: 13px; color: var(--text); font-weight: 500; flex: 0 0 auto; white-space: nowrap; }
+  .opt-db-row-email {
+    font-size: 12.5px;
+    color: var(--link);
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .opt-db-row-reason { font-size: 11.5px; color: var(--text-muted); flex: 0 0 auto; white-space: nowrap; }
+
+  .opt-db-footer {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 28px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .opt-db-footer-count { font-size: 13.5px; font-weight: 600; color: var(--text); }
+
+  /* ---------- Native delete-confirmation dialog (a deliberate borrow from
+     real HubSpot's own bulk-delete guard) — requires typing the exact
+     record count before Delete enables. This is the one failsafe between
+     an AI-selected batch and an irreversible action. ---------- */
+
+  .confirm-modal {
+    width: 100%;
+    max-width: 480px;
+    background: var(--surface);
+    border-radius: 12px;
+    box-shadow: var(--shadow-modal);
+    overflow: hidden;
+    transform: translateY(10px) scale(.985);
+    transition: transform .18s ease;
+  }
+  .overlay.open .confirm-modal { transform: none; }
+
+  .confirm-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 24px 24px 0;
+  }
+  .confirm-modal-title { margin: 0; font-size: 22px; font-weight: 700; color: #1e2a35; line-height: 1.3; }
+
+  .confirm-modal-body { padding: 18px 24px 24px; }
+  .confirm-modal-body p { margin: 0 0 18px; font-size: 13.5px; line-height: 1.55; color: var(--text); }
+
+  .confirm-modal-input-label { display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+  .confirm-modal-input {
+    width: 100%;
+    padding: 9px 12px;
+    font-size: 14px;
+    border: 1px solid #cbd6e2;
+    border-radius: 4px;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+  .confirm-modal-input:focus { outline: 2px solid var(--orange); outline-offset: 1px; }
+
+  .confirm-modal-actions { display: flex; align-items: center; gap: 8px; }
+
+  .btn-danger { background: #dc2626; color: #fff; }
+  .btn-danger:hover { background: #b91c1c; }
+  .btn-danger:disabled { background: #e5e9ee; color: #9aa7b5; cursor: default; }
 
   /* Breeze's diagnostic dialogue — the sentence(s) the live model writes,
      shown above the remediation rows. Falls back to a canned line when the
@@ -1776,14 +1899,54 @@
       </div>
       <!-- /Import detail page -->
 
+      <!-- ============ Optimize Database page (T9, NEW — redesigned) ============ -->
+      <!-- Reached from the "Optimize Database" warning-screen button. Breeze's
+           scan still runs in the intercept modal (see runTriageAiScan) — this
+           is where its result lands: a full page, not a checklist inside a
+           modal, so every record behind a bulk action can be individually
+           reviewed and selected rather than accepted as an anonymous count. -->
+      <div class="page" id="optimizeDatabasePage" hidden>
+
+        <div class="page-header">
+          <div>
+            <a class="id-breadcrumb" href="#" id="optDbBackLink">‹ Back to Contacts</a>
+            <div class="page-title">Optimize Database</div>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <div class="card opt-db-dialogue-card">
+            <div class="breeze-attrib"><span class="breeze-attrib-dot">✦</span> Breeze diagnosis</div>
+            <p class="breeze-dialogue" id="optDbDialogue"></p>
+            <div class="triage-banner">
+              <svg width="15" height="15" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex:0 0 auto;margin-top:1px">
+                <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/>
+                <line x1="10" y1="9" x2="10" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="10" cy="6.3" r="1" fill="currentColor" stroke="none"/>
+              </svg>
+              <span>Setting contacts to "Non-Marketing" does not free up your quota until your next monthly renewal date. Only permanent deletion or merging frees up capacity today.</span>
+            </div>
+          </div>
+
+          <div id="optDbSections"></div>
+        </div>
+
+        <div class="opt-db-footer">
+          <span class="opt-db-footer-count" id="optDbFooterCount">0 selected</span>
+          <button class="btn btn-primary-orange" id="optDbActionBtn" type="button" disabled>Select contacts to optimize</button>
+        </div>
+
+      </div>
+      <!-- /Optimize Database page -->
+
     </main>
   </div>
 </div>
 
-<!-- ============ Financial intercept + triage modal (T8–T9, NEW) ============ -->
-<!-- One modal shell reused across steps: T8's warning screen and T9's
-     triage dashboard are both rendered into #financialInterceptBody, the
-     same way the app's earlier flow screens swapped content in place. -->
+<!-- ============ Financial intercept modal (T8) ============ -->
+<!-- Just the warning screen and the AI-scanning transition now — T9's
+     result renders as a full page (#optimizeDatabasePage) instead of into
+     this modal; see runTriageAiScan / enterOptimizeDatabasePage. -->
 <div class="overlay" id="financialInterceptOverlay" role="dialog" aria-modal="true" aria-labelledby="financialInterceptTitle">
   <div class="modal" style="max-width:520px">
 
@@ -1796,6 +1959,31 @@
     </div>
 
     <div class="intercept-body" id="financialInterceptBody"></div>
+
+  </div>
+</div>
+
+<!-- ============ Native delete-confirmation dialog (NEW) ============ -->
+<!-- Modeled on HubSpot's real bulk-delete guard: the user must type the
+     exact record count before the action commits. Opened from the
+     Optimize Database page's action button. -->
+<div class="overlay" id="deleteConfirmOverlay" role="dialog" aria-modal="true" aria-labelledby="deleteConfirmTitle">
+  <div class="confirm-modal">
+
+    <div class="confirm-modal-header">
+      <h2 class="confirm-modal-title" id="deleteConfirmTitle"></h2>
+      <button class="modal-close" id="deleteConfirmClose" type="button" aria-label="Close">×</button>
+    </div>
+
+    <div class="confirm-modal-body">
+      <p id="deleteConfirmBody"></p>
+      <label class="confirm-modal-input-label" for="deleteConfirmInput">Type the number of records below to delete</label>
+      <input type="text" inputmode="numeric" autocomplete="off" class="confirm-modal-input" id="deleteConfirmInput" placeholder="0" />
+      <div class="confirm-modal-actions">
+        <button class="btn btn-danger" id="deleteConfirmBtn" type="button" disabled>Delete</button>
+        <button class="btn btn-outline" id="deleteConfirmCancelBtn" type="button">Cancel</button>
+      </div>
+    </div>
 
   </div>
 </div>
@@ -1893,6 +2081,40 @@
       minScanMs: 1100
     },
 
+    // A pool of plausible name/company pairs used to generate realistic-
+    // looking rows for a triage category's contact-level drill-down (T9's
+    // "Preview N contacts"). These are flavor text, not real records — the
+    // only real rows in this demo live in state.contacts — they exist so a
+    // reviewer can see *what kind* of record a bulk action would touch
+    // before committing to it, the same way a careful human would ask
+    // "wait, show me which ones" before approving a bulk delete.
+    contactPreviewPool: [
+      { name: 'Owen Bradley',     company: 'Harborline Freight' },
+      { name: 'Sana Farouk',      company: 'Cedarwood Interiors' },
+      { name: 'Miguel Santos',    company: 'Rialto Foods' },
+      { name: 'Ingrid Lindqvist', company: 'Polar Data Systems' },
+      { name: 'Chidi Okeke',      company: 'Zenith Consulting' },
+      { name: 'Hana Kobayashi',   company: 'Origami Studio' },
+      { name: 'Lucas Ferreira',   company: 'Bravo Construction' },
+      { name: 'Aisha Rahman',     company: 'Northgate Realty' },
+      { name: 'Erik Johansson',   company: 'Fjellstrand AS' },
+      { name: 'Camila Ruiz',      company: 'Solmar Hospitality' },
+      { name: 'Declan Murphy',    company: 'Emerald Fields Co.' },
+      { name: 'Yuna Park',        company: 'Hanbit Studio' },
+      { name: 'Thabo Nkosi',      company: 'Baobab Logistics' },
+      { name: 'Freya Andersen',   company: 'Nordlys Design' },
+      { name: 'Rahul Mehta',      company: 'Indigo Softworks' },
+      { name: 'Chloe Martin',     company: 'Lumiere Events' },
+      { name: 'Adam Kowalski',    company: 'Wisla Manufacturing' },
+      { name: 'Zainab Hussain',   company: 'Crescent Retail Group' },
+      { name: 'Noah Bergstrom',   company: 'Skogsvik Timber' },
+      { name: 'Isabela Costa',    company: 'Praia Marketing' },
+      { name: 'Farid Karimi',     company: 'Sahara Robotics' },
+      { name: 'Grace OConnell',   company: 'Kildare Analytics' },
+      { name: 'Wei Zhang',        company: 'Lantern Trade Co.' },
+      { name: 'Marta Nowak',      company: 'Baltyk Shipping' }
+    ],
+
     // T11's countdown is illustrative, not tied to a real clock — this is
     // just a plausible "hours left until midnight" starting point.
     overageCountdownSeedMinutes: 615, // ~10h 15m — breach at roughly 1:45 PM
@@ -1982,6 +2204,7 @@
     const onImportStep2Page = state.view === 'import-step2';
     const onImportStep3Page = state.view === 'import-step3';
     const onImportDetailPage = state.view === 'import-detail';
+    const onOptimizeDatabasePage = state.view === 'optimize-database';
 
     document.getElementById('contactsPage').hidden = !onContactsPage;
     document.getElementById('dataIntegrationPage').hidden = !onDataIntegrationPage;
@@ -1989,11 +2212,13 @@
     document.getElementById('importStep2Page').hidden = !onImportStep2Page;
     document.getElementById('importStep3Page').hidden = !onImportStep3Page;
     document.getElementById('importDetailPage').hidden = !onImportDetailPage;
-    document.getElementById('sidebarContactsItem').classList.toggle('active', onContactsPage);
+    document.getElementById('optimizeDatabasePage').hidden = !onOptimizeDatabasePage;
+    document.getElementById('sidebarContactsItem').classList.toggle('active', onContactsPage || onOptimizeDatabasePage);
 
     renderImportStep1();
     renderImportStep2();
     renderImportDetail();
+    if (onOptimizeDatabasePage) renderOptimizeDatabasePage();
   }
 
   // Fills in the uploaded-file details on the Step 1 wizard screen from
@@ -2204,14 +2429,31 @@
      diagnostics chat below needs it, and later screens will too.
      ========================================================================= */
 
-  function showToast(message, variant) {
+  // `opts.undo`, if provided, adds an Undo button to the toast — clicking
+  // it calls opts.undo() and dismisses immediately. A toast with Undo stays
+  // up longer (8s vs. 3.6s) since reading + deciding takes a beat longer
+  // than reading a plain confirmation.
+  function showToast(message, variant, opts) {
     const toast = document.getElementById('toast');
-    toast.textContent = message;
+    const hasUndo = Boolean(opts && typeof opts.undo === 'function');
+
+    toast.innerHTML = `
+      <span class="toast-message">${escapeHtml(message)}</span>
+      ${hasUndo ? '<button type="button" class="toast-undo-btn">Undo</button>' : ''}
+    `;
+    if (hasUndo) {
+      toast.querySelector('.toast-undo-btn').addEventListener('click', () => {
+        clearTimeout(showToast._t);
+        toast.classList.remove('show');
+        opts.undo();
+      });
+    }
+
     toast.classList.remove('success', 'warning');
     if (variant) toast.classList.add(variant);
     toast.classList.add('show');
     clearTimeout(showToast._t);
-    showToast._t = setTimeout(() => toast.classList.remove('show'), 3600);
+    showToast._t = setTimeout(() => toast.classList.remove('show'), hasUndo ? 8000 : 3600);
   }
 
   /* =========================================================================
@@ -2335,11 +2577,6 @@
   // because that already happened.
   let triageOrigin = null;
 
-  // The working copy of CONFIG.triageCategories for the currently open
-  // triage screen, with each row's checked state. Rebuilt fresh every
-  // time the screen opens so a previous run's choices never leak in.
-  let triageWorkingCategories = [];
-
   function setInterceptTitle(text) {
     financialInterceptTitle.textContent = text;
   }
@@ -2385,8 +2622,8 @@
     financialInterceptBody.innerHTML = `
       <p>Setting these ${selectedCount} contacts as marketing will push you to ${prospectiveTotal.toLocaleString()} / ${CONFIG.contactLimit.toLocaleString()}. Your subscription will automatically upgrade by ${CONFIG.overageMonthlyCostLabel}/month tonight at 12:00 AM.</p>
       <div class="intercept-actions">
-        <button class="btn btn-primary-orange" id="optimizeDbBtn" type="button">Optimize Database to Save ${CONFIG.overageMonthlyCostLabel}/mo</button>
-        <button class="btn btn-outline" id="acceptUpgradeBtn" type="button">Continue &amp; Accept Upgrade</button>
+        <button class="btn btn-primary-orange" id="acceptUpgradeBtn" type="button">Continue &amp; Accept Upgrade</button>
+        <button class="btn btn-outline" id="optimizeDbBtn" type="button">Optimize Database to Save ${CONFIG.overageMonthlyCostLabel}/mo</button>
       </div>
     `;
 
@@ -2397,18 +2634,21 @@
     document.getElementById('acceptUpgradeBtn').addEventListener('click', applyBreachPath);
   }
 
-  // ---- T9: AI scan loading state, then the triage dashboard ----
+  // ---- T9: AI scan loading state, then a redirect to the Optimize
+  // Database page ----
 
   // The demo's "functional AI" hook. Shows the scanning state, asks the
   // live Breeze backend (Gemini) to diagnose the situation and choose the
-  // remediation chips, then renders the triage dashboard from its answer.
+  // remediation categories, then redirects to a dedicated page built from
+  // its answer — full contact lists per category, individually selectable,
+  // rather than a bulk category-level checklist inside this modal.
   //
   // Bulletproofing for a live pitch: the model call is raced against a
   // minimum on-screen time (so the scan never just flashes) and, if it
   // errors, times out, or returns anything unusable, we SILENTLY fall back
-  // to the full canned triage. The client never sees a spinner that hangs,
-  // an error, or an empty modal — worst case they see the polished static
-  // version and never know the difference.
+  // to the full canned category set. The client never sees a spinner that
+  // hangs, an error, or an empty page — worst case they see the polished
+  // static version and never know the difference.
   async function runTriageAiScan() {
     setInterceptTitle('Breeze AI');
     financialInterceptBody.innerHTML = `
@@ -2425,11 +2665,7 @@
       delay(CONFIG.ai.minScanMs)
     ]);
 
-    if (diagnosis) {
-      renderTriageScreen(diagnosis.categories, diagnosis.dialogue);
-    } else {
-      renderTriageScreen(); // silent fallback → full canned triage
-    }
+    enterOptimizeDatabasePage(diagnosis); // diagnosis is null on any failure → fallback
   }
 
   // Small promise-based sleep, used to floor the scan animation time.
@@ -2504,7 +2740,15 @@
       const id = chip && chip.action_id;
       if (byId[id] && !seen.has(id)) {
         seen.add(id);
-        categories.push({ ...byId[id], checked: true });
+        // label/count/type/detail always come from OUR canonical catalogue
+        // (byId[id]) — never from the model. `reason` is the one piece of
+        // model-authored text we keep, since it's just an explanation, not
+        // a number the app depends on; it's escaped before it ever reaches
+        // the DOM (see escapeHtml in renderOptDbRow).
+        categories.push({
+          ...byId[id],
+          reason: typeof chip.reason === 'string' ? chip.reason.trim() : ''
+        });
       }
     });
 
@@ -2522,144 +2766,356 @@
       .replace(/'/g, '&#39;');
   }
 
-  // Renders the triage dashboard. Called two ways:
-  //   • with (categories, dialogue) from a successful live AI diagnosis
-  //   • with no arguments → the full canned triage (fallback / offline)
-  // Either way, triageWorkingCategories becomes the source of truth for the
-  // execute step, and every entry is a canonical CONFIG action.
-  function renderTriageScreen(categories, dialogue) {
-    const source = (categories && categories.length) ? categories : CONFIG.triageCategories;
-    triageWorkingCategories = source.map(cat => ({ ...cat, checked: cat.checked !== false }));
+  /* =========================================================================
+     Optimize Database page (T9, redesigned): full contact lists per
+     category, individually selectable, instead of a bulk category-level
+     checklist inside the modal. Entered from runTriageAiScan() above.
+     ========================================================================= */
 
-    // Breeze's diagnosis line. Live text when we have it; a canned line that
-    // reads naturally otherwise — the client can't tell which is which.
-    const dialogueText = dialogue && dialogue.trim()
-      ? dialogue.trim()
-      : `I found ${sumChecked(triageWorkingCategories).toLocaleString()} low-value records you can clear right now to stay under your ${CONFIG.contactLimit.toLocaleString()}-contact limit. Review what I'd remove below.`;
+  // Builds state.optimize from either a successful live AI diagnosis
+  // (categories + dialogue) or, on any failure, the full canned category
+  // set — same shape either way, so the fallback page is indistinguishable
+  // from the live one. Then navigates to the dedicated page.
+  function enterOptimizeDatabasePage(diagnosis) {
+    const source = (diagnosis && diagnosis.categories && diagnosis.categories.length)
+      ? diagnosis.categories
+      : CONFIG.triageCategories;
 
-    setInterceptTitle('AI Triage: Marketing Contact Cleanup');
-    financialInterceptBody.innerHTML = `
-      <div class="breeze-attrib"><span class="breeze-attrib-dot">✦</span> Breeze diagnosis</div>
-      <p class="breeze-dialogue">${escapeHtml(dialogueText)}</p>
-      <div class="triage-banner">
-        <svg width="15" height="15" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex:0 0 auto;margin-top:1px">
-          <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/>
-          <line x1="10" y1="9" x2="10" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          <circle cx="10" cy="6.3" r="1" fill="currentColor" stroke="none"/>
-        </svg>
-        <span>Note: Setting contacts to 'Non-Marketing' does not free up your quota until your next monthly renewal date. Only permanent deletion or merging frees up capacity today.</span>
-      </div>
-      ${triageWorkingCategories.map(renderTriageRow).join('')}
-      <button class="btn btn-primary-orange" id="executeTriageBtn" type="button"></button>
-    `;
+    const categories = source.map(cat => ({
+      action_id: cat.action_id,
+      label: cat.label,
+      type: cat.type,
+      count: cat.count,
+      // Breeze's own reasoning when the live model supplied one, the
+      // canonical CONFIG detail text otherwise — both render identically.
+      reason: (cat.reason && cat.reason.trim()) ? cat.reason.trim() : cat.detail,
+      contacts: buildFullCategoryContacts(cat)
+    }));
 
-    financialInterceptBody.querySelectorAll('.triage-check').forEach(checkbox => {
+    const totalCount = categories.reduce((sum, c) => sum + c.count, 0);
+    const dialogueText = (diagnosis && diagnosis.dialogue && diagnosis.dialogue.trim())
+      ? diagnosis.dialogue.trim()
+      : `I found ${totalCount.toLocaleString()} low-value records you can clean up right now to stay under your ${CONFIG.contactLimit.toLocaleString()}-contact limit. Choose which ones to action below.`;
+
+    state.optimize = {
+      dialogue: dialogueText,
+      categories,
+      selectedKeys: new Set() // nothing pre-selected — the user opts in per contact or per list
+    };
+
+    closeInterceptModal();
+    navigateTo('optimize-database');
+  }
+
+  // ---- Contact-level drill-down (trust layer): every record behind a bulk
+  // action is real enough to look at and pick individually. ----
+
+  // Small deterministic hash, used only to pick a stable-looking sample of
+  // rows per category — deterministic (not Math.random) so reopening the
+  // same category always shows the same people instead of reshuffling
+  // mid-pitch.
+  function hashSeed(str) {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+    return h;
+  }
+
+  function slugifyCompany(company) {
+    return company.toLowerCase().replace(/[^a-z0-9]+/g, '').slice(0, 14) || 'example';
+  }
+
+  function emailForName(name, company) {
+    const parts = name.replace(/[^\w\s]/g, '').split(' ').filter(Boolean);
+    const first = (parts[0] || 'contact').toLowerCase();
+    const last = (parts[parts.length - 1] || '').toLowerCase();
+    return `${first}${last ? '.' + last : ''}@${slugifyCompany(company)}.com`;
+  }
+
+  // Builds the FULL list of category.count realistic-looking rows (no cap —
+  // this is a dedicated page with its own scroll area, not an inline
+  // preview), each with a stable id so individual selection survives
+  // re-renders.
+  function buildFullCategoryContacts(category) {
+    const pool = CONFIG.contactPreviewPool;
+    const seed = hashSeed(category.action_id);
+    const rows = [];
+    for (let i = 0; i < category.count; i++) {
+      const person = pool[(seed + i * 7) % pool.length];
+      let reason = category.detail;
+      if (category.action_id === 'merge_dupes') {
+        const dupeOf = pool[(seed + i * 7 + 5) % pool.length];
+        reason = `Duplicate of ${dupeOf.name}`;
+      }
+      rows.push({
+        id: `${category.action_id}-${i}`,
+        name: person.name,
+        email: emailForName(person.name, person.company),
+        reason
+      });
+    }
+    return rows;
+  }
+
+  // ---- Rendering the page ----
+
+  function renderOptimizeDatabasePage() {
+    const opt = state.optimize;
+    if (!opt) return;
+
+    document.getElementById('optDbDialogue').textContent = opt.dialogue;
+    document.getElementById('optDbSections').innerHTML = opt.categories.map(renderOptDbSection).join('');
+
+    document.querySelectorAll('.opt-db-row-check').forEach(checkbox => {
       checkbox.addEventListener('change', () => {
-        triageWorkingCategories[+checkbox.dataset.index].checked = checkbox.checked;
-        updateTriageExecuteLabel();
+        const key = checkbox.dataset.key;
+        if (checkbox.checked) opt.selectedKeys.add(key); else opt.selectedKeys.delete(key);
+        updateOptDbSelectAllState(checkbox.closest('.opt-db-section').dataset.actionId);
+        updateOptDbFooter();
       });
     });
 
-    document.getElementById('executeTriageBtn').addEventListener('click', executeTriage);
-    updateTriageExecuteLabel();
+    document.querySelectorAll('.opt-db-select-all').forEach(checkbox => {
+      checkbox.addEventListener('change', () => {
+        const actionId = checkbox.dataset.actionId;
+        const category = opt.categories.find(c => c.action_id === actionId);
+        category.contacts.forEach(c => {
+          const key = `${actionId}::${c.id}`;
+          if (checkbox.checked) opt.selectedKeys.add(key); else opt.selectedKeys.delete(key);
+        });
+        // A bulk change to a whole list is the one case worth a full
+        // re-render — individual row clicks stay lightweight (above).
+        renderOptimizeDatabasePage();
+      });
+    });
+
+    opt.categories.forEach(cat => updateOptDbSelectAllState(cat.action_id));
+    updateOptDbFooter();
   }
 
-  function renderTriageRow(category, index) {
+  function renderOptDbSection(category) {
     return `
-      <label class="triage-row">
-        <input type="checkbox" class="triage-check" data-index="${index}" checked />
-        <span class="triage-label">
-          ${category.label}
-          <span class="triage-note">${category.detail}</span>
-        </span>
+      <div class="card opt-db-section" data-action-id="${category.action_id}">
+        <div class="opt-db-section-header">
+          <label class="opt-db-select-all-label">
+            <input type="checkbox" class="opt-db-select-all" data-action-id="${category.action_id}" />
+            <span class="opt-db-section-title">${escapeHtml(category.label)}</span>
+          </label>
+          <span class="opt-db-section-reason">${escapeHtml(category.reason)}</span>
+        </div>
+        <div class="opt-db-list">
+          ${category.contacts.map(c => renderOptDbRow(category, c)).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  function renderOptDbRow(category, contact) {
+    const key = `${category.action_id}::${contact.id}`;
+    const checked = state.optimize.selectedKeys.has(key);
+    return `
+      <label class="opt-db-row">
+        <input type="checkbox" class="opt-db-row-check" data-key="${key}" ${checked ? 'checked' : ''} />
+        <span class="opt-db-row-avatar">${initials(contact.name)}</span>
+        <span class="opt-db-row-name">${escapeHtml(contact.name)}</span>
+        <span class="opt-db-row-email">${escapeHtml(contact.email)}</span>
+        <span class="opt-db-row-reason">${escapeHtml(contact.reason)}</span>
       </label>
     `;
   }
 
-  function sumChecked(categories) {
-    return categories.filter(cat => cat.checked).reduce((sum, cat) => sum + cat.count, 0);
+  // Keeps a section's "select all" checkbox in sync (checked / indeterminate
+  // / unchecked) with how many of its rows are individually selected.
+  function updateOptDbSelectAllState(actionId) {
+    const opt = state.optimize;
+    const category = opt.categories.find(c => c.action_id === actionId);
+    const cb = document.querySelector(`.opt-db-select-all[data-action-id="${actionId}"]`);
+    if (!category || !cb) return;
+    const total = category.contacts.length;
+    const selected = category.contacts.filter(c => opt.selectedKeys.has(`${actionId}::${c.id}`)).length;
+    cb.checked = total > 0 && selected === total;
+    cb.indeterminate = selected > 0 && selected < total;
   }
 
-  // "Permanently" is load-bearing here — a normal delete just moves
-  // records into the 90-day recycle bin, which does NOT free up quota.
-  // With merge actions in the mix the wording generalizes to "Free Up",
-  // since merging isn't a deletion but still reclaims capacity.
-  function updateTriageExecuteLabel() {
-    const btn = document.getElementById('executeTriageBtn');
-    const checked = triageWorkingCategories.filter(cat => cat.checked);
-    const n = checked.reduce((sum, cat) => sum + cat.count, 0);
+  function updateOptDbFooter() {
+    const n = state.optimize.selectedKeys.size;
+    const btn = document.getElementById('optDbActionBtn');
+    document.getElementById('optDbFooterCount').textContent = `${n.toLocaleString()} selected`;
+    btn.disabled = n === 0;
+    btn.textContent = n > 0
+      ? `Optimize ${n.toLocaleString()} Contact${n === 1 ? '' : 's'}`
+      : 'Select contacts to optimize';
+  }
 
-    if (n === 0) {
-      btn.textContent = 'Select records to clean up';
-      btn.disabled = true;
-      return;
+  document.getElementById('optDbBackLink').addEventListener('click', event => {
+    event.preventDefault();
+    state.optimize = null;
+    triageOrigin = null;
+    navigateTo('contacts');
+  });
+
+  document.getElementById('optDbActionBtn').addEventListener('click', openDeleteConfirmModal);
+
+  // Tallies the current selection into delete vs. merge counts — the
+  // deterministic math the type-to-confirm modal and the final execution
+  // both read from. Derived only from canonical category counts, never
+  // from anything the model returned.
+  function getSelectedOptimizeContacts() {
+    const opt = state.optimize;
+    let deleteCount = 0, mergeCount = 0;
+    opt.categories.forEach(cat => {
+      const n = cat.contacts.filter(c => opt.selectedKeys.has(`${cat.action_id}::${c.id}`)).length;
+      if (cat.type === 'merge') mergeCount += n; else deleteCount += n;
+    });
+    return { deleteCount, mergeCount, total: deleteCount + mergeCount };
+  }
+
+  /* =========================================================================
+     Native delete-confirmation dialog (NEW) — a deliberate borrow from real
+     HubSpot's own bulk-delete guard: the user must type the exact record
+     count before Delete enables. This is the one failsafe standing between
+     an AI-curated batch and an irreversible action.
+     ========================================================================= */
+
+  const deleteConfirmOverlay = document.getElementById('deleteConfirmOverlay');
+  let deleteConfirmTriggerEl = null;
+  let releaseDeleteConfirmFocusTrap = null;
+  let pendingConfirmCount = 0; // the exact number the input must match to enable Delete
+
+  function openDeleteConfirmModal() {
+    const selected = getSelectedOptimizeContacts();
+    pendingConfirmCount = selected.total;
+
+    const title = selected.deleteCount > 0 && selected.mergeCount > 0
+      ? `Delete & merge ${selected.total.toLocaleString()} records?`
+      : selected.mergeCount > 0
+        ? `Merge ${selected.total.toLocaleString()} record${selected.total === 1 ? '' : 's'}?`
+        : `Delete ${selected.total.toLocaleString()} record${selected.total === 1 ? '' : 's'}?`;
+
+    let body;
+    if (selected.deleteCount > 0 && selected.mergeCount > 0) {
+      body = `You're about to permanently delete ${selected.deleteCount.toLocaleString()} record${selected.deleteCount === 1 ? '' : 's'} and merge ${selected.mergeCount.toLocaleString()} duplicate record${selected.mergeCount === 1 ? '' : 's'}. Deleted records can't be restored after 90 days.`;
+    } else if (selected.mergeCount > 0) {
+      body = `You're about to merge ${selected.mergeCount.toLocaleString()} duplicate record${selected.mergeCount === 1 ? '' : 's'} into one. This can't be undone from this screen.`;
+    } else {
+      body = `You're about to delete ${selected.deleteCount.toLocaleString()} record${selected.deleteCount === 1 ? '' : 's'}. Deleted records can't be restored after 90 days. Records created after this submission will not be deleted.`;
     }
-    btn.disabled = false;
-    const hasMerge = checked.some(cat => cat.type === 'merge');
-    btn.textContent = hasMerge
-      ? `Free Up ${n.toLocaleString()} Contacts & Continue`
-      : `Permanently Delete ${n.toLocaleString()} Contacts & Continue`;
+
+    document.getElementById('deleteConfirmTitle').textContent = title;
+    document.getElementById('deleteConfirmBody').textContent = body;
+
+    const input = document.getElementById('deleteConfirmInput');
+    input.value = '';
+    input.placeholder = String(selected.total);
+
+    const confirmBtn = document.getElementById('deleteConfirmBtn');
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = selected.deleteCount > 0 ? 'Delete' : 'Confirm';
+
+    deleteConfirmTriggerEl = document.getElementById('optDbActionBtn');
+    deleteConfirmOverlay.classList.add('open');
+    releaseDeleteConfirmFocusTrap = trapFocusWithin(deleteConfirmOverlay);
+    input.focus();
   }
 
-  // Builds the human-readable summary of what the cleanup did, e.g.
+  function closeDeleteConfirmModal() {
+    deleteConfirmOverlay.classList.remove('open');
+    if (releaseDeleteConfirmFocusTrap) releaseDeleteConfirmFocusTrap();
+    if (deleteConfirmTriggerEl) deleteConfirmTriggerEl.focus();
+  }
+
+  document.getElementById('deleteConfirmInput').addEventListener('input', event => {
+    document.getElementById('deleteConfirmBtn').disabled = event.target.value.trim() !== String(pendingConfirmCount);
+  });
+
+  document.getElementById('deleteConfirmClose').addEventListener('click', closeDeleteConfirmModal);
+  document.getElementById('deleteConfirmCancelBtn').addEventListener('click', closeDeleteConfirmModal);
+  deleteConfirmOverlay.addEventListener('click', event => {
+    if (event.target === deleteConfirmOverlay) closeDeleteConfirmModal();
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && deleteConfirmOverlay.classList.contains('open')) closeDeleteConfirmModal();
+  });
+
+  document.getElementById('deleteConfirmBtn').addEventListener('click', () => {
+    executeOptimize();
+    closeDeleteConfirmModal();
+  });
+
+  // ---- T10: execution + resolution (branches on triageOrigin) ----
+
+  // Builds the human-readable summary of what the action did, e.g.
   // "30 inactive contacts permanently deleted and 20 duplicates merged".
-  function describeCleanup(checked) {
-    const deleted = checked.filter(c => c.type === 'delete').reduce((s, c) => s + c.count, 0);
-    const merged  = checked.filter(c => c.type === 'merge').reduce((s, c) => s + c.count, 0);
+  function describeOptimizeCleanup(selected) {
     const parts = [];
-    if (deleted) parts.push(`${deleted.toLocaleString()} inactive contacts permanently deleted`);
-    if (merged)  parts.push(`${merged.toLocaleString()} duplicates merged`);
+    if (selected.deleteCount) parts.push(`${selected.deleteCount.toLocaleString()} inactive contacts permanently deleted`);
+    if (selected.mergeCount) parts.push(`${selected.mergeCount.toLocaleString()} duplicates merged`);
     const phrase = parts.join(' and ');
     return phrase.charAt(0).toUpperCase() + phrase.slice(1);
   }
 
-  // ---- T10: execution + resolution (branches on triageOrigin) ----
+  function executeOptimize() {
+    const selected = getSelectedOptimizeContacts();
+    const freedCount = selected.total;
+    const cleanupSummary = describeOptimizeCleanup(selected);
 
-  function executeTriage() {
-    const btn = document.getElementById('executeTriageBtn');
-    const checked = triageWorkingCategories.filter(cat => cat.checked);
-    // Total capacity reclaimed — deletions and merges both count toward it.
-    // This is the deterministic math: it's derived only from canonical
-    // CONFIG counts, never from anything the model returned.
-    const freedCount = checked.reduce((sum, cat) => sum + cat.count, 0);
-    const cleanupSummary = describeCleanup(checked);
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span>Working…';
+    // Snapshot everything this action is about to touch, so a single Undo
+    // can put the account back exactly as it was — including which
+    // contacts were flipped to Marketing, not just the running totals.
+    const snapshot = {
+      contactCount: state.contactCount,
+      contacts: state.contacts.map(c => ({ ...c })),
+      selectedContactIds: [...state.selectedContactIds],
+      contactViewFilter: state.contactViewFilter,
+      overageCountdownMinutes: state.overageCountdownMinutes
+    };
 
-    setTimeout(() => {
-      // The cleanup happens either way — it's the same marketing-contact
-      // pool regardless of which path led here.
-      state.contactCount -= freedCount;
+    // The cleanup happens either way — it's the same marketing-contact pool
+    // regardless of which path led here.
+    state.contactCount -= freedCount;
 
-      if (triageOrigin === 'pre-emptive') {
-        const appliedCount = state.selectedContactIds.length;
-        applySelectedContactsAsMarketing();
-        state.contactCount += appliedCount;
-        state.selectedContactIds = [];
-        state.contactViewFilter = 'all';
+    if (triageOrigin === 'pre-emptive') {
+      const appliedCount = state.selectedContactIds.length;
+      applySelectedContactsAsMarketing();
+      state.contactCount += appliedCount;
+      state.selectedContactIds = [];
+      state.contactViewFilter = 'all';
 
-        closeInterceptModal();
-        render();
-        showToast(
-          `${cleanupSummary}. ${appliedCount} webinar leads set as marketing. You remain under your limit, saving ${CONFIG.overageMonthlyCostLabel}/mo.`,
-          'success'
-        );
-      } else {
-        // Breach-recovery: the 100 contacts are already marketing (T11
-        // applied that immediately) — the cleanup is the only thing needed
-        // to drop back under the limit and cancel the pending upgrade.
-        state.overageCountdownMinutes = null;
-
-        closeInterceptModal();
-        render();
-        showToast(
-          `${cleanupSummary}. You're back under your limit — the ${CONFIG.overageMonthlyCostLabel}/mo upgrade has been avoided.`,
-          'success'
-        );
-      }
-
+      state.optimize = null;
       triageOrigin = null;
-    }, 700);
+      navigateTo('contacts');
+      showToast(
+        `${cleanupSummary}. ${appliedCount} webinar leads set as marketing. You remain under your limit, saving ${CONFIG.overageMonthlyCostLabel}/mo.`,
+        'success',
+        { undo: () => undoOptimize(snapshot) }
+      );
+    } else {
+      // Breach-recovery: the 100 contacts are already marketing (T11
+      // applied that immediately) — the cleanup is the only thing needed to
+      // drop back under the limit and cancel the pending upgrade.
+      state.overageCountdownMinutes = null;
+
+      state.optimize = null;
+      triageOrigin = null;
+      navigateTo('contacts');
+      showToast(
+        `${cleanupSummary}. You're back under your limit — the ${CONFIG.overageMonthlyCostLabel}/mo upgrade has been avoided.`,
+        'success',
+        { undo: () => undoOptimize(snapshot) }
+      );
+    }
+  }
+
+  // Restores state exactly as it was before executeOptimize() ran, from the
+  // snapshot taken at the start of that call. Wired to the toast's Undo
+  // button — the one place a user can walk back an AI-driven bulk action.
+  function undoOptimize(snapshot) {
+    state.contactCount = snapshot.contactCount;
+    state.contacts = snapshot.contacts;
+    state.selectedContactIds = snapshot.selectedContactIds;
+    state.contactViewFilter = snapshot.contactViewFilter;
+    state.overageCountdownMinutes = snapshot.overageCountdownMinutes;
+    render();
+    showToast("Undone — your marketing contacts are back where they were.");
   }
 
   // Flips every currently-selected contact's status to Marketing. Shared
