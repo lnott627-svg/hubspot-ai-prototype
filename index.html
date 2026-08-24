@@ -1050,6 +1050,28 @@
   .triage-label { font-size: 13.5px; color: var(--text); line-height: 1.4; }
   .triage-note { display: block; font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 
+  /* Breeze's diagnostic dialogue — the sentence(s) the live model writes,
+     shown above the remediation rows. Falls back to a canned line when the
+     AI is unavailable, so this style is used in both paths. */
+  .breeze-attrib {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 7px;
+  }
+  .breeze-attrib .breeze-attrib-dot { font-size: 12px; line-height: 1; }
+  .breeze-dialogue {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--text);
+    margin: 0 0 14px;
+  }
+
   /* ---------- Marketing contact overage banner (T11) ---------- */
 
   .overage-banner {
@@ -1839,13 +1861,35 @@
       fileSizeLabel: '6.1 KB' // approximate — not shown in any reference, just plausible flavor text
     },
 
-    // T9's triage categories — drawn from the existing marketing base
-    // (engagement data), not the newly imported non-marketing contacts.
+    // T9's remediation catalogue — the canonical list of cleanup actions
+    // Breeze can offer, drawn from the existing marketing base (engagement
+    // data), not the newly imported non-marketing contacts.
+    //
+    // IMPORTANT (this is what keeps the live-AI build bulletproof): `count`
+    // and `action_id` are the SINGLE SOURCE OF TRUTH for how much quota each
+    // action frees. The live model only ever chooses *which* of these to
+    // offer and writes the surrounding prose — it never invents the numbers.
+    // Whatever chips come back from the model are mapped straight back onto
+    // these entries by action_id, so the math on screen is always ours.
+    //
     // A fresh "checked" copy of this is built each time the screen opens.
+    //   type: 'delete' → permanently removes records (frees quota today)
+    //   type: 'merge'  → collapses duplicates into one (also frees quota)
     triageCategories: [
-      { count: 30, label: '30 Hard Bounced Contacts',  detail: 'Permanently failed email delivery' },
-      { count: 25, label: '25 Unengaged Contacts',     detail: 'Zero opens, clicks, or site visits in the last 12 months' }
+      { action_id: 'purge_bounced',   count: 30, type: 'delete', label: '30 Hard Bounced Contacts', detail: 'Permanently failed email delivery' },
+      { action_id: 'purge_unengaged', count: 25, type: 'delete', label: '25 Unengaged Contacts',     detail: 'Zero opens, clicks, or site visits in the last 12 months' },
+      { action_id: 'merge_dupes',     count: 20, type: 'merge',  label: 'Merge 20 Duplicate Contacts', detail: 'Same email address across multiple records — merged into one' }
     ],
+
+    // Live-AI tuning. timeoutMs caps how long we wait for Breeze before
+    // silently falling back to the canned triage; minScanMs keeps the
+    // "scanning…" animation on screen long enough to read even when the
+    // model (or the fallback) resolves almost instantly.
+    ai: {
+      endpoint: '/api/diagnose',
+      timeoutMs: 2500,
+      minScanMs: 1100
+    },
 
     // T11's countdown is illustrative, not tied to a real clock — this is
     // just a plausible "hours left until midnight" starting point.
@@ -2353,7 +2397,17 @@
 
   // ---- T9: AI scan loading state, then the triage dashboard ----
 
-  function runTriageAiScan() {
+  // The demo's "functional AI" hook. Shows the scanning state, asks the
+  // live Breeze backend (Gemini) to diagnose the situation and choose the
+  // remediation chips, then renders the triage dashboard from its answer.
+  //
+  // Bulletproofing for a live pitch: the model call is raced against a
+  // minimum on-screen time (so the scan never just flashes) and, if it
+  // errors, times out, or returns anything unusable, we SILENTLY fall back
+  // to the full canned triage. The client never sees a spinner that hangs,
+  // an error, or an empty modal — worst case they see the polished static
+  // version and never know the difference.
+  async function runTriageAiScan() {
     setInterceptTitle('Breeze AI');
     financialInterceptBody.innerHTML = `
       <div class="intercept-loading">
@@ -2361,21 +2415,137 @@
         <p>Breeze AI is scanning your marketing contacts for low-value records…</p>
       </div>
     `;
-    setTimeout(renderTriageScreen, 1100);
+
+    // Keep the scan visible for at least minScanMs regardless of how fast
+    // the network call (or the fallback) resolves.
+    const [diagnosis] = await Promise.all([
+      requestBreezeDiagnosis(),
+      delay(CONFIG.ai.minScanMs)
+    ]);
+
+    if (diagnosis) {
+      renderTriageScreen(diagnosis.categories, diagnosis.dialogue);
+    } else {
+      renderTriageScreen(); // silent fallback → full canned triage
+    }
   }
 
-  function renderTriageScreen() {
-    triageWorkingCategories = CONFIG.triageCategories.map(cat => ({ ...cat, checked: true }));
+  // Small promise-based sleep, used to floor the scan animation time.
+  function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // Builds the live-state payload the backend feeds to Gemini. Every number
+  // here is read from `state`/`CONFIG` — the model receives the real
+  // situation, and the real catalogue of actions it's allowed to offer.
+  function buildDiagnosisPayload() {
+    const selectedForMarketing = state.selectedContactIds.length;
+    return {
+      tier: CONFIG.modes[state.mode].label,
+      contactLimit: CONFIG.contactLimit,
+      activeContacts: state.contactCount,
+      selectedForMarketing,
+      prospectiveTotal: state.contactCount + selectedForMarketing,
+      overageCost: CONFIG.overageMonthlyCostLabel,
+      origin: triageOrigin, // 'pre-emptive' | 'breach-recovery'
+      // The canonical actions Breeze may choose from. The model echoes back
+      // action_ids; it does not get to invent new ones or change the counts.
+      availableActions: CONFIG.triageCategories.map(c => ({
+        action_id: c.action_id,
+        count: c.count,
+        type: c.type,
+        label: c.label,
+        detail: c.detail
+      }))
+    };
+  }
+
+  // Calls the backend, with a hard timeout. Returns a normalized
+  // { dialogue, categories } object, or null on ANY failure (offline,
+  // non-200, malformed JSON, unusable content) so the caller can fall back.
+  async function requestBreezeDiagnosis() {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), CONFIG.ai.timeoutMs);
+    try {
+      const res = await fetch(CONFIG.ai.endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildDiagnosisPayload()),
+        signal: controller.signal
+      });
+      if (!res.ok) return null;
+      const data = await res.json();
+      return normalizeDiagnosis(data);
+    } catch (err) {
+      // Network error, abort/timeout, or bad JSON — all resolve to fallback.
+      return null;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  // Turns the raw backend response into something safe to render. The model
+  // supplies the dialogue and a list of chips; we map each chip back onto a
+  // canonical CONFIG.triageCategories entry by action_id so the authoritative
+  // count/type/detail are always ours, never the model's. Returns null if
+  // there's no usable dialogue or no recognized chip → fallback.
+  function normalizeDiagnosis(data) {
+    if (!data || typeof data.dialogue !== 'string' || !data.dialogue.trim()) return null;
+    if (!Array.isArray(data.chips)) return null;
+
+    const byId = {};
+    CONFIG.triageCategories.forEach(c => { byId[c.action_id] = c; });
+
+    const seen = new Set();
+    const categories = [];
+    data.chips.forEach(chip => {
+      const id = chip && chip.action_id;
+      if (byId[id] && !seen.has(id)) {
+        seen.add(id);
+        categories.push({ ...byId[id], checked: true });
+      }
+    });
+
+    if (categories.length === 0) return null;
+    return { dialogue: data.dialogue.trim(), categories };
+  }
+
+  // Escapes model-generated text before it goes into innerHTML.
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  // Renders the triage dashboard. Called two ways:
+  //   • with (categories, dialogue) from a successful live AI diagnosis
+  //   • with no arguments → the full canned triage (fallback / offline)
+  // Either way, triageWorkingCategories becomes the source of truth for the
+  // execute step, and every entry is a canonical CONFIG action.
+  function renderTriageScreen(categories, dialogue) {
+    const source = (categories && categories.length) ? categories : CONFIG.triageCategories;
+    triageWorkingCategories = source.map(cat => ({ ...cat, checked: cat.checked !== false }));
+
+    // Breeze's diagnosis line. Live text when we have it; a canned line that
+    // reads naturally otherwise — the client can't tell which is which.
+    const dialogueText = dialogue && dialogue.trim()
+      ? dialogue.trim()
+      : `I found ${sumChecked(triageWorkingCategories).toLocaleString()} low-value records you can clear right now to stay under your ${CONFIG.contactLimit.toLocaleString()}-contact limit. Review what I'd remove below.`;
 
     setInterceptTitle('AI Triage: Marketing Contact Cleanup');
     financialInterceptBody.innerHTML = `
+      <div class="breeze-attrib"><span class="breeze-attrib-dot">✦</span> Breeze diagnosis</div>
+      <p class="breeze-dialogue">${escapeHtml(dialogueText)}</p>
       <div class="triage-banner">
         <svg width="15" height="15" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex:0 0 auto;margin-top:1px">
           <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/>
           <line x1="10" y1="9" x2="10" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           <circle cx="10" cy="6.3" r="1" fill="currentColor" stroke="none"/>
         </svg>
-        <span>Note: Setting contacts to 'Non-Marketing' does not free up your quota until your next monthly renewal date. Only permanent deletion frees up capacity today.</span>
+        <span>Note: Setting contacts to 'Non-Marketing' does not free up your quota until your next monthly renewal date. Only permanent deletion or merging frees up capacity today.</span>
       </div>
       ${triageWorkingCategories.map(renderTriageRow).join('')}
       <button class="btn btn-primary-orange" id="executeTriageBtn" type="button"></button>
@@ -2410,25 +2580,54 @@
 
   // "Permanently" is load-bearing here — a normal delete just moves
   // records into the 90-day recycle bin, which does NOT free up quota.
+  // With merge actions in the mix the wording generalizes to "Free Up",
+  // since merging isn't a deletion but still reclaims capacity.
   function updateTriageExecuteLabel() {
     const btn = document.getElementById('executeTriageBtn');
-    const n = sumChecked(triageWorkingCategories);
-    btn.textContent = n > 0 ? `Permanently Delete ${n} Contacts & Continue` : 'Select records to delete';
-    btn.disabled = n === 0;
+    const checked = triageWorkingCategories.filter(cat => cat.checked);
+    const n = checked.reduce((sum, cat) => sum + cat.count, 0);
+
+    if (n === 0) {
+      btn.textContent = 'Select records to clean up';
+      btn.disabled = true;
+      return;
+    }
+    btn.disabled = false;
+    const hasMerge = checked.some(cat => cat.type === 'merge');
+    btn.textContent = hasMerge
+      ? `Free Up ${n.toLocaleString()} Contacts & Continue`
+      : `Permanently Delete ${n.toLocaleString()} Contacts & Continue`;
+  }
+
+  // Builds the human-readable summary of what the cleanup did, e.g.
+  // "30 inactive contacts permanently deleted and 20 duplicates merged".
+  function describeCleanup(checked) {
+    const deleted = checked.filter(c => c.type === 'delete').reduce((s, c) => s + c.count, 0);
+    const merged  = checked.filter(c => c.type === 'merge').reduce((s, c) => s + c.count, 0);
+    const parts = [];
+    if (deleted) parts.push(`${deleted.toLocaleString()} inactive contacts permanently deleted`);
+    if (merged)  parts.push(`${merged.toLocaleString()} duplicates merged`);
+    const phrase = parts.join(' and ');
+    return phrase.charAt(0).toUpperCase() + phrase.slice(1);
   }
 
   // ---- T10: execution + resolution (branches on triageOrigin) ----
 
   function executeTriage() {
     const btn = document.getElementById('executeTriageBtn');
-    const deletedCount = sumChecked(triageWorkingCategories);
+    const checked = triageWorkingCategories.filter(cat => cat.checked);
+    // Total capacity reclaimed — deletions and merges both count toward it.
+    // This is the deterministic math: it's derived only from canonical
+    // CONFIG counts, never from anything the model returned.
+    const freedCount = checked.reduce((sum, cat) => sum + cat.count, 0);
+    const cleanupSummary = describeCleanup(checked);
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span>Deleting…';
+    btn.innerHTML = '<span class="spinner"></span>Working…';
 
     setTimeout(() => {
-      // The purge happens either way — it's the same 950-contact pool
-      // regardless of which path led here.
-      state.contactCount -= deletedCount;
+      // The cleanup happens either way — it's the same marketing-contact
+      // pool regardless of which path led here.
+      state.contactCount -= freedCount;
 
       if (triageOrigin === 'pre-emptive') {
         const appliedCount = state.selectedContactIds.length;
@@ -2440,19 +2639,19 @@
         closeInterceptModal();
         render();
         showToast(
-          `${deletedCount} inactive contacts permanently deleted. ${appliedCount} webinar leads set as marketing. You remain under your limit, saving ${CONFIG.overageMonthlyCostLabel}/mo.`,
+          `${cleanupSummary}. ${appliedCount} webinar leads set as marketing. You remain under your limit, saving ${CONFIG.overageMonthlyCostLabel}/mo.`,
           'success'
         );
       } else {
         // Breach-recovery: the 100 contacts are already marketing (T11
-        // applied that immediately) — purging is the only thing needed
+        // applied that immediately) — the cleanup is the only thing needed
         // to drop back under the limit and cancel the pending upgrade.
         state.overageCountdownMinutes = null;
 
         closeInterceptModal();
         render();
         showToast(
-          `${deletedCount} inactive contacts permanently deleted. You're back under your limit — the ${CONFIG.overageMonthlyCostLabel}/mo upgrade has been avoided.`,
+          `${cleanupSummary}. You're back under your limit — the ${CONFIG.overageMonthlyCostLabel}/mo upgrade has been avoided.`,
           'success'
         );
       }
