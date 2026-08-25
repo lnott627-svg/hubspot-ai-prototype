@@ -1023,7 +1023,10 @@
 
   .intercept-body { padding: 18px; display: flex; flex-direction: column; gap: 14px; }
   .intercept-body p { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--text); }
-  .intercept-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .intercept-actions { display: flex; align-items: stretch; gap: 12px; flex-wrap: nowrap; }
+  /* Both actions share the row equally so they read as one paired choice
+     rather than a primary CTA with a wrapped afterthought beneath it. */
+  .intercept-actions .btn { flex: 1 1 0; min-width: 0; text-align: center; }
 
   /* ---------- AI scan loading + triage dashboard (T9) ---------- */
 
@@ -1197,23 +1200,6 @@
     margin: 0 0 14px;
   }
 
-  /* ---------- Marketing contact overage banner (T11) ---------- */
-
-  .overage-banner {
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 12px 28px;
-    background: #fff7ed;
-    border-bottom: 1px solid #fed7aa;
-    font-size: 14px;
-    color: #7a4a12;
-  }
-
-  .overage-countdown { margin-left: 10px; font-weight: 600; color: #9a5b13; }
-
   .toast.success { background: #17663f; }
   .toast.warning { background: #a3510c; }
 
@@ -1257,25 +1243,6 @@
   }
 
   /* ---------- Quota usage banner ---------- */
-  /* A full-width strip between the top nav and the page body, showing how
-     close the account is to its record limit. Its numbers come from
-     render() — see renderQuotaBanner() in the script below. */
-
-  .quota-banner {
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 12px 28px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    font-size: 14px;
-    color: var(--text);
-  }
-
-  .quota-banner-text strong { font-weight: 600; }
-
   @media (max-width: 900px) {
     .sidebar { display: none; }
     .navsearch { display: none; }
@@ -1326,22 +1293,6 @@
       </button>
     </div>
   </header>
-
-  <!-- ============ Quota usage banner ============ -->
-  <div class="quota-banner" id="quotaBanner">
-    <div class="quota-banner-text" id="quotaBannerText"></div>
-    <button class="btn btn-outline" id="quotaUpgradeBtn" type="button">Upgrade</button>
-  </div>
-
-  <!-- ============ Marketing contact overage banner (T11, NEW) ============ -->
-  <!-- Hidden whenever state.contactCount is at or under CONFIG.contactLimit. -->
-  <div class="overage-banner" id="overageBanner" hidden>
-    <div class="overage-banner-text">
-      <span id="overageBannerText"></span>
-      <span class="overage-countdown" id="overageCountdown"></span>
-    </div>
-    <button class="btn btn-dark btn-sm" id="freeUpCapacityBtn" type="button">Free up capacity</button>
-  </div>
 
   <div class="body">
 
@@ -2023,9 +1974,6 @@
       }
     },
 
-    // The product name the quota banner offers as the upgrade path.
-    bannerUpgradeProduct: 'Starter Customer Platform',
-
     // The 8 contacts the table always starts with, regardless of mode.
     // marketingStatus tags each contact as 'Marketing' or 'Non-marketing'.
     // The 8 seed contacts represent the existing marketing base — records
@@ -2171,26 +2119,8 @@
 
   function render() {
     renderPage();
-    renderQuotaBanner();
     renderCounterPill();
     renderContactsTable();
-    renderOverageBanner();
-  }
-
-  // Shows the amber "over your limit" banner whenever the marketing
-  // count exceeds the tier limit (T11) — hidden the rest of the time.
-  function renderOverageBanner() {
-    const overage = state.contactCount - CONFIG.contactLimit;
-    const isOverLimit = overage > 0;
-    document.getElementById('overageBanner').hidden = !isOverLimit;
-    if (!isOverLimit) return;
-
-    document.getElementById('overageBannerText').textContent =
-      `You're ${overage.toLocaleString()} marketing contacts over your limit. Free up capacity before 12:00 AM to avoid a ${CONFIG.overageMonthlyCostLabel}/month upgrade.`;
-
-    const hours = Math.floor(state.overageCountdownMinutes / 60);
-    const minutes = state.overageCountdownMinutes % 60;
-    document.getElementById('overageCountdown').textContent = `${hours}h ${minutes}m`;
   }
 
   // Shows whichever page matches state.view and hides the rest. This is
@@ -2285,15 +2215,6 @@
       });
     }
     return contacts;
-  }
-
-  // The banner text is built from a template so the two numbers in it
-  // (used vs. limit) always match whatever render() was last called with.
-  function renderQuotaBanner() {
-    const textEl = document.getElementById('quotaBannerText');
-    textEl.innerHTML =
-      `You've used <strong>${state.contactCount.toLocaleString()}</strong> of ${CONFIG.contactLimit.toLocaleString()} contacts.  ` +
-      `Create more contacts with ${CONFIG.bannerUpgradeProduct}.`;
   }
 
   // The pill shows both the count AND its label, because "contacts" and
@@ -3152,20 +3073,6 @@
     // pending.
     showToast(`${appliedCount} webinar leads set as marketing. You're now over your limit — a ${CONFIG.overageMonthlyCostLabel}/mo upgrade is pending.`);
   }
-
-  document.getElementById('freeUpCapacityBtn').addEventListener('click', event => {
-    triageOrigin = 'breach-recovery';
-    openInterceptModal(event.target, runTriageAiScan);
-  });
-
-  // Ticks the countdown down once a minute purely for display — this is
-  // the "illustrative, non-firing" timer the brief called for. It never
-  // reaches zero and does anything; it's not wired to a real clock.
-  setInterval(() => {
-    if (state.overageCountdownMinutes === null) return;
-    if (state.overageCountdownMinutes > 0) state.overageCountdownMinutes -= 1;
-    renderOverageBanner();
-  }, 60000);
 
   /* =========================================================================
      SECTION 10: DATA INTEGRATION HUB (T2)
