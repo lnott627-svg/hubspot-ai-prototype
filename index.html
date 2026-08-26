@@ -828,6 +828,23 @@
 
   thead th.checkcol { width: 40px; }
 
+  /* Narrow trailing header cell holding the add-column control. */
+  thead th.addcol { width: 44px; text-align: center; padding: 0; }
+
+  .addcol-btn {
+    width: 28px; height: 28px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    border-radius: var(--radius);
+  }
+
+  .addcol-btn:hover { background: #f5f8fa; color: var(--text); }
+  .addcol-btn .nb-ico { width: 15px; height: 15px; }
+
   .th-sort { display: inline-flex; align-items: center; gap: 4px; color: #1e2a35; }
   .th-sort .arrow { font-size: 10px; }
 
@@ -1739,12 +1756,15 @@
               <thead>
                 <tr>
                   <th class="checkcol"><input class="rowcheck" type="checkbox" id="selectAllCheckbox" /></th>
-                  <th><span class="th-sort">Name <span class="arrow">↑</span></span></th>
+                  <th><span class="th-sort">Name</span></th>
                   <th>Email</th>
                   <th>Phone Number</th>
                   <th>Contact owner</th>
                   <th>Primary company</th>
                   <th>Marketing contact status</th>
+                  <th>Lead Status</th>
+                  <th><span class="th-sort">Create Date <span class="arrow">↓</span></span></th>
+                  <th class="addcol"><button class="addcol-btn" type="button" title="Add column"><svg class="nb-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M10 4.5v11M4.5 10h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button></th>
                 </tr>
               </thead>
               <tbody id="contactRows"></tbody>
@@ -2421,7 +2441,7 @@
     // Working copy of the table rows. Each gets a stable id here (not
     // stored in CONFIG) so bulk-selection can track rows regardless of
     // how the array gets re-sorted or added to later.
-    contacts: CONFIG.seedContacts.map((contact, i) => ({ ...contact, id: `seed-${i + 1}` })),
+    contacts: CONFIG.seedContacts.map((contact, i) => ({ ...contact, id: `seed-${i + 1}`, createdAt: Date.now() })),
     view: 'contacts', // 'contacts' | 'data-integration' | 'import-step1' — which page is shown
     pendingImport: null, // set to a copy of CONFIG.pendingImport once an import starts
     importStatus: null, // null | 'processing' | 'complete' — drives the import detail page
@@ -2540,7 +2560,8 @@
         phone: '--',
         owner: 'No owner',
         company: '--',
-        marketingStatus: 'Non-marketing'
+        marketingStatus: 'Non-marketing',
+        createdAt: Date.now()
       });
     }
     return contacts;
@@ -2558,6 +2579,23 @@
   // Turns "Sarah Jenkins" into "SJ" for the little round avatar badge.
   function initials(name) {
     return name.split(' ').map(part => part[0]).join('').slice(0, 2).toUpperCase();
+  }
+
+  // Renders a create-date the way HubSpot's list does: "Aug 19, 2026
+  // 2:27 PM GMT+10", with the offset read from the viewer's own zone.
+  function formatCreateDate(timestamp) {
+    const date = new Date(timestamp);
+    const day = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const time = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+
+    // getTimezoneOffset counts minutes *behind* UTC, so the sign flips.
+    const offsetMinutes = -date.getTimezoneOffset();
+    const sign = offsetMinutes < 0 ? '-' : '+';
+    const hours = Math.floor(Math.abs(offsetMinutes) / 60);
+    const minutes = Math.abs(offsetMinutes) % 60;
+    const offset = minutes ? `${hours}:${String(minutes).padStart(2, '0')}` : `${hours}`;
+
+    return `${day} ${time} GMT${sign}${offset}`;
   }
 
   // Returns the contacts the table should currently show, applying
@@ -2589,6 +2627,9 @@
         <td class="muted">${c.owner}</td>
         <td>${c.company}</td>
         <td><span class="status-badge ${c.marketingStatus === 'Marketing' ? 'marketing' : 'non-marketing'}">${c.marketingStatus}</span></td>
+        <td>${c.leadStatus || '--'}</td>
+        <td>${formatCreateDate(c.createdAt)}</td>
+        <td></td>
       </tr>
     `).join('');
 
