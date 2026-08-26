@@ -174,12 +174,8 @@
   .nav-assistant .spark { color: var(--orange); }
   .nav-assistant:hover { background: #2c3641; color: #fff; }
 
-  /* Wrapper so the Breeze nudge popover can be positioned relative to
-     the button — same pattern as .dropdown-wrap. */
-  .nav-assistant-wrap { position: relative; display: flex; align-items: center; }
-
-  /* Tiny orange notification dot that appears on the button while a
-     proactive nudge is active — matches the notification-bell "14" badge
+  /* Tiny orange notification dot on the Breeze Assistant button while a
+     proactive nudge is unread — matches the notification-bell "14" badge
      visually so it reads as the same category of thing. */
   .nav-assistant-badge {
     width: 8px; height: 8px;
@@ -187,115 +183,6 @@
     background: var(--orange);
     margin-left: 2px;
     flex: 0 0 auto;
-  }
-
-  /* ---------- Proactive nudge chat popover ----------
-     Drops down from the Breeze Assistant nav button when Breeze wants
-     the user's attention. Gradient rim + white card matches the docked
-     Breeze panel; a small pointer at the top ties it visually to the
-     button it came from. */
-
-  .breeze-nudge {
-    position: absolute;
-    top: calc(100% + 12px);
-    right: -6px;
-    width: 360px;
-    background: linear-gradient(160deg, #ff7a59, #f2547d 45%, #7c5cff);
-    padding: 1.5px;
-    border-radius: 14px;
-    z-index: 60;
-    opacity: 0;
-    transform: translateY(-8px);
-    pointer-events: none;
-    transition: opacity .22s ease, transform .22s ease;
-  }
-
-  .breeze-nudge.open { opacity: 1; transform: none; pointer-events: auto; }
-  .breeze-nudge[hidden] { display: none; }
-
-  /* The pointer/tail. Uses the outer gradient's dominant color at the
-     top-right (orange) so it reads as one continuous surface. */
-  .breeze-nudge::before {
-    content: "";
-    position: absolute;
-    top: -5px; right: 32px;
-    width: 12px; height: 12px;
-    background: #ff7a59;
-    transform: rotate(45deg);
-    border-top-left-radius: 3px;
-    z-index: -1;
-  }
-
-  .breeze-nudge-inner {
-    background: #ffffff;
-    border-radius: 12.5px;
-    padding: 14px 14px 12px;
-    color: var(--text);
-    font-size: 13.5px;
-    line-height: 1.5;
-  }
-
-  .breeze-nudge-head {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-
-  .breeze-nudge-avatar {
-    width: 32px; height: 32px;
-    flex: 0 0 auto;
-    border-radius: 10px;
-    background: linear-gradient(160deg, #ff7a59, #f2547d 55%, #7c5cff);
-    color: #fff;
-    display: grid;
-    place-items: center;
-  }
-  .breeze-nudge-avatar svg { width: 18px; height: 18px; }
-
-  .breeze-nudge-name {
-    display: flex;
-    flex-direction: column;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text);
-    line-height: 1.2;
-  }
-  .breeze-nudge-name-sub {
-    font-size: 11.5px;
-    color: var(--text-muted);
-    font-weight: 400;
-    margin-top: 2px;
-  }
-
-  .breeze-nudge-close {
-    margin-left: auto;
-    background: none;
-    border: none;
-    padding: 4px 6px;
-    color: var(--text-muted);
-    font-size: 16px;
-    line-height: 1;
-    border-radius: 4px;
-  }
-  .breeze-nudge-close:hover { background: #f0f4f8; color: var(--text); }
-
-  .breeze-nudge-body {
-    margin: 0 0 12px;
-    font-size: 13px;
-    color: var(--text);
-  }
-  .breeze-nudge-body strong { font-weight: 600; color: #1e2a35; }
-
-  .breeze-nudge-actions {
-    display: flex;
-    gap: 8px;
-  }
-  .breeze-nudge-actions .btn {
-    flex: 1 1 0;
-    padding: 8px 10px;
-    font-size: 12.5px;
-    text-align: center;
   }
 
   .nav-account {
@@ -1156,37 +1043,36 @@
 
   .modal-close:hover { background: #f0f4f8; color: var(--text); }
 
-  /* ---------- Breeze Assistant docked panel ----------
-     Opened from the "Breeze Assistant" nav button. Modeled on HubSpot's
-     real Breeze chat panel: a gradient-rimmed white card docked to the
-     bottom-right of the viewport, with a floating dark badge pinned to
-     its top-right corner. Purely a visual shell — no live chat behavior
-     is wired up, matching the brief to match the UI, not build the
-     feature. */
+  /* ---------- Breeze Assistant slide-in sidebar ----------
+     Opened either by clicking the Breeze Assistant nav button OR
+     automatically when Breeze proactively reaches out (proactive nudge —
+     see openBreezeNudge). Slides in from the right, takes the full
+     viewport height under the top nav, matching real HubSpot's Breeze
+     Assistant panel. A gradient rim on its LEFT edge is the visual
+     signature; a floating dark badge pins the Breeze mark to the corner
+     where the rim meets the top. */
 
   .breeze-panel {
     position: fixed;
-    right: 28px;
-    bottom: 24px;
-    width: 400px;
-    max-height: calc(100vh - 90px);
-    border-radius: 22px;
-    background: linear-gradient(160deg, #ff7a59, #f2547d 45%, #7c5cff);
-    padding: 2px;
-    box-shadow: var(--shadow-modal);
+    top: 44px;             /* clears the top nav */
+    right: 0;
+    bottom: 0;
+    width: 460px;
+    max-width: 100vw;
+    background: linear-gradient(180deg, #ff7a59, #f2547d 45%, #7c5cff);
+    padding-left: 3px;     /* gradient rim shows only on the left edge */
     z-index: 55;
-    opacity: 0;
-    transform: translateY(12px) scale(.98);
+    transform: translateX(100%);
     pointer-events: none;
-    transition: opacity .18s ease, transform .18s ease;
+    transition: transform .28s cubic-bezier(.2,.7,.2,1);
   }
 
-  .breeze-panel.open { opacity: 1; transform: none; pointer-events: auto; }
+  .breeze-panel.open { transform: none; pointer-events: auto; }
 
   .breeze-panel-inner {
     position: relative;
     background: var(--surface);
-    border-radius: 20px;
+    height: 100%;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -1194,16 +1080,17 @@
 
   .breeze-badge {
     position: absolute;
-    top: -14px;
-    right: -14px;
-    width: 42px; height: 42px;
-    border-radius: 13px;
+    top: 14px;
+    left: -18px;
+    width: 36px; height: 36px;
+    border-radius: 11px;
     background: #1c2429;
     display: grid;
     place-items: center;
+    z-index: 2;
   }
 
-  .breeze-badge svg { width: 22px; height: 22px; color: #d4f562; }
+  .breeze-badge svg { width: 20px; height: 20px; color: #d4f562; }
 
   .breeze-panel-head {
     display: flex;
@@ -1235,6 +1122,73 @@
 
   .breeze-greeting .line1 { color: var(--orange); display: block; }
   .breeze-greeting .line2 { color: #e0348c; display: block; }
+
+  /* When Breeze reaches out on its own (proactive nudge), the panel
+     shows this chat-message block INSTEAD of the greeting. It reads as
+     the first turn in a conversation Breeze started — an avatar to the
+     left, the message body, and action chips inline. */
+  .breeze-message {
+    padding: 22px 22px 6px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .breeze-message[hidden] { display: none; }
+
+  .breeze-message-avatar {
+    width: 34px; height: 34px;
+    flex: 0 0 auto;
+    border-radius: 11px;
+    background: linear-gradient(160deg, #ff7a59, #f2547d 55%, #7c5cff);
+    color: #fff;
+    display: grid;
+    place-items: center;
+  }
+  .breeze-message-avatar svg { width: 18px; height: 18px; }
+
+  .breeze-message-body {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .breeze-message-name {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .breeze-message-name .sub {
+    font-weight: 400;
+    color: var(--text-muted);
+    margin-left: 6px;
+    font-size: 11.5px;
+  }
+
+  .breeze-message-text {
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--text);
+    margin: 0 0 12px;
+    padding: 12px 14px;
+    background: #f5f8fa;
+    border-radius: 12px;
+    border-top-left-radius: 4px;
+  }
+  .breeze-message-text strong { font-weight: 600; color: #1e2a35; }
+
+  .breeze-message-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .breeze-message-actions .btn {
+    padding: 7px 12px;
+    font-size: 12.5px;
+  }
+
+  /* When the message is showing, we don't need the big "how can I help
+     you?" greeting below — it's already a live conversation. */
+  .breeze-panel.has-message .breeze-greeting { display: none; }
 
   .breeze-input-box {
     margin: 18px 22px 0;
@@ -1703,46 +1657,16 @@
         <span class="dot">14</span>
       </button>
       <div class="navbar-divider"></div>
-      <div class="nav-assistant-wrap" id="breezeAssistantWrap">
-        <button class="nav-assistant" type="button" id="breezeAssistantBtn" aria-haspopup="true" aria-expanded="false">
-          <span class="spark">
-            <svg class="nb-ico" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path d="M9.5 2.5c.4 2.9 1.6 4.1 4.5 4.5-2.9.4-4.1 1.6-4.5 4.5-.4-2.9-1.6-4.1-4.5-4.5 2.9-.4 4.1-1.6 4.5-4.5z"/>
-              <path d="M15 11c.2 1.5.8 2.1 2.3 2.3-1.5.2-2.1.8-2.3 2.3-.2-1.5-.8-2.1-2.3-2.3 1.5-.2 2.1-.8 2.3-2.3z"/>
-            </svg>
-          </span>
-          Breeze Assistant
-          <span class="nav-assistant-badge" id="breezeAssistantBadge" hidden></span>
-        </button>
-
-        <!-- Proactive nudge popover: a "chat message" from Breeze that
-             drops down from this button when usage crosses the 95%
-             threshold. Anchored here (not in a separate overlay) so it
-             visually reads as coming FROM the assistant, not as a system
-             modal. See checkProactiveNudge() / openBreezeNudge(). -->
-        <div class="breeze-nudge" id="breezeNudge" role="dialog" aria-labelledby="breezeNudgeTitle" hidden>
-          <div class="breeze-nudge-inner">
-            <div class="breeze-nudge-head">
-              <span class="breeze-nudge-avatar" aria-hidden="true">
-                <svg viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M9.5 2.5c.4 2.9 1.6 4.1 4.5 4.5-2.9.4-4.1 1.6-4.5 4.5-.4-2.9-1.6-4.1-4.5-4.5 2.9-.4 4.1-1.6 4.5-4.5z"/>
-                  <path d="M15 11c.2 1.5.8 2.1 2.3 2.3-1.5.2-2.1.8-2.3 2.3-.2-1.5-.8-2.1-2.3-2.3 1.5-.2 2.1-.8 2.3-2.3z"/>
-                </svg>
-              </span>
-              <div class="breeze-nudge-name">
-                <span id="breezeNudgeTitle">Breeze</span>
-                <span class="breeze-nudge-name-sub">Your AI assistant</span>
-              </div>
-              <button class="breeze-nudge-close" id="breezeNudgeClose" type="button" aria-label="Dismiss">×</button>
-            </div>
-            <p class="breeze-nudge-body" id="breezeNudgeBody"></p>
-            <div class="breeze-nudge-actions">
-              <button class="btn btn-outline breeze-nudge-dismiss" id="breezeNudgeDismiss" type="button">Not now</button>
-              <button class="btn btn-primary-orange" id="breezeNudgeCta" type="button">Yes, help me clean up</button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <button class="nav-assistant" type="button" id="breezeAssistantBtn" aria-haspopup="true" aria-expanded="false">
+        <span class="spark">
+          <svg class="nb-ico" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path d="M9.5 2.5c.4 2.9 1.6 4.1 4.5 4.5-2.9.4-4.1 1.6-4.5 4.5-.4-2.9-1.6-4.1-4.5-4.5 2.9-.4 4.1-1.6 4.5-4.5z"/>
+            <path d="M15 11c.2 1.5.8 2.1 2.3 2.3-1.5.2-2.1.8-2.3 2.3-.2-1.5-.8-2.1-2.3-2.3 1.5-.2 2.1-.8 2.3-2.3z"/>
+          </svg>
+        </span>
+        Breeze Assistant
+        <span class="nav-assistant-badge" id="breezeAssistantBadge" hidden></span>
+      </button>
       <div class="navbar-divider"></div>
       <button class="nav-account" type="button">
         <span class="avatar">
@@ -2463,6 +2387,26 @@
       </button>
     </div>
 
+    <!-- Proactive chat message from Breeze. Hidden by default; shown
+         inside the panel when checkProactiveNudge fires. See
+         openBreezeNudge / closeBreezeNudge. -->
+    <div class="breeze-message" id="breezeMessage" hidden>
+      <span class="breeze-message-avatar" aria-hidden="true">
+        <svg viewBox="0 0 20 20" fill="currentColor">
+          <path d="M9.5 2.5c.4 2.9 1.6 4.1 4.5 4.5-2.9.4-4.1 1.6-4.5 4.5-.4-2.9-1.6-4.1-4.5-4.5 2.9-.4 4.1-1.6 4.5-4.5z"/>
+          <path d="M15 11c.2 1.5.8 2.1 2.3 2.3-1.5.2-2.1.8-2.3 2.3-.2-1.5-.8-2.1-2.3-2.3 1.5-.2 2.1-.8 2.3-2.3z"/>
+        </svg>
+      </span>
+      <div class="breeze-message-body">
+        <div class="breeze-message-name">Breeze <span class="sub">just now</span></div>
+        <p class="breeze-message-text" id="breezeMessageText"></p>
+        <div class="breeze-message-actions">
+          <button class="btn btn-primary-orange" id="breezeMessageCta" type="button">Yes, help me clean up</button>
+          <button class="btn btn-outline" id="breezeMessageDismiss" type="button">Not now</button>
+        </div>
+      </div>
+    </div>
+
     <div class="breeze-greeting" id="breezeGreeting">
       <span class="line1">Hi there,</span>
       <span class="line2">how can I help you?</span>
@@ -3028,9 +2972,16 @@
   const breezePanel = document.getElementById('breezePanel');
   const breezePanelClose = document.getElementById('breezePanelClose');
 
-  function setBreezePanelOpen(isOpen) {
+  // opts.hasMessage=true switches the panel into "Breeze is showing a
+  // proactive chat message" mode (adds .has-message, which hides the big
+  // greeting so the message takes the top spot). Opening without opts
+  // clears that mode so the panel falls back to its default greeting.
+  function setBreezePanelOpen(isOpen, opts) {
     breezePanel.classList.toggle('open', isOpen);
     breezeAssistantBtn.setAttribute('aria-expanded', String(isOpen));
+    if (isOpen) {
+      breezePanel.classList.toggle('has-message', Boolean(opts && opts.hasMessage));
+    }
   }
 
   breezeAssistantBtn.addEventListener('click', event => {
@@ -3038,7 +2989,10 @@
     setBreezePanelOpen(!breezePanel.classList.contains('open'));
   });
 
-  breezePanelClose.addEventListener('click', () => setBreezePanelOpen(false));
+  breezePanelClose.addEventListener('click', () => {
+    setBreezePanelOpen(false);
+    closeBreezeMessage();
+  });
 
   document.addEventListener('click', event => {
     if (breezePanel.classList.contains('open') &&
@@ -3046,12 +3000,14 @@
         event.target !== breezeAssistantBtn &&
         !breezeAssistantBtn.contains(event.target)) {
       setBreezePanelOpen(false);
+      closeBreezeMessage();
     }
   });
 
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape' && breezePanel.classList.contains('open')) {
       setBreezePanelOpen(false);
+      closeBreezeMessage();
     }
   });
 
@@ -3259,8 +3215,8 @@
     }
 
     const modalAlreadyOpen = financialInterceptOverlay.classList.contains('open');
-    const nudgeAlreadyOpen = breezeNudge.classList.contains('open');
-    const canInterrupt = state.view === 'contacts' && !modalAlreadyOpen && !nudgeAlreadyOpen;
+    const panelAlreadyOpen = document.getElementById('breezePanel').classList.contains('open');
+    const canInterrupt = state.view === 'contacts' && !modalAlreadyOpen && !panelAlreadyOpen;
     if (state.proactiveNudgeAcknowledged || !canInterrupt) return;
 
     // Latch immediately (not inside the timeout) so a second render() call
@@ -3269,63 +3225,52 @@
     setTimeout(openBreezeNudge, CONFIG.proactiveNudgeDelayMs);
   }
 
-  // The nudge lives in the top nav (see .breeze-nudge in the header) as a
-  // chat-style popover dropping from the Breeze Assistant button. Copy is
-  // deliberately first-person and conversational — this is meant to read
-  // as a personal assistant flagging something for you, not a system
-  // dialog interrupting the app.
-  const breezeNudge = document.getElementById('breezeNudge');
+  // The proactive nudge is delivered as the first "chat message" inside
+  // the Breeze Assistant slide-in panel — same panel the user opens by
+  // clicking the nav button, but here Breeze opens it themselves. Copy
+  // is deliberately first-person and conversational: this is meant to
+  // read as an assistant proactively starting a conversation with you.
   const breezeAssistantBadge = document.getElementById('breezeAssistantBadge');
+  const breezeMessage = document.getElementById('breezeMessage');
 
   function openBreezeNudge() {
     // floor, not round — rounding 996/1,000 up to "100%" would read as
     // already-at-limit right next to "996 of 1,000", which is wrong.
     const pct = Math.floor((state.contactCount / CONFIG.contactLimit) * 100);
 
-    document.getElementById('breezeNudgeBody').innerHTML =
+    document.getElementById('breezeMessageText').innerHTML =
       `Hi — I've been keeping an eye on your marketing contacts. ` +
       `You're at <strong>${state.contactCount.toLocaleString()} of ${CONFIG.contactLimit.toLocaleString()}</strong> (${pct}% of your limit). ` +
       `Want me to look through your database and pull together some low-value contacts you can clean up? ` +
       `A few minutes now avoids the ${CONFIG.overageMonthlyCostLabel}/mo overage upgrade.`;
 
-    breezeNudge.hidden = false;
-    // rAF so the browser paints [hidden]=false first, then transitions in
-    requestAnimationFrame(() => breezeNudge.classList.add('open'));
+    breezeMessage.hidden = false;
     breezeAssistantBadge.hidden = false;
+    setBreezePanelOpen(true, { hasMessage: true });
   }
 
-  function closeBreezeNudge() {
-    breezeNudge.classList.remove('open');
+  function closeBreezeMessage() {
+    breezeMessage.hidden = true;
     breezeAssistantBadge.hidden = true;
-    // Match the CSS transition duration before hiding, so it animates out.
-    setTimeout(() => { breezeNudge.hidden = true; }, 220);
+    document.getElementById('breezePanel').classList.remove('has-message');
   }
 
-  document.getElementById('breezeNudgeClose').addEventListener('click', closeBreezeNudge);
-  document.getElementById('breezeNudgeDismiss').addEventListener('click', closeBreezeNudge);
+  document.getElementById('breezeMessageDismiss').addEventListener('click', () => {
+    closeBreezeMessage();
+    setBreezePanelOpen(false);
+  });
 
-  // "Yes, help me clean up" → run the same AI-scan-into-Optimize-Database
-  // flow as every other path into this. The scan's own loading state lives
-  // in the intercept overlay; from here on the code path is identical.
-  document.getElementById('breezeNudgeCta').addEventListener('click', () => {
+  // "Yes, help me clean up" → close the panel, then run the same
+  // AI-scan-into-Optimize-Database flow every other entry point uses.
+  document.getElementById('breezeMessageCta').addEventListener('click', () => {
     triageOrigin = 'proactive';
-    closeBreezeNudge();
-    // Give the popover's exit animation a moment before the scan modal
-    // opens, so they don't cross-fade on top of each other.
+    closeBreezeMessage();
+    setBreezePanelOpen(false);
+    // Small delay so the panel's slide-out and the scan modal's fade-in
+    // don't step on each other visually.
     setTimeout(() => {
       openInterceptModal(document.getElementById('breezeAssistantBtn'), runTriageAiScan);
-    }, 180);
-  });
-
-  // Outside-click dismisses, matching every other popover in the app.
-  document.addEventListener('click', event => {
-    if (!breezeNudge.classList.contains('open')) return;
-    const wrap = document.getElementById('breezeAssistantWrap');
-    if (!wrap.contains(event.target)) closeBreezeNudge();
-  });
-
-  document.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && breezeNudge.classList.contains('open')) closeBreezeNudge();
+    }, 220);
   });
 
   // ---- T8: the warning screen ----
