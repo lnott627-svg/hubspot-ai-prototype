@@ -1744,7 +1744,15 @@
         <span class="bulk-bar-count" id="bulkBarCount"></span>
         <div class="bulk-bar-actions">
           <button class="btn btn-outline btn-sm" type="button" disabled>Delete</button>
-          <button class="btn btn-dark btn-sm" id="setAsMarketingBtn" type="button">Set as marketing</button>
+          <div class="dropdown-wrap" id="bulkMoreWrap">
+            <button class="btn btn-dark btn-sm" id="bulkMoreBtn" type="button" aria-haspopup="true" aria-expanded="false">
+              More <span class="caret">▾</span>
+            </button>
+            <div class="dropdown-menu" id="bulkMoreMenu" role="menu">
+              <button class="dropdown-item" id="bulkSetMarketingOption" type="button" role="menuitem">Set as marketing contacts</button>
+              <button class="dropdown-item" id="bulkSetNonMarketingOption" type="button" role="menuitem">Set as non-marketing contacts</button>
+            </div>
+          </div>
         </div>
         <button class="bulk-bar-clear" id="bulkBarClear" type="button" aria-label="Clear selection">×</button>
       </div>
@@ -2325,17 +2333,21 @@
 
     // The 8 contacts the table always starts with, regardless of mode.
     // marketingStatus tags each contact as 'Marketing' or 'Non-marketing'.
-    // The 8 seed contacts represent the existing marketing base — records
-    // imported later (see generateImportedContacts) start non-marketing.
+    // HubSpot Starter caps marketing contacts (1,000) but never caps
+    // non-marketing ones, so a realistic account has far more of the
+    // latter — most of these start Non-marketing, giving the user a
+    // pool to convert without first running the import flow. Records
+    // imported later (see generateImportedContacts) also start
+    // non-marketing, adding to that same pool.
     seedContacts: [
-      { name: 'Amara Osei',      email: 'amara.osei@northwind.io',   phone: '--',              owner: 'No owner', company: 'Northwind Logistics', marketingStatus: 'Marketing' },
-      { name: 'Daniel Vega',     email: 'd.vega@brightpath.co',      phone: '(415) 555-0142',  owner: 'No owner', company: 'Brightpath Co.',       marketingStatus: 'Marketing' },
-      { name: 'Priya Raman',     email: 'priya@lumenworks.com',      phone: '--',              owner: 'No owner', company: 'Lumen Works',          marketingStatus: 'Marketing' },
-      { name: 'Tomas Ferreira',  email: 'tomas.f@sablegroup.net',    phone: '(212) 555-0187',  owner: 'No owner', company: 'Sable Group',          marketingStatus: 'Marketing' },
-      { name: 'Nina Halvorsen',  email: 'nina.h@fjordanalytics.no',  phone: '--',              owner: 'No owner', company: 'Fjord Analytics',      marketingStatus: 'Marketing' },
-      { name: 'Marcus Bell',     email: 'm.bell@coastalhvac.com',    phone: '(305) 555-0113',  owner: 'No owner', company: 'Coastal HVAC',         marketingStatus: 'Marketing' },
-      { name: 'Yuki Tanaka',     email: 'y.tanaka@kaizenlabs.jp',    phone: '--',              owner: 'No owner', company: 'Kaizen Labs',           marketingStatus: 'Marketing' },
-      { name: 'Elena Duarte',    email: 'elena@verdepack.mx',        phone: '(650) 555-0176',  owner: 'No owner', company: 'Verde Packaging',      marketingStatus: 'Marketing' }
+      { name: 'Amara Osei',      email: 'amara.osei@northwind.io',   phone: '--',              owner: 'No owner', company: 'Northwind Logistics', marketingStatus: 'Marketing',     leadStatus: '--' },
+      { name: 'Daniel Vega',     email: 'd.vega@brightpath.co',      phone: '(415) 555-0142',  owner: 'No owner', company: 'Brightpath Co.',       marketingStatus: 'Non-marketing', leadStatus: 'New' },
+      { name: 'Priya Raman',     email: 'priya@lumenworks.com',      phone: '--',              owner: 'No owner', company: 'Lumen Works',          marketingStatus: 'Non-marketing', leadStatus: 'Open' },
+      { name: 'Tomas Ferreira',  email: 'tomas.f@sablegroup.net',    phone: '(212) 555-0187',  owner: 'No owner', company: 'Sable Group',          marketingStatus: 'Non-marketing', leadStatus: 'Attempted to contact' },
+      { name: 'Nina Halvorsen',  email: 'nina.h@fjordanalytics.no',  phone: '--',              owner: 'No owner', company: 'Fjord Analytics',      marketingStatus: 'Marketing',     leadStatus: '--' },
+      { name: 'Marcus Bell',     email: 'm.bell@coastalhvac.com',    phone: '(305) 555-0113',  owner: 'No owner', company: 'Coastal HVAC',         marketingStatus: 'Non-marketing', leadStatus: 'In progress' },
+      { name: 'Yuki Tanaka',     email: 'y.tanaka@kaizenlabs.jp',    phone: '--',              owner: 'No owner', company: 'Kaizen Labs',           marketingStatus: 'Non-marketing', leadStatus: 'New' },
+      { name: 'Elena Duarte',    email: 'elena@verdepack.mx',        phone: '(650) 555-0176',  owner: 'No owner', company: 'Verde Packaging',      marketingStatus: 'Non-marketing', leadStatus: 'Unqualified' }
     ],
 
     // The file the Starter flow simulates importing. rowCount is what
@@ -2833,12 +2845,9 @@
      ========================================================================= */
 
   document.getElementById('marketingStatusFilterBtn').addEventListener('click', () => {
-    const btn = document.getElementById('marketingStatusFilterBtn');
     const goingToNonMarketing = state.contactViewFilter === 'all';
     state.contactViewFilter = goingToNonMarketing ? 'non-marketing' : 'all';
-    btn.innerHTML = goingToNonMarketing
-      ? 'Marketing contact status: Non-marketing <span class="caret">▾</span>'
-      : 'Marketing contact status: All <span class="caret">▾</span>';
+    setMarketingStatusFilterLabel(goingToNonMarketing);
 
     // Changing the filter can hide rows that were selected under the old
     // one — clear the selection rather than leave invisible rows checked.
@@ -2934,10 +2943,59 @@
     }
   });
 
-  // ---- T8: the warning screen ----
+  // ---- Bulk bar "More" menu: set as marketing / non-marketing ----
+  // Mirrors the "Add contacts" dropdown pattern (open/close toggle,
+  // outside-click and Escape both close it).
 
-  document.getElementById('setAsMarketingBtn').addEventListener('click', event => {
-    openInterceptModal(event.target, renderInterceptWarningScreen);
+  const bulkMoreWrap = document.getElementById('bulkMoreWrap');
+  const bulkMoreBtn = document.getElementById('bulkMoreBtn');
+  const bulkMoreMenu = document.getElementById('bulkMoreMenu');
+
+  function openBulkMoreMenu() {
+    bulkMoreMenu.classList.add('open');
+    bulkMoreBtn.setAttribute('aria-expanded', 'true');
+  }
+
+  function closeBulkMoreMenu() {
+    bulkMoreMenu.classList.remove('open');
+    bulkMoreBtn.setAttribute('aria-expanded', 'false');
+  }
+
+  bulkMoreBtn.addEventListener('click', event => {
+    event.stopPropagation();
+    const isOpen = bulkMoreMenu.classList.contains('open');
+    if (isOpen) closeBulkMoreMenu(); else openBulkMoreMenu();
+  });
+
+  document.addEventListener('click', event => {
+    if (!bulkMoreWrap.contains(event.target)) closeBulkMoreMenu();
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') closeBulkMoreMenu();
+  });
+
+  // ---- T8: the warning screen ----
+  // The AI intercept only fires when converting the current selection
+  // would actually breach the Marketing Contact limit — otherwise the
+  // conversion just happens (applyMarketingConversionDirectly).
+
+  document.getElementById('bulkSetMarketingOption').addEventListener('click', () => {
+    closeBulkMoreMenu();
+
+    const selectedCount = state.selectedContactIds.length;
+    const prospectiveTotal = state.contactCount + selectedCount;
+
+    if (prospectiveTotal > CONFIG.contactLimit) {
+      openInterceptModal(bulkMoreBtn, renderInterceptWarningScreen);
+    } else {
+      applyMarketingConversionDirectly();
+    }
+  });
+
+  document.getElementById('bulkSetNonMarketingOption').addEventListener('click', () => {
+    closeBulkMoreMenu();
+    applySelectedContactsAsNonMarketing();
   });
 
   function renderInterceptWarningScreen() {
@@ -3406,7 +3464,7 @@
       applySelectedContactsAsMarketing();
       state.contactCount += appliedCount;
       state.selectedContactIds = [];
-      state.contactViewFilter = 'all';
+      resetMarketingStatusFilter();
 
       state.optimize = null;
       triageOrigin = null;
@@ -3414,7 +3472,7 @@
       showToast(
         `${cleanupSummary}. ${appliedCount} webinar leads set as marketing. You remain under your limit, saving ${CONFIG.overageMonthlyCostLabel}/mo.`,
         'success',
-        { undo: () => undoOptimize(snapshot) }
+        { undo: () => restoreContactsSnapshot(snapshot) }
       );
     } else {
       // Breach-recovery: the 100 contacts are already marketing (T11
@@ -3428,22 +3486,41 @@
       showToast(
         `${cleanupSummary}. You're back under your limit — the ${CONFIG.overageMonthlyCostLabel}/mo upgrade has been avoided.`,
         'success',
-        { undo: () => undoOptimize(snapshot) }
+        { undo: () => restoreContactsSnapshot(snapshot) }
       );
     }
   }
 
-  // Restores state exactly as it was before executeOptimize() ran, from the
-  // snapshot taken at the start of that call. Wired to the toast's Undo
-  // button — the one place a user can walk back an AI-driven bulk action.
-  function undoOptimize(snapshot) {
+  // Restores state exactly as it was before a bulk contact-status action
+  // ran, from a snapshot taken at the start of that action. Wired to the
+  // toast's Undo button — the one place a user can walk back a bulk
+  // marketing/non-marketing status change, AI-driven or not.
+  function restoreContactsSnapshot(snapshot) {
     state.contactCount = snapshot.contactCount;
     state.contacts = snapshot.contacts;
     state.selectedContactIds = snapshot.selectedContactIds;
     state.contactViewFilter = snapshot.contactViewFilter;
     state.overageCountdownMinutes = snapshot.overageCountdownMinutes;
+    setMarketingStatusFilterLabel(state.contactViewFilter === 'non-marketing');
     render();
     showToast("Undone — your marketing contacts are back where they were.");
+  }
+
+  // The "Marketing contact status" filter pill's label doesn't derive from
+  // state on render() — it's plain text set at the moment the filter
+  // changes — so every place that changes state.contactViewFilter needs
+  // to call this too, or the label goes stale relative to the real filter.
+  function setMarketingStatusFilterLabel(isNonMarketing) {
+    document.getElementById('marketingStatusFilterBtn').innerHTML = isNonMarketing
+      ? 'Marketing contact status: Non-marketing <span class="caret">▾</span>'
+      : 'Marketing contact status: All <span class="caret">▾</span>';
+  }
+
+  // Resets the filter pill back to its default label and value. Used
+  // after a bulk conversion resets the underlying filter to 'all'.
+  function resetMarketingStatusFilter() {
+    state.contactViewFilter = 'all';
+    setMarketingStatusFilterLabel(false);
   }
 
   // Flips every currently-selected contact's status to Marketing. Shared
@@ -3452,6 +3529,70 @@
     state.contacts.forEach(contact => {
       if (state.selectedContactIds.includes(contact.id)) contact.marketingStatus = 'Marketing';
     });
+  }
+
+  // Captures everything a bulk contact-status action might touch, so
+  // restoreContactsSnapshot() can put it all back exactly as it was.
+  function takeContactsSnapshot() {
+    return {
+      contactCount: state.contactCount,
+      contacts: state.contacts.map(c => ({ ...c })),
+      selectedContactIds: [...state.selectedContactIds],
+      contactViewFilter: state.contactViewFilter,
+      overageCountdownMinutes: state.overageCountdownMinutes
+    };
+  }
+
+  // The common case for "Set as marketing contacts": applying it doesn't
+  // breach the Marketing Contact limit, so it just happens — no AI
+  // intercept needed. The intercept (T8) is reserved for when it actually
+  // would breach; see the bulkSetMarketingOption click handler below.
+  function applyMarketingConversionDirectly() {
+    const snapshot = takeContactsSnapshot();
+    const appliedCount = state.selectedContactIds.length;
+
+    applySelectedContactsAsMarketing();
+    state.contactCount += appliedCount;
+    state.selectedContactIds = [];
+    resetMarketingStatusFilter();
+    render();
+
+    showToast(
+      `${appliedCount} contact${appliedCount === 1 ? '' : 's'} set as marketing.`,
+      'success',
+      { undo: () => restoreContactsSnapshot(snapshot) }
+    );
+  }
+
+  // The reverse action: flips selected Marketing contacts back to
+  // Non-marketing. Contacts already Non-marketing in the selection are
+  // left alone. Per the same rule the triage screen states (T9), this
+  // does NOT free up quota immediately — only permanent deletion does —
+  // so state.contactCount is deliberately left untouched.
+  function applySelectedContactsAsNonMarketing() {
+    const snapshot = takeContactsSnapshot();
+    let flippedCount = 0;
+
+    state.contacts.forEach(contact => {
+      if (state.selectedContactIds.includes(contact.id) && contact.marketingStatus === 'Marketing') {
+        contact.marketingStatus = 'Non-marketing';
+        flippedCount += 1;
+      }
+    });
+
+    if (flippedCount === 0) {
+      showToast('Those contacts are already non-marketing.');
+      return;
+    }
+
+    state.selectedContactIds = [];
+    render();
+
+    showToast(
+      `${flippedCount} contact${flippedCount === 1 ? '' : 's'} set as non-marketing. This won't free up your quota until your next renewal date.`,
+      undefined,
+      { undo: () => restoreContactsSnapshot(snapshot) }
+    );
   }
 
   /* =========================================================================
@@ -3467,7 +3608,7 @@
     applySelectedContactsAsMarketing();
     state.contactCount += appliedCount;
     state.selectedContactIds = [];
-    state.contactViewFilter = 'all';
+    resetMarketingStatusFilter();
 
     // Start the (illustrative, non-firing) countdown now that we're over.
     state.overageCountdownMinutes = CONFIG.overageCountdownSeedMinutes;
