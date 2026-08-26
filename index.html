@@ -174,6 +174,130 @@
   .nav-assistant .spark { color: var(--orange); }
   .nav-assistant:hover { background: #2c3641; color: #fff; }
 
+  /* Wrapper so the Breeze nudge popover can be positioned relative to
+     the button — same pattern as .dropdown-wrap. */
+  .nav-assistant-wrap { position: relative; display: flex; align-items: center; }
+
+  /* Tiny orange notification dot that appears on the button while a
+     proactive nudge is active — matches the notification-bell "14" badge
+     visually so it reads as the same category of thing. */
+  .nav-assistant-badge {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--orange);
+    margin-left: 2px;
+    flex: 0 0 auto;
+  }
+
+  /* ---------- Proactive nudge chat popover ----------
+     Drops down from the Breeze Assistant nav button when Breeze wants
+     the user's attention. Gradient rim + white card matches the docked
+     Breeze panel; a small pointer at the top ties it visually to the
+     button it came from. */
+
+  .breeze-nudge {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: -6px;
+    width: 360px;
+    background: linear-gradient(160deg, #ff7a59, #f2547d 45%, #7c5cff);
+    padding: 1.5px;
+    border-radius: 14px;
+    z-index: 60;
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+    transition: opacity .22s ease, transform .22s ease;
+  }
+
+  .breeze-nudge.open { opacity: 1; transform: none; pointer-events: auto; }
+  .breeze-nudge[hidden] { display: none; }
+
+  /* The pointer/tail. Uses the outer gradient's dominant color at the
+     top-right (orange) so it reads as one continuous surface. */
+  .breeze-nudge::before {
+    content: "";
+    position: absolute;
+    top: -5px; right: 32px;
+    width: 12px; height: 12px;
+    background: #ff7a59;
+    transform: rotate(45deg);
+    border-top-left-radius: 3px;
+    z-index: -1;
+  }
+
+  .breeze-nudge-inner {
+    background: #ffffff;
+    border-radius: 12.5px;
+    padding: 14px 14px 12px;
+    color: var(--text);
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+
+  .breeze-nudge-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .breeze-nudge-avatar {
+    width: 32px; height: 32px;
+    flex: 0 0 auto;
+    border-radius: 10px;
+    background: linear-gradient(160deg, #ff7a59, #f2547d 55%, #7c5cff);
+    color: #fff;
+    display: grid;
+    place-items: center;
+  }
+  .breeze-nudge-avatar svg { width: 18px; height: 18px; }
+
+  .breeze-nudge-name {
+    display: flex;
+    flex-direction: column;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .breeze-nudge-name-sub {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    font-weight: 400;
+    margin-top: 2px;
+  }
+
+  .breeze-nudge-close {
+    margin-left: auto;
+    background: none;
+    border: none;
+    padding: 4px 6px;
+    color: var(--text-muted);
+    font-size: 16px;
+    line-height: 1;
+    border-radius: 4px;
+  }
+  .breeze-nudge-close:hover { background: #f0f4f8; color: var(--text); }
+
+  .breeze-nudge-body {
+    margin: 0 0 12px;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .breeze-nudge-body strong { font-weight: 600; color: #1e2a35; }
+
+  .breeze-nudge-actions {
+    display: flex;
+    gap: 8px;
+  }
+  .breeze-nudge-actions .btn {
+    flex: 1 1 0;
+    padding: 8px 10px;
+    font-size: 12.5px;
+    text-align: center;
+  }
+
   .nav-account {
     display: flex;
     align-items: center;
@@ -1579,15 +1703,46 @@
         <span class="dot">14</span>
       </button>
       <div class="navbar-divider"></div>
-      <button class="nav-assistant" type="button" id="breezeAssistantBtn" aria-haspopup="true" aria-expanded="false">
-        <span class="spark">
-          <svg class="nb-ico" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path d="M9.5 2.5c.4 2.9 1.6 4.1 4.5 4.5-2.9.4-4.1 1.6-4.5 4.5-.4-2.9-1.6-4.1-4.5-4.5 2.9-.4 4.1-1.6 4.5-4.5z"/>
-            <path d="M15 11c.2 1.5.8 2.1 2.3 2.3-1.5.2-2.1.8-2.3 2.3-.2-1.5-.8-2.1-2.3-2.3 1.5-.2 2.1-.8 2.3-2.3z"/>
-          </svg>
-        </span>
-        Breeze Assistant
-      </button>
+      <div class="nav-assistant-wrap" id="breezeAssistantWrap">
+        <button class="nav-assistant" type="button" id="breezeAssistantBtn" aria-haspopup="true" aria-expanded="false">
+          <span class="spark">
+            <svg class="nb-ico" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path d="M9.5 2.5c.4 2.9 1.6 4.1 4.5 4.5-2.9.4-4.1 1.6-4.5 4.5-.4-2.9-1.6-4.1-4.5-4.5 2.9-.4 4.1-1.6 4.5-4.5z"/>
+              <path d="M15 11c.2 1.5.8 2.1 2.3 2.3-1.5.2-2.1.8-2.3 2.3-.2-1.5-.8-2.1-2.3-2.3 1.5-.2 2.1-.8 2.3-2.3z"/>
+            </svg>
+          </span>
+          Breeze Assistant
+          <span class="nav-assistant-badge" id="breezeAssistantBadge" hidden></span>
+        </button>
+
+        <!-- Proactive nudge popover: a "chat message" from Breeze that
+             drops down from this button when usage crosses the 95%
+             threshold. Anchored here (not in a separate overlay) so it
+             visually reads as coming FROM the assistant, not as a system
+             modal. See checkProactiveNudge() / openBreezeNudge(). -->
+        <div class="breeze-nudge" id="breezeNudge" role="dialog" aria-labelledby="breezeNudgeTitle" hidden>
+          <div class="breeze-nudge-inner">
+            <div class="breeze-nudge-head">
+              <span class="breeze-nudge-avatar" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M9.5 2.5c.4 2.9 1.6 4.1 4.5 4.5-2.9.4-4.1 1.6-4.5 4.5-.4-2.9-1.6-4.1-4.5-4.5 2.9-.4 4.1-1.6 4.5-4.5z"/>
+                  <path d="M15 11c.2 1.5.8 2.1 2.3 2.3-1.5.2-2.1.8-2.3 2.3-.2-1.5-.8-2.1-2.3-2.3 1.5-.2 2.1-.8 2.3-2.3z"/>
+                </svg>
+              </span>
+              <div class="breeze-nudge-name">
+                <span id="breezeNudgeTitle">Breeze</span>
+                <span class="breeze-nudge-name-sub">Your AI assistant</span>
+              </div>
+              <button class="breeze-nudge-close" id="breezeNudgeClose" type="button" aria-label="Dismiss">×</button>
+            </div>
+            <p class="breeze-nudge-body" id="breezeNudgeBody"></p>
+            <div class="breeze-nudge-actions">
+              <button class="btn btn-outline breeze-nudge-dismiss" id="breezeNudgeDismiss" type="button">Not now</button>
+              <button class="btn btn-primary-orange" id="breezeNudgeCta" type="button">Yes, help me clean up</button>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="navbar-divider"></div>
       <button class="nav-account" type="button">
         <span class="avatar">
@@ -3104,41 +3259,74 @@
     }
 
     const modalAlreadyOpen = financialInterceptOverlay.classList.contains('open');
-    const canInterrupt = state.view === 'contacts' && !modalAlreadyOpen;
+    const nudgeAlreadyOpen = breezeNudge.classList.contains('open');
+    const canInterrupt = state.view === 'contacts' && !modalAlreadyOpen && !nudgeAlreadyOpen;
     if (state.proactiveNudgeAcknowledged || !canInterrupt) return;
 
     // Latch immediately (not inside the timeout) so a second render() call
     // firing before the delay elapses can't schedule a duplicate.
     state.proactiveNudgeAcknowledged = true;
-    setTimeout(() => {
-      triageOrigin = 'proactive';
-      openInterceptModal(document.getElementById('breezeAssistantBtn'), renderProactiveNudgeScreen);
-    }, CONFIG.proactiveNudgeDelayMs);
+    setTimeout(openBreezeNudge, CONFIG.proactiveNudgeDelayMs);
   }
 
-  // No pending selection led here, so — unlike renderInterceptWarningScreen
-  // — there's nothing to "accept the upgrade" on. The only actions that
-  // make sense are cleaning up now or dismissing until next time.
-  function renderProactiveNudgeScreen() {
+  // The nudge lives in the top nav (see .breeze-nudge in the header) as a
+  // chat-style popover dropping from the Breeze Assistant button. Copy is
+  // deliberately first-person and conversational — this is meant to read
+  // as a personal assistant flagging something for you, not a system
+  // dialog interrupting the app.
+  const breezeNudge = document.getElementById('breezeNudge');
+  const breezeAssistantBadge = document.getElementById('breezeAssistantBadge');
+
+  function openBreezeNudge() {
     // floor, not round — rounding 996/1,000 up to "100%" would read as
     // already-at-limit right next to "996 of 1,000", which is wrong.
     const pct = Math.floor((state.contactCount / CONFIG.contactLimit) * 100);
 
-    setInterceptTitle("Breeze noticed you're approaching your limit.");
-    financialInterceptBody.innerHTML = `
-      <p>You've used <strong>${state.contactCount.toLocaleString()}</strong> of ${CONFIG.contactLimit.toLocaleString()} marketing contacts (${pct}%). At this rate, converting even a few more contacts will trigger a ${CONFIG.overageMonthlyCostLabel}/month upgrade. Clean up low-value contacts now to stay comfortably under your limit.</p>
-      <div class="intercept-actions">
-        <button class="btn btn-primary-orange" id="optimizeDbBtn" type="button">Optimize Database</button>
-        <button class="btn btn-outline" id="dismissNudgeBtn" type="button">Dismiss</button>
-      </div>
-    `;
+    document.getElementById('breezeNudgeBody').innerHTML =
+      `Hi — I've been keeping an eye on your marketing contacts. ` +
+      `You're at <strong>${state.contactCount.toLocaleString()} of ${CONFIG.contactLimit.toLocaleString()}</strong> (${pct}% of your limit). ` +
+      `Want me to look through your database and pull together some low-value contacts you can clean up? ` +
+      `A few minutes now avoids the ${CONFIG.overageMonthlyCostLabel}/mo overage upgrade.`;
 
-    document.getElementById('optimizeDbBtn').addEventListener('click', () => {
-      triageOrigin = 'proactive';
-      runTriageAiScan();
-    });
-    document.getElementById('dismissNudgeBtn').addEventListener('click', closeInterceptModal);
+    breezeNudge.hidden = false;
+    // rAF so the browser paints [hidden]=false first, then transitions in
+    requestAnimationFrame(() => breezeNudge.classList.add('open'));
+    breezeAssistantBadge.hidden = false;
   }
+
+  function closeBreezeNudge() {
+    breezeNudge.classList.remove('open');
+    breezeAssistantBadge.hidden = true;
+    // Match the CSS transition duration before hiding, so it animates out.
+    setTimeout(() => { breezeNudge.hidden = true; }, 220);
+  }
+
+  document.getElementById('breezeNudgeClose').addEventListener('click', closeBreezeNudge);
+  document.getElementById('breezeNudgeDismiss').addEventListener('click', closeBreezeNudge);
+
+  // "Yes, help me clean up" → run the same AI-scan-into-Optimize-Database
+  // flow as every other path into this. The scan's own loading state lives
+  // in the intercept overlay; from here on the code path is identical.
+  document.getElementById('breezeNudgeCta').addEventListener('click', () => {
+    triageOrigin = 'proactive';
+    closeBreezeNudge();
+    // Give the popover's exit animation a moment before the scan modal
+    // opens, so they don't cross-fade on top of each other.
+    setTimeout(() => {
+      openInterceptModal(document.getElementById('breezeAssistantBtn'), runTriageAiScan);
+    }, 180);
+  });
+
+  // Outside-click dismisses, matching every other popover in the app.
+  document.addEventListener('click', event => {
+    if (!breezeNudge.classList.contains('open')) return;
+    const wrap = document.getElementById('breezeAssistantWrap');
+    if (!wrap.contains(event.target)) closeBreezeNudge();
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && breezeNudge.classList.contains('open')) closeBreezeNudge();
+  });
 
   // ---- T8: the warning screen ----
   // The AI intercept only fires when converting the current selection
