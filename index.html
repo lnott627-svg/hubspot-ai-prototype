@@ -9,13 +9,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --navbar:       #ffffff;
-    --navbar-border:#dfe3eb;
-    --sidebar:      #ffffff;
-    --sidebar-hover:#f5f8fa;
-    --sidebar-active:#eaf0f6;
-    --sidebar-text: #33475b;
-    --sidebar-text-muted: #7c98b6;
+    --navbar:       #2e3338;
+    --navbar-border:#3d4854;
+    --sidebar:      #2e3338;
+    --sidebar-hover:rgba(255,255,255,.07);
+    --sidebar-active:rgba(255,255,255,.14);
+    --sidebar-text: #e4e8ed;
+    --sidebar-text-muted: #9297a3;
     --bg:           #f5f8fa;
     --surface:      #ffffff;
     --orange:       #ff7a59;
@@ -57,7 +57,7 @@
     align-items: center;
     gap: 18px;
     padding: 0 14px;
-    color: var(--text);
+    color: #cbd6e2;
     border-bottom: 1px solid var(--navbar-border);
   }
 
@@ -65,25 +65,25 @@
 
   .sprocket { width: 28px; height: 28px; display: block; }
 
-  .brand .chev { font-size: 9px; color: var(--text-muted); }
+  .brand .chev { font-size: 9px; color: #8496a8; }
 
   .navsearch {
     flex: 0 1 340px;
     display: flex;
     align-items: center;
     gap: 8px;
-    background: #f5f8fa;
-    border: 1px solid #cbd6e2;
+    background: #2c3641;
+    border: 1px solid #3d4854;
     border-radius: var(--radius);
     padding: 7px 12px;
     font-size: 13px;
-    color: var(--text-muted);
+    color: #97a8ba;
   }
 
   .navsearch .kbd {
     margin-left: auto;
     font-size: 11px;
-    color: var(--text-muted);
+    color: #6d7f92;
   }
 
   .navbar-spacer { flex: 1; }
@@ -99,7 +99,7 @@
     width: 34px; height: 34px;
     border: none;
     background: transparent;
-    color: var(--text-muted);
+    color: #b1c0d1;
     border-radius: var(--radius);
     display: grid;
     place-items: center;
@@ -107,7 +107,7 @@
     position: relative;
   }
 
-  .nav-icon-btn:hover { background: #f5f8fa; color: var(--text); }
+  .nav-icon-btn:hover { background: #2c3641; color: #fff; }
 
   .nav-icon-btn .dot {
     position: absolute;
@@ -126,7 +126,7 @@
 
   .navbar-divider {
     width: 1px; height: 22px;
-    background: var(--border);
+    background: #3d4854;
     margin: 0 4px;
   }
 
@@ -136,11 +136,11 @@
     gap: 6px;
     padding: 7px 10px;
     font-size: 13px;
-    color: var(--text);
+    color: #b1c0d1;
     border-radius: var(--radius);
   }
 
-  .nav-upgrade:hover { background: #f5f8fa; color: var(--text); }
+  .nav-upgrade:hover { background: #2c3641; color: #fff; }
 
   .nav-assistant {
     display: flex;
@@ -148,24 +148,26 @@
     gap: 6px;
     padding: 7px 10px;
     font-size: 13px;
-    color: var(--text);
+    color: #b1c0d1;
     border-radius: var(--radius);
   }
 
   .nav-assistant .spark { color: var(--orange); }
-  .nav-assistant:hover { background: #f5f8fa; color: var(--text); }
+  .nav-assistant:hover { background: #2c3641; color: #fff; }
 
   .nav-account {
     display: flex;
     align-items: center;
     gap: 7px;
     padding: 5px 8px 5px 5px;
+    border: none;
+    background: transparent;
     border-radius: var(--radius);
     font-size: 13px;
-    color: var(--text);
+    color: #d6dee6;
   }
 
-  .nav-account:hover { background: #f5f8fa; }
+  .nav-account:hover { background: #2c3641; }
 
   .nav-account .avatar {
     width: 24px; height: 24px;
@@ -183,7 +185,7 @@
     width: 220px;
     flex: 0 0 220px;
     background: var(--sidebar);
-    border-right: 1px solid var(--border);
+    border-right: 1px solid rgba(255,255,255,.08);
     display: flex;
     flex-direction: column;
     padding: 10px 10px 0;
@@ -214,7 +216,7 @@
 
   .nav-item.active {
     background: var(--sidebar-active);
-    color: var(--text);
+    color: #fff;
     font-weight: 600;
   }
 
