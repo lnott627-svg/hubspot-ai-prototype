@@ -2368,6 +2368,13 @@
     // two flows we'll build in later screens.
     contactLimit: 1000,
 
+    // The whole point of this redesign: Breeze flags the account the
+    // moment usage crosses this fraction of the limit, proactively —
+    // before any bulk action would actually breach it. See
+    // checkProactiveNudge() / renderProactiveNudgeScreen().
+    proactiveNudgeThreshold: 0.95,
+    proactiveNudgeDelayMs: 900,
+
     // The product name the quota banner offers as the upgrade path.
     bannerUpgradeProduct: 'Starter Customer Platform',
 
@@ -2524,6 +2531,12 @@
     selectedContactIds: [], // ids of currently checked rows, for the bulk action bar
     overageCountdownMinutes: null, // null when under limit; minutes-to-midnight while over it (T11)
 
+    // Edge-triggered latch for the proactive nudge: true once it's been
+    // shown for the current above-threshold stretch, so it fires once per
+    // crossing rather than on every render. Reset to false the moment the
+    // count drops back under the threshold — see checkProactiveNudge().
+    proactiveNudgeAcknowledged: false,
+
     // Increments each time an import completes. Contact ids are scoped to
     // the run that created them (see generateImportedContacts) so a
     // second import in the same session can't collide with the first —
@@ -2547,6 +2560,7 @@
     renderCounterPill();
     renderContactsTable();
     renderOverageBanner();
+    checkProactiveNudge();
   }
 
   // The banner text is built from a template so the two numbers in it
@@ -3065,6 +3079,67 @@
     if (event.key === 'Escape') closeBulkMoreMenu();
   });
 
+  /* =========================================================================
+     Proactive nudge (NEW): the redesign's actual thesis. Every other path
+     into this modal is reactive — it waits for a bulk action that would
+     breach the limit. This one isn't tied to any user action at all: the
+     moment the account's usage crosses proactiveNudgeThreshold, Breeze
+     flags it on its own, on whatever screen render() next runs on.
+     ========================================================================= */
+
+  // Edge-triggered so this fires once per above-threshold stretch, not on
+  // every render() call. Called from render() itself, after every state
+  // change — the same way renderQuotaBanner/renderOverageBanner already
+  // stay in sync with state.contactCount.
+  function checkProactiveNudge() {
+    const threshold = Math.ceil(CONFIG.contactLimit * CONFIG.proactiveNudgeThreshold);
+    // Only the 95%-to-100% band is this nudge's territory — at or under
+    // the limit, but close enough to warrant a heads-up. Already-breached
+    // accounts (> contactLimit) are the reactive overage banner's job.
+    const isInWarningBand = state.contactCount >= threshold && state.contactCount <= CONFIG.contactLimit;
+
+    if (!isInWarningBand) {
+      state.proactiveNudgeAcknowledged = false;
+      return;
+    }
+
+    const modalAlreadyOpen = financialInterceptOverlay.classList.contains('open');
+    const canInterrupt = state.view === 'contacts' && !modalAlreadyOpen;
+    if (state.proactiveNudgeAcknowledged || !canInterrupt) return;
+
+    // Latch immediately (not inside the timeout) so a second render() call
+    // firing before the delay elapses can't schedule a duplicate.
+    state.proactiveNudgeAcknowledged = true;
+    setTimeout(() => {
+      triageOrigin = 'proactive';
+      openInterceptModal(document.getElementById('breezeAssistantBtn'), renderProactiveNudgeScreen);
+    }, CONFIG.proactiveNudgeDelayMs);
+  }
+
+  // No pending selection led here, so — unlike renderInterceptWarningScreen
+  // — there's nothing to "accept the upgrade" on. The only actions that
+  // make sense are cleaning up now or dismissing until next time.
+  function renderProactiveNudgeScreen() {
+    // floor, not round — rounding 996/1,000 up to "100%" would read as
+    // already-at-limit right next to "996 of 1,000", which is wrong.
+    const pct = Math.floor((state.contactCount / CONFIG.contactLimit) * 100);
+
+    setInterceptTitle("Breeze noticed you're approaching your limit.");
+    financialInterceptBody.innerHTML = `
+      <p>You've used <strong>${state.contactCount.toLocaleString()}</strong> of ${CONFIG.contactLimit.toLocaleString()} marketing contacts (${pct}%). At this rate, converting even a few more contacts will trigger a ${CONFIG.overageMonthlyCostLabel}/month upgrade. Clean up low-value contacts now to stay comfortably under your limit.</p>
+      <div class="intercept-actions">
+        <button class="btn btn-primary-orange" id="optimizeDbBtn" type="button">Optimize Database</button>
+        <button class="btn btn-outline" id="dismissNudgeBtn" type="button">Dismiss</button>
+      </div>
+    `;
+
+    document.getElementById('optimizeDbBtn').addEventListener('click', () => {
+      triageOrigin = 'proactive';
+      runTriageAiScan();
+    });
+    document.getElementById('dismissNudgeBtn').addEventListener('click', closeInterceptModal);
+  }
+
   // ---- T8: the warning screen ----
   // The AI intercept only fires when converting the current selection
   // would actually breach the Marketing Contact limit — otherwise the
@@ -3564,10 +3639,10 @@
         'success',
         { undo: () => restoreContactsSnapshot(snapshot) }
       );
-    } else {
-      // Breach-recovery: the 100 contacts are already marketing (T11
-      // applied that immediately) — the cleanup is the only thing needed to
-      // drop back under the limit and cancel the pending upgrade.
+    } else if (triageOrigin === 'breach-recovery') {
+      // The 100 contacts are already marketing (T11 applied that
+      // immediately) — the cleanup is the only thing needed to drop back
+      // under the limit and cancel the pending upgrade.
       state.overageCountdownMinutes = null;
 
       state.optimize = null;
@@ -3575,6 +3650,17 @@
       navigateTo('contacts');
       showToast(
         `${cleanupSummary}. You're back under your limit — the ${CONFIG.overageMonthlyCostLabel}/mo upgrade has been avoided.`,
+        'success',
+        { undo: () => restoreContactsSnapshot(snapshot) }
+      );
+    } else {
+      // Proactive: nothing was pending and nothing had breached — Breeze
+      // flagged this ambiently, so the cleanup itself is the whole story.
+      state.optimize = null;
+      triageOrigin = null;
+      navigateTo('contacts');
+      showToast(
+        `${cleanupSummary}. You're now at ${state.contactCount.toLocaleString()} of ${CONFIG.contactLimit.toLocaleString()} marketing contacts — comfortably under your limit.`,
         'success',
         { undo: () => restoreContactsSnapshot(snapshot) }
       );
