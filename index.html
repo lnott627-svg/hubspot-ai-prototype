@@ -2326,7 +2326,13 @@
       },
       starter: {
         label: 'Starter Tier',
-        baseline: 950,
+        // High enough that converting most (not all) of the seed table's
+        // non-marketing contacts breaches the 1,000 limit and triggers the
+        // Breeze AI intercept directly — no need to run the full Import
+        // wizard just to see that flow. Converting 1-4 of the 6 available
+        // stays under the limit and applies immediately instead, so both
+        // demo paths are reachable from the unmodified seed data.
+        baseline: 996,
         counterLabel: 'marketing contacts'
       }
     },
