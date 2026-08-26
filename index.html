@@ -50,16 +50,19 @@
   /* ---------- Top navbar ---------- */
 
   .navbar {
-    height: 52px;
-    flex: 0 0 52px;
+    height: 44px;
+    flex: 0 0 44px;
     background: var(--navbar);
     display: flex;
     align-items: center;
-    gap: 18px;
-    padding: 0 14px;
+    gap: 12px;
+    padding: 0 12px;
     color: #cbd6e2;
     border-bottom: 1px solid var(--navbar-border);
   }
+
+  /* Shared sizing for the inline SVG line-icons across the top nav. */
+  .nb-ico { width: 18px; height: 18px; display: block; flex: 0 0 auto; }
 
   .brand { display: flex; align-items: center; gap: 4px; flex: 0 0 auto; }
 
@@ -67,24 +70,22 @@
 
   .brand .chev { font-size: 9px; color: #8496a8; }
 
+  /* White rounded search pill, magnifier on the right — matches HubSpot. */
   .navsearch {
-    flex: 0 1 340px;
+    flex: 0 1 400px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 8px;
-    background: #2c3641;
-    border: 1px solid #3d4854;
-    border-radius: var(--radius);
-    padding: 7px 12px;
-    font-size: 13px;
-    color: #97a8ba;
+    background: #ffffff;
+    border: 1px solid #cbd6e2;
+    border-radius: 18px;
+    padding: 5px 14px;
+    font-size: 13.5px;
+    color: #516f90;
   }
 
-  .navsearch .kbd {
-    margin-left: auto;
-    font-size: 11px;
-    color: #6d7f92;
-  }
+  .navsearch .nb-ico { color: #516f90; }
 
   .navbar-spacer { flex: 1; }
 
@@ -96,7 +97,7 @@
   }
 
   .nav-icon-btn {
-    width: 34px; height: 34px;
+    width: 30px; height: 30px;
     border: none;
     background: transparent;
     color: #b1c0d1;
@@ -108,6 +109,20 @@
   }
 
   .nav-icon-btn:hover { background: #2c3641; color: #fff; }
+
+  /* The circular outlined "create" (+) button, separate from search. */
+  .nav-create {
+    width: 30px; height: 30px;
+    flex: 0 0 auto;
+    border: 1px solid #55606c;
+    background: transparent;
+    color: #cfd8e3;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+  }
+
+  .nav-create:hover { background: #2c3641; color: #fff; border-color: #6b7783; }
 
   .nav-icon-btn .dot {
     position: absolute;
@@ -170,12 +185,16 @@
   .nav-account:hover { background: #2c3641; }
 
   .nav-account .avatar {
-    width: 24px; height: 24px;
+    width: 26px; height: 26px;
     border-radius: 50%;
-    background: #516f90;
+    background: #c7d0da;
     display: grid; place-items: center;
-    color: #fff; font-size: 11px; font-weight: 500;
+    color: #5b6b7c; overflow: hidden;
   }
+
+  .nav-account .avatar svg { width: 18px; height: 18px; display: block; }
+
+  .nav-account .chev { font-size: 9px; color: #8496a8; }
 
   /* ---------- Body: sidebar + main ---------- */
 
@@ -1265,31 +1284,83 @@
         <circle cx="27" cy="47" r="10" style="fill:var(--orange)" />
         <circle cx="68" cy="69" r="22" style="fill:none; stroke:var(--orange); stroke-width:9" />
       </svg>
-      <span class="chev">▾</span>
     </div>
 
     <div class="navsearch">
-      <span>⌕</span>
       <span>Find or Ask</span>
+      <svg class="nb-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <circle cx="9" cy="9" r="5.5" stroke="currentColor" stroke-width="1.5"/>
+        <line x1="13.2" y1="13.2" x2="17" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
     </div>
 
     <div class="navbar-spacer"></div>
 
     <div class="navbar-icons">
-      <button class="nav-icon-btn" type="button" title="Create">+</button>
-      <a class="nav-upgrade" href="#"><span>⬆</span> Upgrade</a>
+      <button class="nav-create" type="button" title="Create">
+        <svg class="nb-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <line x1="10" y1="5" x2="10" y2="15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <line x1="5" y1="10" x2="15" y2="10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <a class="nav-upgrade" href="#">
+        <svg class="nb-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10 13.5V6.7M7.2 9.5 10 6.7l2.8 2.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Upgrade
+      </a>
       <div class="navbar-divider"></div>
-      <button class="nav-icon-btn" type="button" title="Calling">☎</button>
-      <button class="nav-icon-btn" type="button" title="Marketplace">⌂</button>
-      <button class="nav-icon-btn" type="button" title="Help">?</button>
-      <button class="nav-icon-btn" type="button" title="Settings">⚙</button>
+      <button class="nav-icon-btn" type="button" title="Calling">
+        <svg class="nb-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M6.3 3.6c.4 0 .77.25.92.62l.86 2.1a1 1 0 0 1-.23 1.1l-.86.83a8 8 0 0 0 3.47 3.47l.83-.86a1 1 0 0 1 1.1-.23l2.1.86c.37.15.62.52.62.92v1.86A1.5 1.5 0 0 1 14 16.4 11.5 11.5 0 0 1 3.6 6a1.5 1.5 0 0 1 1.44-1.6z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="nav-icon-btn" type="button" title="Marketplace">
+        <svg class="nb-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M4.2 8.4V16h11.6V8.4" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+          <path d="M3 4.5h14l.9 2.9a2 2 0 0 1-3.87.7 2 2 0 0 1-3.86 0 2 2 0 0 1-3.86 0 2 2 0 0 1-3.87-.7L3 4.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+          <path d="M8.2 16v-3.4h3.6V16" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="nav-icon-btn" type="button" title="Help">
+        <svg class="nb-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M8.1 8a1.9 1.9 0 0 1 3.7.6c0 1.25-1.8 1.6-1.8 2.7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          <circle cx="10" cy="13.9" r=".9" fill="currentColor"/>
+        </svg>
+      </button>
+      <button class="nav-icon-btn" type="button" title="Settings">
+        <svg class="nb-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M8.45 2.6h3.1l.35 1.85c.46.16.9.42 1.28.74l1.8-.6 1.55 2.68-1.4 1.28c.05.24.07.5.07.75s-.02.51-.07.75l1.4 1.28-1.55 2.68-1.8-.6c-.38.32-.82.58-1.28.74l-.35 1.85h-3.1l-.35-1.85a5.4 5.4 0 0 1-1.28-.74l-1.8.6-1.55-2.68 1.4-1.28a5.5 5.5 0 0 1 0-1.5l-1.4-1.28 1.55-2.68 1.8.6c.38-.32.82-.58 1.28-.74L8.45 2.6z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+          <circle cx="10" cy="10" r="2.3" stroke="currentColor" stroke-width="1.3"/>
+        </svg>
+      </button>
       <button class="nav-icon-btn" type="button" title="Notifications">
-        🔔<span class="dot">10</span>
+        <svg class="nb-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M10 3a4.5 4.5 0 0 1 4.5 4.5c0 2.9 1 3.9 1.4 4.4H4.1c.4-.5 1.4-1.5 1.4-4.4A4.5 4.5 0 0 1 10 3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+          <path d="M8.4 15a1.6 1.6 0 0 0 3.2 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        <span class="dot">14</span>
       </button>
       <div class="navbar-divider"></div>
-      <a class="nav-assistant" href="#"><span class="spark">✦</span> Assistant</a>
+      <a class="nav-assistant" href="#">
+        <span class="spark">
+          <svg class="nb-ico" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path d="M9.5 2.5c.4 2.9 1.6 4.1 4.5 4.5-2.9.4-4.1 1.6-4.5 4.5-.4-2.9-1.6-4.1-4.5-4.5 2.9-.4 4.1-1.6 4.5-4.5z"/>
+            <path d="M15 11c.2 1.5.8 2.1 2.3 2.3-1.5.2-2.1.8-2.3 2.3-.2-1.5-.8-2.1-2.3-2.3 1.5-.2 2.1-.8 2.3-2.3z"/>
+          </svg>
+        </span>
+        Breeze Assistant
+      </a>
+      <div class="navbar-divider"></div>
       <button class="nav-account" type="button">
-        <span class="avatar">EM</span>
+        <span class="avatar">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <circle cx="12" cy="9" r="3.4"/>
+            <path d="M5.5 19c0-3 2.9-5 6.5-5s6.5 2 6.5 5z"/>
+          </svg>
+        </span>
         <span>En Media</span>
         <span class="chev">▾</span>
       </button>
