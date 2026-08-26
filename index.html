@@ -10,7 +10,8 @@
 <style>
   :root {
     --navbar:       #2e3338;
-    --sidebar:      var(--navbar);
+    --navbar-border:#3d4854;
+    --sidebar:      #2e3338;
     --sidebar-hover:rgba(255,255,255,.07);
     --sidebar-active:rgba(255,255,255,.14);
     --sidebar-text: #e4e8ed;
@@ -35,7 +36,7 @@
   body {
     margin: 0;
     font-family: var(--font);
-    font-weight: 300;
+    font-weight: 400;
     color: var(--text);
     background: var(--bg);
     -webkit-font-smoothing: antialiased;
@@ -49,15 +50,19 @@
   /* ---------- Top navbar ---------- */
 
   .navbar {
-    height: 52px;
-    flex: 0 0 52px;
+    height: 44px;
+    flex: 0 0 44px;
     background: var(--navbar);
     display: flex;
     align-items: center;
-    gap: 18px;
-    padding: 0 14px;
+    gap: 12px;
+    padding: 0 12px;
     color: #cbd6e2;
+    border-bottom: 1px solid var(--navbar-border);
   }
+
+  /* Shared sizing for the inline SVG line-icons across the top nav. */
+  .nb-ico { width: 18px; height: 18px; display: block; flex: 0 0 auto; }
 
   .brand { display: flex; align-items: center; gap: 4px; flex: 0 0 auto; }
 
@@ -65,24 +70,22 @@
 
   .brand .chev { font-size: 9px; color: #8496a8; }
 
+  /* White rounded search pill, magnifier on the right — matches HubSpot. */
   .navsearch {
-    flex: 0 1 340px;
+    flex: 0 1 400px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 8px;
-    background: #2c3641;
-    border: 1px solid #3d4854;
-    border-radius: var(--radius);
-    padding: 7px 12px;
-    font-size: 13px;
-    color: #97a8ba;
+    background: #ffffff;
+    border: 1px solid #cbd6e2;
+    border-radius: 18px;
+    padding: 5px 14px;
+    font-size: 13.5px;
+    color: #516f90;
   }
 
-  .navsearch .kbd {
-    margin-left: auto;
-    font-size: 11px;
-    color: #6d7f92;
-  }
+  .navsearch .nb-ico { color: #516f90; }
 
   .navbar-spacer { flex: 1; }
 
@@ -94,7 +97,7 @@
   }
 
   .nav-icon-btn {
-    width: 34px; height: 34px;
+    width: 30px; height: 30px;
     border: none;
     background: transparent;
     color: #b1c0d1;
@@ -106,6 +109,20 @@
   }
 
   .nav-icon-btn:hover { background: #2c3641; color: #fff; }
+
+  /* The circular outlined "create" (+) button, separate from search. */
+  .nav-create {
+    width: 30px; height: 30px;
+    flex: 0 0 auto;
+    border: 1px solid #55606c;
+    background: transparent;
+    color: #cfd8e3;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+  }
+
+  .nav-create:hover { background: #2c3641; color: #fff; border-color: #6b7783; }
 
   .nav-icon-btn .dot {
     position: absolute;
@@ -158,6 +175,8 @@
     align-items: center;
     gap: 7px;
     padding: 5px 8px 5px 5px;
+    border: none;
+    background: transparent;
     border-radius: var(--radius);
     font-size: 13px;
     color: #d6dee6;
@@ -166,16 +185,20 @@
   .nav-account:hover { background: #2c3641; }
 
   .nav-account .avatar {
-    width: 24px; height: 24px;
+    width: 26px; height: 26px;
     border-radius: 50%;
-    background: #516f90;
+    background: #c7d0da;
     display: grid; place-items: center;
-    color: #fff; font-size: 11px; font-weight: 500;
+    color: #5b6b7c; overflow: hidden;
   }
+
+  .nav-account .avatar svg { width: 18px; height: 18px; display: block; }
+
+  .nav-account .chev { font-size: 9px; color: #8496a8; }
 
   /* ---------- Body: sidebar + main ---------- */
 
-  .body { flex: 1; display: flex; min-height: 0; }
+  .body { flex: 1; display: flex; min-height: 0; background: var(--bg); }
 
   .sidebar {
     width: 220px;
@@ -191,7 +214,9 @@
   .nav { display: flex; flex-direction: column; gap: 1px; }
 
   .nav-item {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     padding: 8px 12px;
     font-size: 13.5px;
     font-weight: 400;
@@ -199,12 +224,19 @@
     border-radius: var(--radius);
   }
 
+  .nav-ico {
+    width: 18px; height: 18px;
+    flex: 0 0 18px;
+    /* stroke uses currentColor, so the icon follows the item's
+       text color through hover/active states */
+  }
+
   .nav-item:hover { background: var(--sidebar-hover); }
 
   .nav-item.active {
     background: var(--sidebar-active);
     color: #fff;
-    font-weight: 500;
+    font-weight: 600;
   }
 
   .nav-item .caret {
@@ -216,12 +248,14 @@
   .nav-more {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 10px;
     padding: 8px 12px;
     font-size: 13.5px;
     color: var(--sidebar-text);
     border-radius: var(--radius);
   }
+
+  .nav-more .caret { margin-left: auto; }
 
   .nav-more:hover { background: var(--sidebar-hover); }
 
@@ -257,7 +291,15 @@
 
   /* ---------- Main ---------- */
 
-  .main { flex: 1; min-width: 0; overflow-y: auto; }
+  .main {
+    flex: 1;
+    min-width: 0;
+    overflow-y: auto;
+    margin: 12px;                 /* gutter on all sides, incl. sidebar side */
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
 
   .page-header {
     display: flex;
@@ -271,7 +313,7 @@
     align-items: center;
     gap: 6px;
     font-size: 22px;
-    font-weight: 500;
+    font-weight: 600;
     color: #1e2a35;
     letter-spacing: -.2px;
   }
@@ -338,7 +380,7 @@
   .tab.active {
     color: #1e2a35;
     font-weight: 500;
-    border-bottom-color: #ff7a59;
+    border-bottom-color: #1e2a35;
   }
 
   .tab-add {
@@ -384,6 +426,23 @@
   .pill:hover { background: #f5f8fa; }
   .pill .caret { font-size: 9px; color: var(--text-muted); }
 
+  /* Borderless text dropdowns — the secondary filters HubSpot renders
+     without a button chrome, just a label + caret with a subtle hover. */
+  .filter-text {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 10px;
+    font-size: 13px;
+    color: var(--text);
+    border: none;
+    background: transparent;
+    border-radius: var(--radius);
+  }
+
+  .filter-text:hover { background: #f5f8fa; }
+  .filter-text .caret { font-size: 9px; color: var(--text); }
+
   .toolbar-divider {
     width: 1px; height: 20px;
     background: var(--border);
@@ -402,6 +461,8 @@
   }
 
   .toolbar-icon:hover { background: #f5f8fa; border-color: var(--border); }
+
+  .toolbar-icon.round { border-radius: 50%; }
 
   .adv-filters { font-size: 13px; color: var(--link); }
   .adv-filters:hover { text-decoration: underline; }
@@ -769,7 +830,7 @@
   .th-sort .arrow { font-size: 10px; }
 
   tbody td {
-    padding: 11px 16px;
+    padding: 14px 16px;
     font-size: 13.5px;
     border-bottom: 1px solid #edf2f7;
     white-space: nowrap;
@@ -785,6 +846,8 @@
   }
 
   .who { display: flex; align-items: center; gap: 10px; }
+
+  .row-chev { color: var(--text-muted); font-size: 11px; flex: 0 0 auto; }
 
   .avatar {
     width: 26px; height: 26px;
@@ -946,9 +1009,29 @@
     pointer-events: none;
     transition: opacity .2s ease, transform .2s ease;
     z-index: 60;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    max-width: 480px;
   }
 
-  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+
+  .toast-message { line-height: 1.4; }
+
+  .toast-undo-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+  .toast-undo-btn:hover { opacity: .85; }
 
   .btn-outline { background: #fff; color: var(--text); border: 1px solid #cbd6e2; }
   .btn-outline:hover { background: #f5f8fa; }
@@ -961,7 +1044,10 @@
 
   .intercept-body { padding: 18px; display: flex; flex-direction: column; gap: 14px; }
   .intercept-body p { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--text); }
-  .intercept-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .intercept-actions { display: flex; align-items: stretch; gap: 12px; flex-wrap: nowrap; }
+  /* Both actions share the row equally so they read as one paired choice
+     rather than a primary CTA with a wrapped afterthought beneath it. */
+  .intercept-actions .btn { flex: 1 1 0; min-width: 0; text-align: center; }
 
   /* ---------- AI scan loading + triage dashboard (T9) ---------- */
 
@@ -995,35 +1081,145 @@
     color: #9a5b13;
   }
 
-  .triage-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 10px 12px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
+  /* ---------- Optimize Database page (T9, redesigned as a dedicated page
+     rather than an in-modal checklist — every record is individually
+     selectable, not just bulk-actioned by category) ---------- */
+
+  .opt-db-dialogue-card { padding: 16px 18px; margin-bottom: 16px; }
+
+  .opt-db-section {
+    margin-bottom: 16px;
   }
 
-  .triage-check { margin-top: 3px; width: 15px; height: 15px; accent-color: var(--orange); flex: 0 0 auto; }
-  .triage-label { font-size: 13.5px; color: var(--text); line-height: 1.4; }
-  .triage-note { display: block; font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-
-  /* ---------- Marketing contact overage banner (T11) ---------- */
-
-  .overage-banner {
-    flex: 0 0 auto;
+  .opt-db-section-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
-    padding: 12px 28px;
-    background: #fff7ed;
-    border-bottom: 1px solid #fed7aa;
-    font-size: 14px;
-    color: #7a4a12;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
   }
 
-  .overage-countdown { margin-left: 10px; font-weight: 600; color: #9a5b13; }
+  .opt-db-select-all-label { display: flex; align-items: center; gap: 9px; cursor: pointer; }
+  .opt-db-select-all { width: 15px; height: 15px; accent-color: var(--orange); flex: 0 0 auto; }
+  .opt-db-section-title { font-size: 14px; font-weight: 600; color: var(--text); }
+  .opt-db-section-reason { font-size: 12px; color: var(--text-muted); }
+
+  .opt-db-list { max-height: 260px; overflow-y: auto; }
+
+  .opt-db-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 16px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .opt-db-row:last-child { border-bottom: none; }
+  .opt-db-row:hover { background: #f8fafc; }
+
+  .opt-db-row-check { width: 15px; height: 15px; accent-color: var(--orange); flex: 0 0 auto; }
+  .opt-db-row-avatar {
+    width: 22px; height: 22px; flex: 0 0 22px;
+    border-radius: 50%;
+    background: #dfe3eb;
+    color: #516f90;
+    display: grid; place-items: center;
+    font-size: 9.5px; font-weight: 600;
+  }
+  .opt-db-row-name { font-size: 13px; color: var(--text); font-weight: 500; flex: 0 0 auto; white-space: nowrap; }
+  .opt-db-row-email {
+    font-size: 12.5px;
+    color: var(--link);
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .opt-db-row-reason { font-size: 11.5px; color: var(--text-muted); flex: 0 0 auto; white-space: nowrap; }
+
+  .opt-db-footer {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 28px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .opt-db-footer-count { font-size: 13.5px; font-weight: 600; color: var(--text); }
+
+  /* ---------- Native delete-confirmation dialog (a deliberate borrow from
+     real HubSpot's own bulk-delete guard) — requires typing the exact
+     record count before Delete enables. This is the one failsafe between
+     an AI-selected batch and an irreversible action. ---------- */
+
+  .confirm-modal {
+    width: 100%;
+    max-width: 480px;
+    background: var(--surface);
+    border-radius: 12px;
+    box-shadow: var(--shadow-modal);
+    overflow: hidden;
+    transform: translateY(10px) scale(.985);
+    transition: transform .18s ease;
+  }
+  .overlay.open .confirm-modal { transform: none; }
+
+  .confirm-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 24px 24px 0;
+  }
+  .confirm-modal-title { margin: 0; font-size: 22px; font-weight: 700; color: #1e2a35; line-height: 1.3; }
+
+  .confirm-modal-body { padding: 18px 24px 24px; }
+  .confirm-modal-body p { margin: 0 0 18px; font-size: 13.5px; line-height: 1.55; color: var(--text); }
+
+  .confirm-modal-input-label { display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+  .confirm-modal-input {
+    width: 100%;
+    padding: 9px 12px;
+    font-size: 14px;
+    border: 1px solid #cbd6e2;
+    border-radius: 4px;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+  .confirm-modal-input:focus { outline: 2px solid var(--orange); outline-offset: 1px; }
+
+  .confirm-modal-actions { display: flex; align-items: center; gap: 8px; }
+
+  .btn-danger { background: #dc2626; color: #fff; }
+  .btn-danger:hover { background: #b91c1c; }
+  .btn-danger:disabled { background: #e5e9ee; color: #9aa7b5; cursor: default; }
+
+  /* Breeze's diagnostic dialogue — the sentence(s) the live model writes,
+     shown above the remediation rows. Falls back to a canned line when the
+     AI is unavailable, so this style is used in both paths. */
+  .breeze-attrib {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 7px;
+  }
+  .breeze-attrib .breeze-attrib-dot { font-size: 12px; line-height: 1; }
+  .breeze-dialogue {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--text);
+    margin: 0 0 14px;
+  }
 
   .toast.success { background: #17663f; }
   .toast.warning { background: #a3510c; }
@@ -1068,25 +1264,6 @@
   }
 
   /* ---------- Quota usage banner ---------- */
-  /* A full-width strip between the top nav and the page body, showing how
-     close the account is to its record limit. Its numbers come from
-     render() — see renderQuotaBanner() in the script below. */
-
-  .quota-banner {
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 12px 28px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    font-size: 14px;
-    color: var(--text);
-  }
-
-  .quota-banner-text strong { font-weight: 600; }
-
   @media (max-width: 900px) {
     .sidebar { display: none; }
     .navsearch { display: none; }
@@ -1107,72 +1284,207 @@
         <circle cx="27" cy="47" r="10" style="fill:var(--orange)" />
         <circle cx="68" cy="69" r="22" style="fill:none; stroke:var(--orange); stroke-width:9" />
       </svg>
-      <span class="chev">▾</span>
     </div>
 
     <div class="navsearch">
-      <span>⌕</span>
       <span>Find or Ask</span>
+      <svg class="nb-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <circle cx="9" cy="9" r="5.5" stroke="currentColor" stroke-width="1.5"/>
+        <line x1="13.2" y1="13.2" x2="17" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
     </div>
 
     <div class="navbar-spacer"></div>
 
     <div class="navbar-icons">
-      <button class="nav-icon-btn" type="button" title="Create">+</button>
-      <a class="nav-upgrade" href="#"><span>⬆</span> Upgrade</a>
+      <button class="nav-create" type="button" title="Create">
+        <svg class="nb-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <line x1="10" y1="5" x2="10" y2="15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <line x1="5" y1="10" x2="15" y2="10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <a class="nav-upgrade" href="#">
+        <svg class="nb-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M10 13.5V6.7M7.2 9.5 10 6.7l2.8 2.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Upgrade
+      </a>
       <div class="navbar-divider"></div>
-      <button class="nav-icon-btn" type="button" title="Calling">☎</button>
-      <button class="nav-icon-btn" type="button" title="Marketplace">⌂</button>
-      <button class="nav-icon-btn" type="button" title="Help">?</button>
-      <button class="nav-icon-btn" type="button" title="Settings">⚙</button>
+      <button class="nav-icon-btn" type="button" title="Calling">
+        <svg class="nb-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M6.3 3.6c.4 0 .77.25.92.62l.86 2.1a1 1 0 0 1-.23 1.1l-.86.83a8 8 0 0 0 3.47 3.47l.83-.86a1 1 0 0 1 1.1-.23l2.1.86c.37.15.62.52.62.92v1.86A1.5 1.5 0 0 1 14 16.4 11.5 11.5 0 0 1 3.6 6a1.5 1.5 0 0 1 1.44-1.6z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="nav-icon-btn" type="button" title="Marketplace">
+        <svg class="nb-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M4.2 8.4V16h11.6V8.4" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+          <path d="M3 4.5h14l.9 2.9a2 2 0 0 1-3.87.7 2 2 0 0 1-3.86 0 2 2 0 0 1-3.86 0 2 2 0 0 1-3.87-.7L3 4.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+          <path d="M8.2 16v-3.4h3.6V16" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="nav-icon-btn" type="button" title="Help">
+        <svg class="nb-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <circle cx="10" cy="10" r="7.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M8.1 8a1.9 1.9 0 0 1 3.7.6c0 1.25-1.8 1.6-1.8 2.7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          <circle cx="10" cy="13.9" r=".9" fill="currentColor"/>
+        </svg>
+      </button>
+      <button class="nav-icon-btn" type="button" title="Settings">
+        <svg class="nb-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M8.45 2.6h3.1l.35 1.85c.46.16.9.42 1.28.74l1.8-.6 1.55 2.68-1.4 1.28c.05.24.07.5.07.75s-.02.51-.07.75l1.4 1.28-1.55 2.68-1.8-.6c-.38.32-.82.58-1.28.74l-.35 1.85h-3.1l-.35-1.85a5.4 5.4 0 0 1-1.28-.74l-1.8.6-1.55-2.68 1.4-1.28a5.5 5.5 0 0 1 0-1.5l-1.4-1.28 1.55-2.68 1.8.6c.38-.32.82-.58 1.28-.74L8.45 2.6z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+          <circle cx="10" cy="10" r="2.3" stroke="currentColor" stroke-width="1.3"/>
+        </svg>
+      </button>
       <button class="nav-icon-btn" type="button" title="Notifications">
-        🔔<span class="dot">10</span>
+        <svg class="nb-ico" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M10 3a4.5 4.5 0 0 1 4.5 4.5c0 2.9 1 3.9 1.4 4.4H4.1c.4-.5 1.4-1.5 1.4-4.4A4.5 4.5 0 0 1 10 3z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+          <path d="M8.4 15a1.6 1.6 0 0 0 3.2 0" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        <span class="dot">14</span>
       </button>
       <div class="navbar-divider"></div>
-      <a class="nav-assistant" href="#"><span class="spark">✦</span> Assistant</a>
+      <a class="nav-assistant" href="#">
+        <span class="spark">
+          <svg class="nb-ico" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path d="M9.5 2.5c.4 2.9 1.6 4.1 4.5 4.5-2.9.4-4.1 1.6-4.5 4.5-.4-2.9-1.6-4.1-4.5-4.5 2.9-.4 4.1-1.6 4.5-4.5z"/>
+            <path d="M15 11c.2 1.5.8 2.1 2.3 2.3-1.5.2-2.1.8-2.3 2.3-.2-1.5-.8-2.1-2.3-2.3 1.5-.2 2.1-.8 2.3-2.3z"/>
+          </svg>
+        </span>
+        Breeze Assistant
+      </a>
+      <div class="navbar-divider"></div>
       <button class="nav-account" type="button">
-        <span class="avatar">EM</span>
+        <span class="avatar">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <circle cx="12" cy="9" r="3.4"/>
+            <path d="M5.5 19c0-3 2.9-5 6.5-5s6.5 2 6.5 5z"/>
+          </svg>
+        </span>
         <span>En Media</span>
         <span class="chev">▾</span>
       </button>
     </div>
   </header>
 
-  <!-- ============ Quota usage banner ============ -->
-  <div class="quota-banner" id="quotaBanner">
-    <div class="quota-banner-text" id="quotaBannerText"></div>
-    <button class="btn btn-outline" id="quotaUpgradeBtn" type="button">Upgrade</button>
-  </div>
-
-  <!-- ============ Marketing contact overage banner (T11, NEW) ============ -->
-  <!-- Hidden whenever state.contactCount is at or under CONFIG.contactLimit. -->
-  <div class="overage-banner" id="overageBanner" hidden>
-    <div class="overage-banner-text">
-      <span id="overageBannerText"></span>
-      <span class="overage-countdown" id="overageCountdown"></span>
-    </div>
-    <button class="btn btn-dark btn-sm" id="freeUpCapacityBtn" type="button">Free up capacity</button>
-  </div>
-
   <div class="body">
 
     <!-- ============ Sidebar ============ -->
     <aside class="sidebar" id="appSidebar">
       <nav class="nav">
-        <a class="nav-item" href="#">Home</a>
-        <a class="nav-item active" href="#" id="sidebarContactsItem">Contacts</a>
-        <a class="nav-item" href="#">Companies</a>
-        <a class="nav-item" href="#">Deals</a>
-        <a class="nav-item" href="#">AEO</a>
-        <a class="nav-item" href="#">Marketing Emails</a>
-        <a class="nav-item" href="#">Segments</a>
-        <a class="nav-item" href="#">Forms</a>
-        <a class="nav-item" href="#">Website Pages</a>
-        <a class="nav-item" href="#">Blog</a>
-        <a class="nav-item" href="#">Dashboards</a>
-        <div class="nav-more">Campaigns <span class="caret">↑</span></div>
-        <div class="nav-more">Workflows <span class="caret">↑</span></div>
-        <div class="nav-more">More <span class="caret">›</span></div>
+        <a class="nav-item" href="#">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M3 9.5 10 4l7 5.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4.5 8.5V16h11V8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8.5 16v-4h3v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Home
+        </a>
+        <a class="nav-item active" href="#" id="sidebarContactsItem">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="10" cy="7" r="2.75" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M4.5 16c0-2.6 2.46-4.5 5.5-4.5s5.5 1.9 5.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Contacts
+        </a>
+        <a class="nav-item" href="#">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M4 16.5V4.5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v12" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M12 8.5h3a1 1 0 0 1 1 1v7" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M2.5 16.5h15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M6.5 6.5h3M6.5 9.5h3M6.5 12.5h3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Companies
+        </a>
+        <a class="nav-item" href="#">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M10.5 3.5H5a1.5 1.5 0 0 0-1.5 1.5v5.5c0 .4.16.78.44 1.06l5 5a1.5 1.5 0 0 0 2.12 0l4.94-4.94a1.5 1.5 0 0 0 0-2.12l-5-5A1.5 1.5 0 0 0 10.5 3.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <circle cx="7.5" cy="7.5" r="1.1" fill="currentColor"/>
+          </svg>
+          Deals
+        </a>
+        <a class="nav-item" href="#">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M4.5 8.5 13 5v10L4.5 11.5H3.5a1 1 0 0 1-1-1v-1a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M13 6.5a2.5 2.5 0 0 1 0 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M5.5 11.5 6.5 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          AEO
+        </a>
+        <a class="nav-item" href="#">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="3" y="5" width="14" height="10" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            <path d="m3.5 6 6.5 5 6.5-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Marketing Emails
+        </a>
+        <a class="nav-item" href="#">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M3 6.5 10 3l7 3.5-7 3.5-7-3.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="m3 10 7 3.5L17 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="m3 13.5 7 3.5 7-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Segments
+        </a>
+        <a class="nav-item" href="#">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="4.5" y="3" width="11" height="14" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M8 3.5h4v2H8z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+            <path d="M7.5 9h5M7.5 12h5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Forms
+        </a>
+        <a class="nav-item" href="#">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="3" y="4" width="14" height="12" rx="1" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M3 7.5h14" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="5.3" cy="5.75" r=".6" fill="currentColor"/>
+            <circle cx="7.1" cy="5.75" r=".6" fill="currentColor"/>
+          </svg>
+          Website Pages
+        </a>
+        <a class="nav-item" href="#">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M5 3.5h6l4 4V16a.5.5 0 0 1-.5.5h-9A.5.5 0 0 1 5 16V4a.5.5 0 0 1 .5-.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M11 3.5V7h3.5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="m8 14 1.2-.3 4-4-1-1-4 4z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+          </svg>
+          Blog
+        </a>
+        <a class="nav-item" href="#">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M3 16.5h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <rect x="4" y="9" width="2.6" height="5" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <rect x="8.7" y="6" width="2.6" height="8" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <rect x="13.4" y="4" width="2.6" height="10" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+          Dashboards
+        </a>
+        <div class="nav-more">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="10" cy="10" r="6.5" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="10" cy="10" r=".8" fill="currentColor"/>
+          </svg>
+          Campaigns <span class="caret">↑</span>
+        </div>
+        <div class="nav-more">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="5" cy="5" r="1.8" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="5" cy="15" r="1.8" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="15" cy="10" r="1.8" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M6.8 5H12a1.5 1.5 0 0 1 1.5 1.5v2M6.8 15H12a1.5 1.5 0 0 0 1.5-1.5v-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Workflows <span class="caret">↑</span>
+        </div>
+        <div class="nav-more">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="4.5" cy="10" r="1.1" fill="currentColor"/>
+            <circle cx="10" cy="10" r="1.1" fill="currentColor"/>
+            <circle cx="15.5" cy="10" r="1.1" fill="currentColor"/>
+          </svg>
+          More <span class="caret">›</span>
+        </div>
       </nav>
 
       <div class="sidebar-fill"></div>
@@ -1218,13 +1530,13 @@
         <div class="pill">☰ Filter</div>
         <div class="pill">↕ Sort by</div>
         <div class="toolbar-divider"></div>
-        <div class="pill">Contact owner <span class="caret">▾</span></div>
-        <div class="pill">Create date <span class="caret">▾</span></div>
-        <div class="pill">Last activity date <span class="caret">▾</span></div>
-        <div class="pill">Lead status <span class="caret">▾</span></div>
+        <div class="filter-text">Contact owner <span class="caret">▾</span></div>
+        <div class="filter-text">Create date <span class="caret">▾</span></div>
+        <div class="filter-text">Last activity date <span class="caret">▾</span></div>
+        <div class="filter-text">Lead status <span class="caret">▾</span></div>
         <button class="pill" id="marketingStatusFilterBtn" type="button">Marketing contact status: All <span class="caret">▾</span></button>
-        <button class="toolbar-icon" type="button">+</button>
-        <button class="toolbar-icon" type="button">✎</button>
+        <button class="toolbar-icon round" type="button">+</button>
+        <button class="toolbar-icon round" type="button">✎</button>
         <a class="adv-filters" href="#">Advanced filters</a>
         <div class="toolbar-spacer"></div>
         <button class="toolbar-icon" type="button">▦</button>
@@ -1611,14 +1923,54 @@
       </div>
       <!-- /Import detail page -->
 
+      <!-- ============ Optimize Database page (T9, NEW — redesigned) ============ -->
+      <!-- Reached from the "Optimize Database" warning-screen button. Breeze's
+           scan still runs in the intercept modal (see runTriageAiScan) — this
+           is where its result lands: a full page, not a checklist inside a
+           modal, so every record behind a bulk action can be individually
+           reviewed and selected rather than accepted as an anonymous count. -->
+      <div class="page" id="optimizeDatabasePage" hidden>
+
+        <div class="page-header">
+          <div>
+            <a class="id-breadcrumb" href="#" id="optDbBackLink">‹ Back to Contacts</a>
+            <div class="page-title">Optimize Database</div>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <div class="card opt-db-dialogue-card">
+            <div class="breeze-attrib"><span class="breeze-attrib-dot">✦</span> Breeze diagnosis</div>
+            <p class="breeze-dialogue" id="optDbDialogue"></p>
+            <div class="triage-banner">
+              <svg width="15" height="15" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex:0 0 auto;margin-top:1px">
+                <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/>
+                <line x1="10" y1="9" x2="10" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="10" cy="6.3" r="1" fill="currentColor" stroke="none"/>
+              </svg>
+              <span>Setting contacts to "Non-Marketing" does not free up your quota until your next monthly renewal date. Only permanent deletion or merging frees up capacity today.</span>
+            </div>
+          </div>
+
+          <div id="optDbSections"></div>
+        </div>
+
+        <div class="opt-db-footer">
+          <span class="opt-db-footer-count" id="optDbFooterCount">0 selected</span>
+          <button class="btn btn-primary-orange" id="optDbActionBtn" type="button" disabled>Select contacts to optimize</button>
+        </div>
+
+      </div>
+      <!-- /Optimize Database page -->
+
     </main>
   </div>
 </div>
 
-<!-- ============ Financial intercept + triage modal (T8–T9, NEW) ============ -->
-<!-- One modal shell reused across steps: T8's warning screen and T9's
-     triage dashboard are both rendered into #financialInterceptBody, the
-     same way the app's earlier flow screens swapped content in place. -->
+<!-- ============ Financial intercept modal (T8) ============ -->
+<!-- Just the warning screen and the AI-scanning transition now — T9's
+     result renders as a full page (#optimizeDatabasePage) instead of into
+     this modal; see runTriageAiScan / enterOptimizeDatabasePage. -->
 <div class="overlay" id="financialInterceptOverlay" role="dialog" aria-modal="true" aria-labelledby="financialInterceptTitle">
   <div class="modal" style="max-width:520px">
 
@@ -1631,6 +1983,31 @@
     </div>
 
     <div class="intercept-body" id="financialInterceptBody"></div>
+
+  </div>
+</div>
+
+<!-- ============ Native delete-confirmation dialog (NEW) ============ -->
+<!-- Modeled on HubSpot's real bulk-delete guard: the user must type the
+     exact record count before the action commits. Opened from the
+     Optimize Database page's action button. -->
+<div class="overlay" id="deleteConfirmOverlay" role="dialog" aria-modal="true" aria-labelledby="deleteConfirmTitle">
+  <div class="confirm-modal">
+
+    <div class="confirm-modal-header">
+      <h2 class="confirm-modal-title" id="deleteConfirmTitle"></h2>
+      <button class="modal-close" id="deleteConfirmClose" type="button" aria-label="Close">×</button>
+    </div>
+
+    <div class="confirm-modal-body">
+      <p id="deleteConfirmBody"></p>
+      <label class="confirm-modal-input-label" for="deleteConfirmInput">Type the number of records below to delete</label>
+      <input type="text" inputmode="numeric" autocomplete="off" class="confirm-modal-input" id="deleteConfirmInput" placeholder="0" />
+      <div class="confirm-modal-actions">
+        <button class="btn btn-danger" id="deleteConfirmBtn" type="button" disabled>Delete</button>
+        <button class="btn btn-outline" id="deleteConfirmCancelBtn" type="button">Cancel</button>
+      </div>
+    </div>
 
   </div>
 </div>
@@ -1670,9 +2047,6 @@
       }
     },
 
-    // The product name the quota banner offers as the upgrade path.
-    bannerUpgradeProduct: 'Starter Customer Platform',
-
     // The 8 contacts the table always starts with, regardless of mode.
     // marketingStatus tags each contact as 'Marketing' or 'Non-marketing'.
     // The 8 seed contacts represent the existing marketing base — records
@@ -1698,17 +2072,81 @@
       fileSizeLabel: '6.1 KB' // approximate — not shown in any reference, just plausible flavor text
     },
 
-    // T9's triage categories — drawn from the existing marketing base
-    // (engagement data), not the newly imported non-marketing contacts.
+    // T9's remediation catalogue — the canonical list of cleanup actions
+    // Breeze can offer, drawn from the existing marketing base (engagement
+    // data), not the newly imported non-marketing contacts.
+    //
+    // IMPORTANT (this is what keeps the live-AI build bulletproof): `count`
+    // and `action_id` are the SINGLE SOURCE OF TRUTH for how much quota each
+    // action frees. The live model only ever chooses *which* of these to
+    // offer and writes the surrounding prose — it never invents the numbers.
+    // Whatever chips come back from the model are mapped straight back onto
+    // these entries by action_id, so the math on screen is always ours.
+    //
     // A fresh "checked" copy of this is built each time the screen opens.
+    //   type: 'delete' → permanently removes records (frees quota today)
+    //   type: 'merge'  → collapses duplicates into one (also frees quota)
     triageCategories: [
-      { count: 30, label: '30 Hard Bounced Contacts',  detail: 'Permanently failed email delivery' },
-      { count: 25, label: '25 Unengaged Contacts',     detail: 'Zero opens, clicks, or site visits in the last 12 months' }
+      { action_id: 'purge_bounced',   count: 30, type: 'delete', label: '30 Hard Bounced Contacts', detail: 'Permanently failed email delivery' },
+      { action_id: 'purge_unengaged', count: 25, type: 'delete', label: '25 Unengaged Contacts',     detail: 'Zero opens, clicks, or site visits in the last 12 months' },
+      { action_id: 'merge_dupes',     count: 20, type: 'merge',  label: 'Merge 20 Duplicate Contacts', detail: 'Same email address across multiple records — merged into one' }
+    ],
+
+    // Live-AI tuning. timeoutMs caps how long we wait for Breeze before
+    // silently falling back to the canned triage; minScanMs keeps the
+    // "scanning…" animation on screen long enough to read even when the
+    // model (or the fallback) resolves almost instantly.
+    ai: {
+      endpoint: '/api/diagnose',
+      timeoutMs: 2500,
+      minScanMs: 1100
+    },
+
+    // A pool of plausible name/company pairs used to generate realistic-
+    // looking rows for a triage category's contact-level drill-down (T9's
+    // "Preview N contacts"). These are flavor text, not real records — the
+    // only real rows in this demo live in state.contacts — they exist so a
+    // reviewer can see *what kind* of record a bulk action would touch
+    // before committing to it, the same way a careful human would ask
+    // "wait, show me which ones" before approving a bulk delete.
+    contactPreviewPool: [
+      { name: 'Owen Bradley',     company: 'Harborline Freight' },
+      { name: 'Sana Farouk',      company: 'Cedarwood Interiors' },
+      { name: 'Miguel Santos',    company: 'Rialto Foods' },
+      { name: 'Ingrid Lindqvist', company: 'Polar Data Systems' },
+      { name: 'Chidi Okeke',      company: 'Zenith Consulting' },
+      { name: 'Hana Kobayashi',   company: 'Origami Studio' },
+      { name: 'Lucas Ferreira',   company: 'Bravo Construction' },
+      { name: 'Aisha Rahman',     company: 'Northgate Realty' },
+      { name: 'Erik Johansson',   company: 'Fjellstrand AS' },
+      { name: 'Camila Ruiz',      company: 'Solmar Hospitality' },
+      { name: 'Declan Murphy',    company: 'Emerald Fields Co.' },
+      { name: 'Yuna Park',        company: 'Hanbit Studio' },
+      { name: 'Thabo Nkosi',      company: 'Baobab Logistics' },
+      { name: 'Freya Andersen',   company: 'Nordlys Design' },
+      { name: 'Rahul Mehta',      company: 'Indigo Softworks' },
+      { name: 'Chloe Martin',     company: 'Lumiere Events' },
+      { name: 'Adam Kowalski',    company: 'Wisla Manufacturing' },
+      { name: 'Zainab Hussain',   company: 'Crescent Retail Group' },
+      { name: 'Noah Bergstrom',   company: 'Skogsvik Timber' },
+      { name: 'Isabela Costa',    company: 'Praia Marketing' },
+      { name: 'Farid Karimi',     company: 'Sahara Robotics' },
+      { name: 'Grace OConnell',   company: 'Kildare Analytics' },
+      { name: 'Wei Zhang',        company: 'Lantern Trade Co.' },
+      { name: 'Marta Nowak',      company: 'Baltyk Shipping' }
     ],
 
     // T11's countdown is illustrative, not tied to a real clock — this is
     // just a plausible "hours left until midnight" starting point.
-    overageCountdownSeedMinutes: 615 // ~10h 15m — breach at roughly 1:45 PM
+    overageCountdownSeedMinutes: 615, // ~10h 15m — breach at roughly 1:45 PM
+
+    // The monthly cost of breaching the marketing-contact limit. HubSpot
+    // sells additional marketing contacts for Marketing Hub Starter in
+    // blocks of 1,000 at US$50/mo each — crossing the included 1,000 by
+    // even one contact triggers the full $50 block, not a pro-rated
+    // amount. Every dollar figure in the flow reads from here so the
+    // number stays sourced and single-origin.
+    overageMonthlyCostLabel: '$50'
   };
 
   /* =========================================================================
@@ -1754,26 +2192,8 @@
 
   function render() {
     renderPage();
-    renderQuotaBanner();
     renderCounterPill();
     renderContactsTable();
-    renderOverageBanner();
-  }
-
-  // Shows the amber "over your limit" banner whenever the marketing
-  // count exceeds the tier limit (T11) — hidden the rest of the time.
-  function renderOverageBanner() {
-    const overage = state.contactCount - CONFIG.contactLimit;
-    const isOverLimit = overage > 0;
-    document.getElementById('overageBanner').hidden = !isOverLimit;
-    if (!isOverLimit) return;
-
-    document.getElementById('overageBannerText').textContent =
-      `You're ${overage.toLocaleString()} marketing contacts over your limit. Free up capacity before 12:00 AM to avoid a $45/month upgrade.`;
-
-    const hours = Math.floor(state.overageCountdownMinutes / 60);
-    const minutes = state.overageCountdownMinutes % 60;
-    document.getElementById('overageCountdown').textContent = `${hours}h ${minutes}m`;
   }
 
   // Shows whichever page matches state.view and hides the rest. This is
@@ -1787,6 +2207,7 @@
     const onImportStep2Page = state.view === 'import-step2';
     const onImportStep3Page = state.view === 'import-step3';
     const onImportDetailPage = state.view === 'import-detail';
+    const onOptimizeDatabasePage = state.view === 'optimize-database';
 
     document.getElementById('contactsPage').hidden = !onContactsPage;
     document.getElementById('dataIntegrationPage').hidden = !onDataIntegrationPage;
@@ -1794,11 +2215,13 @@
     document.getElementById('importStep2Page').hidden = !onImportStep2Page;
     document.getElementById('importStep3Page').hidden = !onImportStep3Page;
     document.getElementById('importDetailPage').hidden = !onImportDetailPage;
-    document.getElementById('sidebarContactsItem').classList.toggle('active', onContactsPage);
+    document.getElementById('optimizeDatabasePage').hidden = !onOptimizeDatabasePage;
+    document.getElementById('sidebarContactsItem').classList.toggle('active', onContactsPage || onOptimizeDatabasePage);
 
     renderImportStep1();
     renderImportStep2();
     renderImportDetail();
+    if (onOptimizeDatabasePage) renderOptimizeDatabasePage();
   }
 
   // Fills in the uploaded-file details on the Step 1 wizard screen from
@@ -1867,15 +2290,6 @@
     return contacts;
   }
 
-  // The banner text is built from a template so the two numbers in it
-  // (used vs. limit) always match whatever render() was last called with.
-  function renderQuotaBanner() {
-    const textEl = document.getElementById('quotaBannerText');
-    textEl.innerHTML =
-      `You've used <strong>${state.contactCount.toLocaleString()}</strong> of ${CONFIG.contactLimit.toLocaleString()} contacts.  ` +
-      `Create more contacts with ${CONFIG.bannerUpgradeProduct}.`;
-  }
-
   // The pill shows both the count AND its label, because "contacts" and
   // "marketing contacts" are two different HubSpot limits — swapping the
   // label when the mode changes keeps that distinction visible.
@@ -1909,6 +2323,7 @@
         <td><input class="rowcheck" type="checkbox" data-id="${c.id}" ${state.selectedContactIds.includes(c.id) ? 'checked' : ''} /></td>
         <td>
           <div class="who">
+            <span class="row-chev" aria-hidden="true">›</span>
             <span class="avatar">${initials(c.name)}</span>
             <span class="name">${c.name}</span>
           </div>
@@ -2008,14 +2423,31 @@
      diagnostics chat below needs it, and later screens will too.
      ========================================================================= */
 
-  function showToast(message, variant) {
+  // `opts.undo`, if provided, adds an Undo button to the toast — clicking
+  // it calls opts.undo() and dismisses immediately. A toast with Undo stays
+  // up longer (8s vs. 3.6s) since reading + deciding takes a beat longer
+  // than reading a plain confirmation.
+  function showToast(message, variant, opts) {
     const toast = document.getElementById('toast');
-    toast.textContent = message;
+    const hasUndo = Boolean(opts && typeof opts.undo === 'function');
+
+    toast.innerHTML = `
+      <span class="toast-message">${escapeHtml(message)}</span>
+      ${hasUndo ? '<button type="button" class="toast-undo-btn">Undo</button>' : ''}
+    `;
+    if (hasUndo) {
+      toast.querySelector('.toast-undo-btn').addEventListener('click', () => {
+        clearTimeout(showToast._t);
+        toast.classList.remove('show');
+        opts.undo();
+      });
+    }
+
     toast.classList.remove('success', 'warning');
     if (variant) toast.classList.add(variant);
     toast.classList.add('show');
     clearTimeout(showToast._t);
-    showToast._t = setTimeout(() => toast.classList.remove('show'), 3600);
+    showToast._t = setTimeout(() => toast.classList.remove('show'), hasUndo ? 8000 : 3600);
   }
 
   /* =========================================================================
@@ -2139,11 +2571,6 @@
   // because that already happened.
   let triageOrigin = null;
 
-  // The working copy of CONFIG.triageCategories for the currently open
-  // triage screen, with each row's checked state. Rebuilt fresh every
-  // time the screen opens so a previous run's choices never leak in.
-  let triageWorkingCategories = [];
-
   function setInterceptTitle(text) {
     financialInterceptTitle.textContent = text;
   }
@@ -2187,10 +2614,10 @@
 
     setInterceptTitle('Wait — this will exceed your Marketing Contact limit.');
     financialInterceptBody.innerHTML = `
-      <p>Setting these ${selectedCount} contacts as marketing will push you to ${prospectiveTotal.toLocaleString()} / ${CONFIG.contactLimit.toLocaleString()}. Your subscription will automatically upgrade by $45/month tonight at 12:00 AM.</p>
+      <p>Setting these ${selectedCount} contacts as marketing will push you to ${prospectiveTotal.toLocaleString()} / ${CONFIG.contactLimit.toLocaleString()}. Your subscription will automatically upgrade by ${CONFIG.overageMonthlyCostLabel}/month tonight at 12:00 AM.</p>
       <div class="intercept-actions">
-        <button class="btn btn-primary-orange" id="optimizeDbBtn" type="button">Optimize Database to Save $45/mo</button>
-        <button class="btn btn-outline" id="acceptUpgradeBtn" type="button">Continue &amp; Accept Upgrade</button>
+        <button class="btn btn-primary-orange" id="acceptUpgradeBtn" type="button">Continue &amp; Accept Upgrade</button>
+        <button class="btn btn-outline" id="optimizeDbBtn" type="button">Optimize Database to Save ${CONFIG.overageMonthlyCostLabel}/mo</button>
       </div>
     `;
 
@@ -2201,9 +2628,22 @@
     document.getElementById('acceptUpgradeBtn').addEventListener('click', applyBreachPath);
   }
 
-  // ---- T9: AI scan loading state, then the triage dashboard ----
+  // ---- T9: AI scan loading state, then a redirect to the Optimize
+  // Database page ----
 
-  function runTriageAiScan() {
+  // The demo's "functional AI" hook. Shows the scanning state, asks the
+  // live Breeze backend (Gemini) to diagnose the situation and choose the
+  // remediation categories, then redirects to a dedicated page built from
+  // its answer — full contact lists per category, individually selectable,
+  // rather than a bulk category-level checklist inside this modal.
+  //
+  // Bulletproofing for a live pitch: the model call is raced against a
+  // minimum on-screen time (so the scan never just flashes) and, if it
+  // errors, times out, or returns anything unusable, we SILENTLY fall back
+  // to the full canned category set. The client never sees a spinner that
+  // hangs, an error, or an empty page — worst case they see the polished
+  // static version and never know the difference.
+  async function runTriageAiScan() {
     setInterceptTitle('Breeze AI');
     financialInterceptBody.innerHTML = `
       <div class="intercept-loading">
@@ -2211,104 +2651,465 @@
         <p>Breeze AI is scanning your marketing contacts for low-value records…</p>
       </div>
     `;
-    setTimeout(renderTriageScreen, 1100);
+
+    // Keep the scan visible for at least minScanMs regardless of how fast
+    // the network call (or the fallback) resolves.
+    const [diagnosis] = await Promise.all([
+      requestBreezeDiagnosis(),
+      delay(CONFIG.ai.minScanMs)
+    ]);
+
+    enterOptimizeDatabasePage(diagnosis); // diagnosis is null on any failure → fallback
   }
 
-  function renderTriageScreen() {
-    triageWorkingCategories = CONFIG.triageCategories.map(cat => ({ ...cat, checked: true }));
+  // Small promise-based sleep, used to floor the scan animation time.
+  function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
 
-    setInterceptTitle('AI Triage: Marketing Contact Cleanup');
-    financialInterceptBody.innerHTML = `
-      <div class="triage-banner">
-        <svg width="15" height="15" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="flex:0 0 auto;margin-top:1px">
-          <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.5"/>
-          <line x1="10" y1="9" x2="10" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          <circle cx="10" cy="6.3" r="1" fill="currentColor" stroke="none"/>
-        </svg>
-        <span>Note: Setting contacts to 'Non-Marketing' does not free up your quota until your next monthly renewal date. Only permanent deletion frees up capacity today.</span>
-      </div>
-      ${triageWorkingCategories.map(renderTriageRow).join('')}
-      <button class="btn btn-primary-orange" id="executeTriageBtn" type="button"></button>
-    `;
+  // Builds the live-state payload the backend feeds to Gemini. Every number
+  // here is read from `state`/`CONFIG` — the model receives the real
+  // situation, and the real catalogue of actions it's allowed to offer.
+  function buildDiagnosisPayload() {
+    const selectedForMarketing = state.selectedContactIds.length;
+    return {
+      tier: CONFIG.modes[state.mode].label,
+      contactLimit: CONFIG.contactLimit,
+      activeContacts: state.contactCount,
+      selectedForMarketing,
+      prospectiveTotal: state.contactCount + selectedForMarketing,
+      overageCost: CONFIG.overageMonthlyCostLabel,
+      origin: triageOrigin, // 'pre-emptive' | 'breach-recovery'
+      // The canonical actions Breeze may choose from. The model echoes back
+      // action_ids; it does not get to invent new ones or change the counts.
+      availableActions: CONFIG.triageCategories.map(c => ({
+        action_id: c.action_id,
+        count: c.count,
+        type: c.type,
+        label: c.label,
+        detail: c.detail
+      }))
+    };
+  }
 
-    financialInterceptBody.querySelectorAll('.triage-check').forEach(checkbox => {
+  // Calls the backend, with a hard timeout. Returns a normalized
+  // { dialogue, categories } object, or null on ANY failure (offline,
+  // non-200, malformed JSON, unusable content) so the caller can fall back.
+  async function requestBreezeDiagnosis() {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), CONFIG.ai.timeoutMs);
+    try {
+      const res = await fetch(CONFIG.ai.endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(buildDiagnosisPayload()),
+        signal: controller.signal
+      });
+      if (!res.ok) return null;
+      const data = await res.json();
+      return normalizeDiagnosis(data);
+    } catch (err) {
+      // Network error, abort/timeout, or bad JSON — all resolve to fallback.
+      return null;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  // Turns the raw backend response into something safe to render. The model
+  // supplies the dialogue and a list of chips; we map each chip back onto a
+  // canonical CONFIG.triageCategories entry by action_id so the authoritative
+  // count/type/detail are always ours, never the model's. Returns null if
+  // there's no usable dialogue or no recognized chip → fallback.
+  function normalizeDiagnosis(data) {
+    if (!data || typeof data.dialogue !== 'string' || !data.dialogue.trim()) return null;
+    if (!Array.isArray(data.chips)) return null;
+
+    const byId = {};
+    CONFIG.triageCategories.forEach(c => { byId[c.action_id] = c; });
+
+    const seen = new Set();
+    const categories = [];
+    data.chips.forEach(chip => {
+      const id = chip && chip.action_id;
+      if (byId[id] && !seen.has(id)) {
+        seen.add(id);
+        // label/count/type/detail always come from OUR canonical catalogue
+        // (byId[id]) — never from the model. `reason` is the one piece of
+        // model-authored text we keep, since it's just an explanation, not
+        // a number the app depends on; it's escaped before it ever reaches
+        // the DOM (see escapeHtml in renderOptDbRow).
+        categories.push({
+          ...byId[id],
+          reason: typeof chip.reason === 'string' ? chip.reason.trim() : ''
+        });
+      }
+    });
+
+    if (categories.length === 0) return null;
+    return { dialogue: data.dialogue.trim(), categories };
+  }
+
+  // Escapes model-generated text before it goes into innerHTML.
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  /* =========================================================================
+     Optimize Database page (T9, redesigned): full contact lists per
+     category, individually selectable, instead of a bulk category-level
+     checklist inside the modal. Entered from runTriageAiScan() above.
+     ========================================================================= */
+
+  // Builds state.optimize from either a successful live AI diagnosis
+  // (categories + dialogue) or, on any failure, the full canned category
+  // set — same shape either way, so the fallback page is indistinguishable
+  // from the live one. Then navigates to the dedicated page.
+  function enterOptimizeDatabasePage(diagnosis) {
+    const source = (diagnosis && diagnosis.categories && diagnosis.categories.length)
+      ? diagnosis.categories
+      : CONFIG.triageCategories;
+
+    const categories = source.map(cat => ({
+      action_id: cat.action_id,
+      label: cat.label,
+      type: cat.type,
+      count: cat.count,
+      // Breeze's own reasoning when the live model supplied one, the
+      // canonical CONFIG detail text otherwise — both render identically.
+      reason: (cat.reason && cat.reason.trim()) ? cat.reason.trim() : cat.detail,
+      contacts: buildFullCategoryContacts(cat)
+    }));
+
+    const totalCount = categories.reduce((sum, c) => sum + c.count, 0);
+    const dialogueText = (diagnosis && diagnosis.dialogue && diagnosis.dialogue.trim())
+      ? diagnosis.dialogue.trim()
+      : `I found ${totalCount.toLocaleString()} low-value records you can clean up right now to stay under your ${CONFIG.contactLimit.toLocaleString()}-contact limit. Choose which ones to action below.`;
+
+    state.optimize = {
+      dialogue: dialogueText,
+      categories,
+      selectedKeys: new Set() // nothing pre-selected — the user opts in per contact or per list
+    };
+
+    closeInterceptModal();
+    navigateTo('optimize-database');
+  }
+
+  // ---- Contact-level drill-down (trust layer): every record behind a bulk
+  // action is real enough to look at and pick individually. ----
+
+  // Small deterministic hash, used only to pick a stable-looking sample of
+  // rows per category — deterministic (not Math.random) so reopening the
+  // same category always shows the same people instead of reshuffling
+  // mid-pitch.
+  function hashSeed(str) {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+    return h;
+  }
+
+  function slugifyCompany(company) {
+    return company.toLowerCase().replace(/[^a-z0-9]+/g, '').slice(0, 14) || 'example';
+  }
+
+  function emailForName(name, company) {
+    const parts = name.replace(/[^\w\s]/g, '').split(' ').filter(Boolean);
+    const first = (parts[0] || 'contact').toLowerCase();
+    const last = (parts[parts.length - 1] || '').toLowerCase();
+    return `${first}${last ? '.' + last : ''}@${slugifyCompany(company)}.com`;
+  }
+
+  // Builds the FULL list of category.count realistic-looking rows (no cap —
+  // this is a dedicated page with its own scroll area, not an inline
+  // preview), each with a stable id so individual selection survives
+  // re-renders.
+  function buildFullCategoryContacts(category) {
+    const pool = CONFIG.contactPreviewPool;
+    const seed = hashSeed(category.action_id);
+    const rows = [];
+    for (let i = 0; i < category.count; i++) {
+      const person = pool[(seed + i * 7) % pool.length];
+      let reason = category.detail;
+      if (category.action_id === 'merge_dupes') {
+        const dupeOf = pool[(seed + i * 7 + 5) % pool.length];
+        reason = `Duplicate of ${dupeOf.name}`;
+      }
+      rows.push({
+        id: `${category.action_id}-${i}`,
+        name: person.name,
+        email: emailForName(person.name, person.company),
+        reason
+      });
+    }
+    return rows;
+  }
+
+  // ---- Rendering the page ----
+
+  function renderOptimizeDatabasePage() {
+    const opt = state.optimize;
+    if (!opt) return;
+
+    document.getElementById('optDbDialogue').textContent = opt.dialogue;
+    document.getElementById('optDbSections').innerHTML = opt.categories.map(renderOptDbSection).join('');
+
+    document.querySelectorAll('.opt-db-row-check').forEach(checkbox => {
       checkbox.addEventListener('change', () => {
-        triageWorkingCategories[+checkbox.dataset.index].checked = checkbox.checked;
-        updateTriageExecuteLabel();
+        const key = checkbox.dataset.key;
+        if (checkbox.checked) opt.selectedKeys.add(key); else opt.selectedKeys.delete(key);
+        updateOptDbSelectAllState(checkbox.closest('.opt-db-section').dataset.actionId);
+        updateOptDbFooter();
       });
     });
 
-    document.getElementById('executeTriageBtn').addEventListener('click', executeTriage);
-    updateTriageExecuteLabel();
+    document.querySelectorAll('.opt-db-select-all').forEach(checkbox => {
+      checkbox.addEventListener('change', () => {
+        const actionId = checkbox.dataset.actionId;
+        const category = opt.categories.find(c => c.action_id === actionId);
+        category.contacts.forEach(c => {
+          const key = `${actionId}::${c.id}`;
+          if (checkbox.checked) opt.selectedKeys.add(key); else opt.selectedKeys.delete(key);
+        });
+        // A bulk change to a whole list is the one case worth a full
+        // re-render — individual row clicks stay lightweight (above).
+        renderOptimizeDatabasePage();
+      });
+    });
+
+    opt.categories.forEach(cat => updateOptDbSelectAllState(cat.action_id));
+    updateOptDbFooter();
   }
 
-  function renderTriageRow(category, index) {
+  function renderOptDbSection(category) {
     return `
-      <label class="triage-row">
-        <input type="checkbox" class="triage-check" data-index="${index}" checked />
-        <span class="triage-label">
-          ${category.label}
-          <span class="triage-note">${category.detail}</span>
-        </span>
+      <div class="card opt-db-section" data-action-id="${category.action_id}">
+        <div class="opt-db-section-header">
+          <label class="opt-db-select-all-label">
+            <input type="checkbox" class="opt-db-select-all" data-action-id="${category.action_id}" />
+            <span class="opt-db-section-title">${escapeHtml(category.label)}</span>
+          </label>
+          <span class="opt-db-section-reason">${escapeHtml(category.reason)}</span>
+        </div>
+        <div class="opt-db-list">
+          ${category.contacts.map(c => renderOptDbRow(category, c)).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  function renderOptDbRow(category, contact) {
+    const key = `${category.action_id}::${contact.id}`;
+    const checked = state.optimize.selectedKeys.has(key);
+    return `
+      <label class="opt-db-row">
+        <input type="checkbox" class="opt-db-row-check" data-key="${key}" ${checked ? 'checked' : ''} />
+        <span class="opt-db-row-avatar">${initials(contact.name)}</span>
+        <span class="opt-db-row-name">${escapeHtml(contact.name)}</span>
+        <span class="opt-db-row-email">${escapeHtml(contact.email)}</span>
+        <span class="opt-db-row-reason">${escapeHtml(contact.reason)}</span>
       </label>
     `;
   }
 
-  function sumChecked(categories) {
-    return categories.filter(cat => cat.checked).reduce((sum, cat) => sum + cat.count, 0);
+  // Keeps a section's "select all" checkbox in sync (checked / indeterminate
+  // / unchecked) with how many of its rows are individually selected.
+  function updateOptDbSelectAllState(actionId) {
+    const opt = state.optimize;
+    const category = opt.categories.find(c => c.action_id === actionId);
+    const cb = document.querySelector(`.opt-db-select-all[data-action-id="${actionId}"]`);
+    if (!category || !cb) return;
+    const total = category.contacts.length;
+    const selected = category.contacts.filter(c => opt.selectedKeys.has(`${actionId}::${c.id}`)).length;
+    cb.checked = total > 0 && selected === total;
+    cb.indeterminate = selected > 0 && selected < total;
   }
 
-  // "Permanently" is load-bearing here — a normal delete just moves
-  // records into the 90-day recycle bin, which does NOT free up quota.
-  function updateTriageExecuteLabel() {
-    const btn = document.getElementById('executeTriageBtn');
-    const n = sumChecked(triageWorkingCategories);
-    btn.textContent = n > 0 ? `Permanently Delete ${n} Contacts & Continue` : 'Select records to delete';
+  function updateOptDbFooter() {
+    const n = state.optimize.selectedKeys.size;
+    const btn = document.getElementById('optDbActionBtn');
+    document.getElementById('optDbFooterCount').textContent = `${n.toLocaleString()} selected`;
     btn.disabled = n === 0;
+    btn.textContent = n > 0
+      ? `Optimize ${n.toLocaleString()} Contact${n === 1 ? '' : 's'}`
+      : 'Select contacts to optimize';
   }
+
+  document.getElementById('optDbBackLink').addEventListener('click', event => {
+    event.preventDefault();
+    state.optimize = null;
+    triageOrigin = null;
+    navigateTo('contacts');
+  });
+
+  document.getElementById('optDbActionBtn').addEventListener('click', openDeleteConfirmModal);
+
+  // Tallies the current selection into delete vs. merge counts — the
+  // deterministic math the type-to-confirm modal and the final execution
+  // both read from. Derived only from canonical category counts, never
+  // from anything the model returned.
+  function getSelectedOptimizeContacts() {
+    const opt = state.optimize;
+    let deleteCount = 0, mergeCount = 0;
+    opt.categories.forEach(cat => {
+      const n = cat.contacts.filter(c => opt.selectedKeys.has(`${cat.action_id}::${c.id}`)).length;
+      if (cat.type === 'merge') mergeCount += n; else deleteCount += n;
+    });
+    return { deleteCount, mergeCount, total: deleteCount + mergeCount };
+  }
+
+  /* =========================================================================
+     Native delete-confirmation dialog (NEW) — a deliberate borrow from real
+     HubSpot's own bulk-delete guard: the user must type the exact record
+     count before Delete enables. This is the one failsafe standing between
+     an AI-curated batch and an irreversible action.
+     ========================================================================= */
+
+  const deleteConfirmOverlay = document.getElementById('deleteConfirmOverlay');
+  let deleteConfirmTriggerEl = null;
+  let releaseDeleteConfirmFocusTrap = null;
+  let pendingConfirmCount = 0; // the exact number the input must match to enable Delete
+
+  function openDeleteConfirmModal() {
+    const selected = getSelectedOptimizeContacts();
+    pendingConfirmCount = selected.total;
+
+    const title = selected.deleteCount > 0 && selected.mergeCount > 0
+      ? `Delete & merge ${selected.total.toLocaleString()} records?`
+      : selected.mergeCount > 0
+        ? `Merge ${selected.total.toLocaleString()} record${selected.total === 1 ? '' : 's'}?`
+        : `Delete ${selected.total.toLocaleString()} record${selected.total === 1 ? '' : 's'}?`;
+
+    let body;
+    if (selected.deleteCount > 0 && selected.mergeCount > 0) {
+      body = `You're about to permanently delete ${selected.deleteCount.toLocaleString()} record${selected.deleteCount === 1 ? '' : 's'} and merge ${selected.mergeCount.toLocaleString()} duplicate record${selected.mergeCount === 1 ? '' : 's'}. Deleted records can't be restored after 90 days.`;
+    } else if (selected.mergeCount > 0) {
+      body = `You're about to merge ${selected.mergeCount.toLocaleString()} duplicate record${selected.mergeCount === 1 ? '' : 's'} into one. This can't be undone from this screen.`;
+    } else {
+      body = `You're about to delete ${selected.deleteCount.toLocaleString()} record${selected.deleteCount === 1 ? '' : 's'}. Deleted records can't be restored after 90 days. Records created after this submission will not be deleted.`;
+    }
+
+    document.getElementById('deleteConfirmTitle').textContent = title;
+    document.getElementById('deleteConfirmBody').textContent = body;
+
+    const input = document.getElementById('deleteConfirmInput');
+    input.value = '';
+    input.placeholder = String(selected.total);
+
+    const confirmBtn = document.getElementById('deleteConfirmBtn');
+    confirmBtn.disabled = true;
+    confirmBtn.textContent = selected.deleteCount > 0 ? 'Delete' : 'Confirm';
+
+    deleteConfirmTriggerEl = document.getElementById('optDbActionBtn');
+    deleteConfirmOverlay.classList.add('open');
+    releaseDeleteConfirmFocusTrap = trapFocusWithin(deleteConfirmOverlay);
+    input.focus();
+  }
+
+  function closeDeleteConfirmModal() {
+    deleteConfirmOverlay.classList.remove('open');
+    if (releaseDeleteConfirmFocusTrap) releaseDeleteConfirmFocusTrap();
+    if (deleteConfirmTriggerEl) deleteConfirmTriggerEl.focus();
+  }
+
+  document.getElementById('deleteConfirmInput').addEventListener('input', event => {
+    document.getElementById('deleteConfirmBtn').disabled = event.target.value.trim() !== String(pendingConfirmCount);
+  });
+
+  document.getElementById('deleteConfirmClose').addEventListener('click', closeDeleteConfirmModal);
+  document.getElementById('deleteConfirmCancelBtn').addEventListener('click', closeDeleteConfirmModal);
+  deleteConfirmOverlay.addEventListener('click', event => {
+    if (event.target === deleteConfirmOverlay) closeDeleteConfirmModal();
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && deleteConfirmOverlay.classList.contains('open')) closeDeleteConfirmModal();
+  });
+
+  document.getElementById('deleteConfirmBtn').addEventListener('click', () => {
+    executeOptimize();
+    closeDeleteConfirmModal();
+  });
 
   // ---- T10: execution + resolution (branches on triageOrigin) ----
 
-  function executeTriage() {
-    const btn = document.getElementById('executeTriageBtn');
-    const deletedCount = sumChecked(triageWorkingCategories);
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span>Deleting…';
+  // Builds the human-readable summary of what the action did, e.g.
+  // "30 inactive contacts permanently deleted and 20 duplicates merged".
+  function describeOptimizeCleanup(selected) {
+    const parts = [];
+    if (selected.deleteCount) parts.push(`${selected.deleteCount.toLocaleString()} inactive contacts permanently deleted`);
+    if (selected.mergeCount) parts.push(`${selected.mergeCount.toLocaleString()} duplicates merged`);
+    const phrase = parts.join(' and ');
+    return phrase.charAt(0).toUpperCase() + phrase.slice(1);
+  }
 
-    setTimeout(() => {
-      // The purge happens either way — it's the same 950-contact pool
-      // regardless of which path led here.
-      state.contactCount -= deletedCount;
+  function executeOptimize() {
+    const selected = getSelectedOptimizeContacts();
+    const freedCount = selected.total;
+    const cleanupSummary = describeOptimizeCleanup(selected);
 
-      if (triageOrigin === 'pre-emptive') {
-        const appliedCount = state.selectedContactIds.length;
-        applySelectedContactsAsMarketing();
-        state.contactCount += appliedCount;
-        state.selectedContactIds = [];
-        state.contactViewFilter = 'all';
+    // Snapshot everything this action is about to touch, so a single Undo
+    // can put the account back exactly as it was — including which
+    // contacts were flipped to Marketing, not just the running totals.
+    const snapshot = {
+      contactCount: state.contactCount,
+      contacts: state.contacts.map(c => ({ ...c })),
+      selectedContactIds: [...state.selectedContactIds],
+      contactViewFilter: state.contactViewFilter,
+      overageCountdownMinutes: state.overageCountdownMinutes
+    };
 
-        closeInterceptModal();
-        render();
-        showToast(
-          `${deletedCount} inactive contacts permanently deleted. ${appliedCount} webinar leads set as marketing. You remain under your limit, saving $45/mo.`,
-          'success'
-        );
-      } else {
-        // Breach-recovery: the 100 contacts are already marketing (T11
-        // applied that immediately) — purging is the only thing needed
-        // to drop back under the limit and cancel the pending upgrade.
-        state.overageCountdownMinutes = null;
+    // The cleanup happens either way — it's the same marketing-contact pool
+    // regardless of which path led here.
+    state.contactCount -= freedCount;
 
-        closeInterceptModal();
-        render();
-        showToast(
-          `${deletedCount} inactive contacts permanently deleted. You're back under your limit — the $45/mo upgrade has been avoided.`,
-          'success'
-        );
-      }
+    if (triageOrigin === 'pre-emptive') {
+      const appliedCount = state.selectedContactIds.length;
+      applySelectedContactsAsMarketing();
+      state.contactCount += appliedCount;
+      state.selectedContactIds = [];
+      state.contactViewFilter = 'all';
 
+      state.optimize = null;
       triageOrigin = null;
-    }, 700);
+      navigateTo('contacts');
+      showToast(
+        `${cleanupSummary}. ${appliedCount} webinar leads set as marketing. You remain under your limit, saving ${CONFIG.overageMonthlyCostLabel}/mo.`,
+        'success',
+        { undo: () => undoOptimize(snapshot) }
+      );
+    } else {
+      // Breach-recovery: the 100 contacts are already marketing (T11
+      // applied that immediately) — the cleanup is the only thing needed to
+      // drop back under the limit and cancel the pending upgrade.
+      state.overageCountdownMinutes = null;
+
+      state.optimize = null;
+      triageOrigin = null;
+      navigateTo('contacts');
+      showToast(
+        `${cleanupSummary}. You're back under your limit — the ${CONFIG.overageMonthlyCostLabel}/mo upgrade has been avoided.`,
+        'success',
+        { undo: () => undoOptimize(snapshot) }
+      );
+    }
+  }
+
+  // Restores state exactly as it was before executeOptimize() ran, from the
+  // snapshot taken at the start of that call. Wired to the toast's Undo
+  // button — the one place a user can walk back an AI-driven bulk action.
+  function undoOptimize(snapshot) {
+    state.contactCount = snapshot.contactCount;
+    state.contacts = snapshot.contacts;
+    state.selectedContactIds = snapshot.selectedContactIds;
+    state.contactViewFilter = snapshot.contactViewFilter;
+    state.overageCountdownMinutes = snapshot.overageCountdownMinutes;
+    render();
+    showToast("Undone — your marketing contacts are back where they were.");
   }
 
   // Flips every currently-selected contact's status to Marketing. Shared
@@ -2341,24 +3142,10 @@
     render();
 
     // Neutral toast (no 'success'/'warning' variant) — confirms what
-    // happened without celebrating it, since a $45/mo upgrade is now
+    // happened without celebrating it, since a $50/mo upgrade is now
     // pending.
-    showToast(`${appliedCount} webinar leads set as marketing. You're now over your limit — a $45/mo upgrade is pending.`);
+    showToast(`${appliedCount} webinar leads set as marketing. You're now over your limit — a ${CONFIG.overageMonthlyCostLabel}/mo upgrade is pending.`);
   }
-
-  document.getElementById('freeUpCapacityBtn').addEventListener('click', event => {
-    triageOrigin = 'breach-recovery';
-    openInterceptModal(event.target, runTriageAiScan);
-  });
-
-  // Ticks the countdown down once a minute purely for display — this is
-  // the "illustrative, non-firing" timer the brief called for. It never
-  // reaches zero and does anything; it's not wired to a real clock.
-  setInterval(() => {
-    if (state.overageCountdownMinutes === null) return;
-    if (state.overageCountdownMinutes > 0) state.overageCountdownMinutes -= 1;
-    renderOverageBanner();
-  }, 60000);
 
   /* =========================================================================
      SECTION 10: DATA INTEGRATION HUB (T2)
