@@ -10,50 +10,64 @@ app.use(express.static(__dirname));
 
 // Initialize the Gemini API using your secret key
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const MODEL_NAME = process.env.GEMINI_MODEL || 'gemini-3.7-flash';
 
-// The API Endpoint your frontend will call
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok' });
+});
+
+// The API endpoint the frontend's requestBreezeDiagnosis() calls. Request
+// body and response shape must match buildDiagnosisPayload() / normalizeDiagnosis()
+// in index.html exactly — the frontend silently falls back to a canned triage
+// on anything it doesn't recognize, so a shape mismatch here fails invisibly.
 app.post('/api/diagnose', async (req, res) => {
     try {
-        // 1. Receive the simulated database state from your frontend
-        const { activeContacts, recycleBin, attemptedUpload } = req.body;
+        const {
+            tier, contactLimit, activeContacts, selectedForMarketing,
+            prospectiveTotal, overageCost, origin, availableActions
+        } = req.body;
 
-        // 2. Select the fast, lightweight model and force JSON output
-        const model = genAI.getGenerativeModel({ 
-            model: "gemini-3.7-flash",
+        const model = genAI.getGenerativeModel({
+            model: MODEL_NAME,
             generationConfig: { responseMimeType: "application/json" }
         });
 
-        // 3. The System Prompt (Injecting the context behind the scenes)
         const prompt = `
-        You are Breeze AI, an embedded diagnostic assistant inside the HubSpot CRM. 
+        You are Breeze AI, an embedded diagnostic assistant inside the HubSpot CRM.
         Your tone is helpful, concise, and direct. Do not greet the user.
 
-        A user has just experienced a failed CSV import due to a quota limit. 
-        Here is their current live database state:
-        - Tier Limit: 1,000 contacts
-        - Active Contacts: ${activeContacts}
-        - Contacts in Recycle Bin: ${recycleBin}
-        - Attempted Import Size: ${attemptedUpload}
+        A user on the ${tier} is about to cross their marketing-contact limit.
+        - Marketing contact limit: ${contactLimit}
+        - Current marketing contacts: ${activeContacts}
+        - Contacts they're about to set as marketing: ${selectedForMarketing}
+        - Resulting total if applied: ${prospectiveTotal}
+        - Monthly cost of breaching the limit: ${overageCost}
+        - Context: ${origin === 'pre-emptive' ? 'they have not yet been charged an overage' : 'they have already been charged an overage and are trying to get back under the limit'}
+
+        Here is the canonical catalogue of cleanup actions they can take. You may
+        only recommend actions from this exact list, by their action_id — never
+        invent a new one:
+        ${JSON.stringify(availableActions, null, 2)}
 
         Task:
-        1. Explain exactly why their import failed using the math above.
-        2. Offer a solution to clear the recycle bin to make room.
-        3. Return your response strictly in the following JSON format:
+        1. Write one short sentence diagnosing the situation using the numbers above.
+        2. Choose which of the catalogue actions to recommend (as many as make sense
+           to get them back under or keep them under the limit), and write one short
+           sentence of reasoning for each ("why this one").
+        3. Return your response strictly in the following JSON format, with no
+           extra commentary:
         {
-          "dialogue": "Your explanation here...",
-          "action_button": {
-            "label": "Permanently Empty Bin",
-            "action_id": "purge_bin"
-          }
+          "dialogue": "Your one-sentence diagnosis here...",
+          "chips": [
+            { "action_id": "one_of_the_ids_above", "reason": "One short sentence." }
+          ]
         }
         `;
 
-        // 4. Send to Gemini and parse the response
         const result = await model.generateContent(prompt);
         const response = await result.response;
         const text = response.text();
 
-        // 5. Send the structured JSON back to your frontend UI
         res.json(JSON.parse(text));
 
     } catch (error) {
@@ -62,7 +76,6 @@ app.post('/api/diagnose', async (req, res) => {
     }
 });
 
-// Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
