@@ -917,18 +917,35 @@
   .status-badge.marketing { background: #e5f8f0; color: #17663f; }
   .status-badge.non-marketing { background: #eef1f4; color: var(--text-muted); }
 
+  /* A rounded bubble sitting inside the page gutter — it hugs its own
+     contents rather than running the full width of the frame. */
   .bulk-bar {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 16px;
-    padding: 10px 28px;
+    gap: 14px;
+    width: fit-content;
+    margin: 0 28px 12px;
+    padding: 8px 12px 8px 20px;
     background: #eaf0f6;
-    border-bottom: 1px solid var(--border);
+    border: 1px solid var(--border);
+    border-radius: 999px;
   }
+
+  /* The class sets a display, so the hidden attribute needs its own rule
+     to win — without this the bar shows even at zero selected. */
+  .bulk-bar[hidden] { display: none; }
 
   .bulk-bar-count { font-size: 13.5px; font-weight: 600; color: var(--text); }
   .bulk-bar-actions { display: flex; gap: 8px; }
-  .bulk-bar-clear { margin-left: auto; background: none; border: none; font-size: 18px; color: var(--text-muted); }
+
+  .bulk-bar-clear {
+    background: none;
+    border: none;
+    font-size: 18px;
+    line-height: 1;
+    color: var(--text-muted);
+    padding: 0 6px;
+  }
 
   /* ---------- Modal (unchanged look) ---------- */
 
