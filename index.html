@@ -70,24 +70,24 @@
 
   .brand .chev { font-size: 9px; color: #8496a8; }
 
-  /* White rounded search pill, magnifier tight against the placeholder
-     text — matches HubSpot. The pill's own width still reads as roomy;
-     `justify-content: space-between` previously stretched the icon to the
-     pill's far edge instead. */
+  /* Transparent outlined search pill, pushed right of the logo — matches
+     real HubSpot's dark-chrome nav. */
   .navsearch {
     flex: 0 1 400px;
+    margin-left: 180px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 8px;
-    background: #ffffff;
-    border: 1px solid #cbd6e2;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, .6);
     border-radius: 18px;
     padding: 5px 14px;
     font-size: 13.5px;
-    color: #516f90;
+    color: #ffffff;
   }
 
-  .navsearch .nb-ico { color: #516f90; }
+  .navsearch .nb-ico { color: #ffffff; }
 
   .navbar-spacer { flex: 1; }
 
