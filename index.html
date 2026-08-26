@@ -70,12 +70,14 @@
 
   .brand .chev { font-size: 9px; color: #8496a8; }
 
-  /* White rounded search pill, magnifier on the right — matches HubSpot. */
+  /* White rounded search pill, magnifier tight against the placeholder
+     text — matches HubSpot. The pill's own width still reads as roomy;
+     `justify-content: space-between` previously stretched the icon to the
+     pill's far edge instead. */
   .navsearch {
     flex: 0 1 400px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 8px;
     background: #ffffff;
     border: 1px solid #cbd6e2;
