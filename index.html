@@ -1054,15 +1054,16 @@
 
   .breeze-panel {
     position: fixed;
-    top: 44px;             /* clears the top nav */
-    right: 0;
-    bottom: 0;
+    top: 56px;              /* 44px nav + 12px inset */
+    right: 12px;
+    bottom: 12px;
     width: 460px;
-    max-width: 100vw;
-    background: linear-gradient(180deg, #ff7a59, #f2547d 45%, #7c5cff);
-    padding-left: 3px;     /* gradient rim shows only on the left edge */
+    max-width: calc(100vw - 24px);
+    background: linear-gradient(180deg, #ff7a59, #f2547d 55%, #a266ff);
+    padding: 1.5px;         /* the thin gradient border shows all around */
+    border-radius: 16px;
     z-index: 55;
-    transform: translateX(100%);
+    transform: translateX(calc(100% + 24px));
     pointer-events: none;
     transition: transform .28s cubic-bezier(.2,.7,.2,1);
   }
@@ -1073,6 +1074,7 @@
     position: relative;
     background: var(--surface);
     height: 100%;
+    border-radius: 14.5px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -1101,10 +1103,11 @@
   .breeze-head-btn svg { width: 16px; height: 16px; }
 
   .breeze-greeting {
-    padding: 18px 26px 6px;
-    font-size: 27px;
+    padding: 90px 32px 6px;
+    font-size: 34px;
     font-weight: 300;
-    line-height: 1.3;
+    line-height: 1.25;
+    letter-spacing: -.2px;
   }
 
   .breeze-greeting .line1 { color: var(--orange); display: block; }
