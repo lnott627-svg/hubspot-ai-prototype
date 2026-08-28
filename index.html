@@ -10,7 +10,6 @@
 <style>
   :root {
     --navbar:       #2e3338;
-    --navbar-border:#3d4854;
     --sidebar:      #2e3338;
     --sidebar-hover:rgba(255,255,255,.07);
     --sidebar-active:rgba(255,255,255,.14);
@@ -23,6 +22,7 @@
     --text:         #33475b;
     --text-muted:   #7c98b6;
     --link:         #0091ae;
+    --table-link:   #0a5c4f;
     --border:       #dfe3eb;
     --radius:       4px;
     --shadow-card:  none;
@@ -58,7 +58,6 @@
     gap: 12px;
     padding: 0 12px;
     color: #cbd6e2;
-    border-bottom: 1px solid var(--navbar-border);
   }
 
   /* Shared sizing for the inline SVG line-icons across the top nav. */
@@ -70,8 +69,11 @@
 
   .brand .chev { font-size: 9px; color: #8496a8; }
 
-  /* Transparent outlined search pill, pushed right of the logo — matches
-     real HubSpot's dark-chrome nav. */
+  /* Outlined rounded search pill on the left of the nav: transparent fill
+     with a white hairline border and white text, so it reads against the
+     dark nav chrome. The left offset lines its edge up with the left edge
+     of the white content card below (220px sidebar + 12px main gutter =
+     232px), less the 52px the pill already starts at after the sprocket. */
   .navsearch {
     flex: 0 1 400px;
     margin-left: 180px;
@@ -236,7 +238,14 @@
     font-size: 13.5px;
     font-weight: 400;
     color: var(--sidebar-text);
-    border-radius: var(--radius);
+    border-radius: 999px;
+  }
+
+  /* Hairline under the Home row, inset from the sidebar's own padding. */
+  .nav-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, .18);
+    margin: 7px 8px;
   }
 
   .nav-ico {
@@ -249,7 +258,7 @@
   .nav-item:hover { background: var(--sidebar-hover); }
 
   .nav-item.active {
-    background: var(--sidebar-active);
+    background: rgba(255, 255, 255, .2);
     color: #fff;
     font-weight: 600;
   }
@@ -267,7 +276,7 @@
     padding: 8px 12px;
     font-size: 13.5px;
     color: var(--sidebar-text);
-    border-radius: var(--radius);
+    border-radius: 999px;
   }
 
   .nav-more .caret { margin-left: auto; }
@@ -278,31 +287,37 @@
 
   .setup-card {
     margin: 10px 0 12px;
-    background: #213343;
-    border-radius: 8px;
+    background: #ffffff;
+    border-radius: 12px;
     padding: 14px;
-    color: #fff;
+    color: #1b2a37;
   }
 
   .setup-card p {
     margin: 0 0 12px;
     font-size: 13px;
     line-height: 1.4;
-    font-weight: 400;
+    font-weight: 600;
   }
 
   .setup-card button {
     width: 100%;
-    background: #33475b;
-    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #2e3338;
+    color: #ffffff;
     border: none;
-    border-radius: var(--radius);
-    padding: 8px 0;
+    border-radius: 6px;
+    padding: 9px 0;
     font-size: 13px;
     font-weight: 500;
   }
 
-  .setup-card button:hover { background: #435a71; }
+  .setup-card button .nav-ico { width: 16px; height: 16px; flex: 0 0 16px; }
+
+  .setup-card button:hover { background: #414951; }
 
   /* ---------- Main ---------- */
 
@@ -326,25 +341,25 @@
   .page-title {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 22px;
-    font-weight: 600;
-    color: #1e2a35;
-    letter-spacing: -.2px;
+    gap: 10px;
+    font-size: 28px;
+    font-weight: 400;
+    color: #000000;
+    letter-spacing: -.4px;
   }
 
-  .page-title .caret { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+  .page-title .tb-ico { width: 18px; height: 18px; color: #000000; }
 
   .page-actions { display: flex; align-items: center; gap: 8px; }
 
   .icon-btn {
-    width: 32px; height: 32px;
+    width: 36px; height: 36px;
     border: 1px solid #cbd6e2;
     background: #fff;
-    border-radius: var(--radius);
+    border-radius: 6px;
     display: grid;
     place-items: center;
-    color: var(--text);
+    color: #000000;
     font-size: 14px;
   }
 
@@ -362,6 +377,21 @@
   .btn:active { transform: translateY(1px); }
 
   .btn-dark { background: #213343; color: #fff; display: flex; align-items: center; gap: 7px; }
+
+  /* The page-header's primary action reads as solid black, not navy. */
+  .btn-black {
+    background: #000000;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 6px;
+    padding: 9px 18px;
+    font-size: 14px;
+  }
+
+  .btn-black:hover { background: #1f1f1f; }
+  .btn-black .caret { font-size: 9px; }
   .btn-dark:hover { background: #33475b; }
   .btn-dark:disabled { background: #7a8ea3; cursor: default; transform: none; }
 
@@ -377,110 +407,185 @@
 
   /* ---------- Tabs ---------- */
 
+  /* The rule under the tabs stops at the page gutter rather than running
+     edge to edge, so the margin (not padding) carries the 28px inset. */
   .tabs {
     display: flex;
     align-items: center;
-    gap: 22px;
-    padding: 16px 28px 0;
+    gap: 26px;
+    margin: 0 28px;
+    padding: 16px 0 0;
     border-bottom: 1px solid var(--border);
   }
 
   .tab {
-    padding-bottom: 11px;
-    font-size: 13.5px;
-    color: var(--text-muted);
-    border-bottom: 2px solid transparent;
-  }
-
-  .tab.active {
-    color: #1e2a35;
-    font-weight: 500;
-    border-bottom-color: #1e2a35;
-  }
-
-  .tab-add {
-    padding-bottom: 11px;
-    color: var(--text-muted);
-    font-size: 15px;
-  }
-
-  /* ---------- Toolbar ---------- */
-
-  .toolbar {
     display: flex;
     align-items: center;
     gap: 8px;
-    padding: 14px 28px;
+    padding-bottom: 10px;
+    font-size: 14px;
+    color: #33475b;
+    border-bottom: 2px solid transparent;
+  }
+
+  .tab .tb-ico { width: 16px; height: 16px; }
+
+  .tab.active {
+    color: #000000;
+    font-weight: 600;
+    border-bottom-color: #000000;
+  }
+
+  .tab-add {
+    display: flex;
+    align-items: center;
+    padding-bottom: 10px;
+    color: #33475b;
+  }
+
+  .tab-add .tb-ico { width: 16px; height: 16px; }
+
+  /* ---------- Toolbar ---------- */
+
+  /* Two stacked rows: the search + view controls on top, the column
+     filters underneath. Both share the page's 28px gutter. */
+  .toolbar {
+    display: flex;
+    flex-direction: column;
+    padding: 0 28px;
+  }
+
+  .toolbar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 0 0;
+  }
+
+  .filter-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 0 14px;
     flex-wrap: wrap;
   }
+
+  /* Shared sizing for the inline SVG line-icons in the header + toolbar. */
+  .tb-ico { width: 17px; height: 17px; flex: 0 0 auto; display: block; }
 
   .search-input {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 7px 12px;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 16px;
     border: 1px solid #cbd6e2;
-    border-radius: 20px;
-    font-size: 13px;
+    border-radius: 999px;
+    font-size: 14px;
     color: var(--text-muted);
-    min-width: 220px;
+    width: 215px;
   }
+
+  .search-input .tb-ico { color: #000000; }
 
   .pill {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 7px 13px;
-    font-size: 13px;
-    color: var(--text);
+    gap: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    color: #000000;
     border: 1px solid #cbd6e2;
-    border-radius: 20px;
+    border-radius: 999px;
     background: #fff;
   }
 
   .pill:hover { background: #f5f8fa; }
   .pill .caret { font-size: 9px; color: var(--text-muted); }
 
-  /* Borderless text dropdowns — the secondary filters HubSpot renders
-     without a button chrome, just a label + caret with a subtle hover. */
+  /* The applied filter reads as a filled grey pill with no outline. */
+  .pill.filled {
+    background: #e8e8e8;
+    border-color: transparent;
+  }
+
+  .pill.filled:hover { background: #dedede; }
+
+  /* Borderless text dropdowns — the column filters HubSpot renders
+     without button chrome, just a bold label + caret. */
   .filter-text {
     display: flex;
     align-items: center;
     gap: 6px;
     padding: 7px 10px;
-    font-size: 13px;
-    color: var(--text);
+    font-size: 14px;
+    font-weight: 600;
+    color: #000000;
     border: none;
     background: transparent;
     border-radius: var(--radius);
   }
 
   .filter-text:hover { background: #f5f8fa; }
-  .filter-text .caret { font-size: 9px; color: var(--text); }
+  .filter-text .caret { font-size: 9px; color: #000000; }
 
   .toolbar-divider {
-    width: 1px; height: 20px;
+    width: 1px; height: 24px;
     background: var(--border);
-    margin: 0 2px;
+    margin: 0 10px;
   }
 
   .toolbar-icon {
-    width: 30px; height: 30px;
+    width: 32px; height: 32px;
     border: 1px solid transparent;
     background: transparent;
     border-radius: var(--radius);
     display: grid;
     place-items: center;
-    color: var(--text-muted);
-    font-size: 13px;
+    color: #000000;
   }
 
-  .toolbar-icon:hover { background: #f5f8fa; border-color: var(--border); }
+  .toolbar-icon:hover { background: #f5f8fa; }
 
-  .toolbar-icon.round { border-radius: 50%; }
+  /* Circled icon buttons — outlined at rest, the way the reference shows
+     the add/edit filter controls and the view options. */
+  .toolbar-icon.round {
+    border-radius: 50%;
+    border-color: #cbd6e2;
+  }
 
-  .adv-filters { font-size: 13px; color: var(--link); }
-  .adv-filters:hover { text-decoration: underline; }
+  /* Segmented board/table switch: one outlined track, the active option
+     circled inside it. */
+  .view-switch {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    border: 1px solid #cbd6e2;
+    border-radius: 999px;
+  }
+
+  .view-switch button {
+    width: 30px; height: 30px;
+    display: grid;
+    place-items: center;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    background: transparent;
+    color: #000000;
+  }
+
+  .view-switch button.active { border-color: #cbd6e2; }
+
+  .adv-filters {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #000000;
+    text-decoration: none;
+  }
 
   .toolbar-spacer { flex: 1; }
 
@@ -821,27 +926,32 @@
   .card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 6px;
+    border-radius: 0;
     box-shadow: var(--shadow-card);
     overflow: hidden;
   }
 
   table { width: 100%; border-collapse: collapse; }
 
+  /* Grey header band, with a hairline between each column that stops at
+     the header — the body rows are separated only horizontally. */
   thead th {
     text-align: left;
-    font-size: 12.5px;
-    font-weight: 500;
-    color: var(--text-muted);
-    padding: 10px 16px;
-    background: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1b2a37;
+    padding: 14px 18px;
+    background: #f5f5f5;
     border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
     white-space: nowrap;
   }
 
-  thead th.checkcol { width: 40px; }
+  thead th:last-child { border-right: none; }
 
-  /* Narrow trailing header cell holding the add-column control. */
+  thead th.checkcol { width: 52px; }
+
+  /* Narrow trailing cell holding the add-column control. */
   thead th.addcol { width: 44px; text-align: center; padding: 0; }
 
   .addcol-btn {
@@ -851,84 +961,118 @@
     margin: 0 auto;
     border: none;
     background: transparent;
-    color: var(--text-muted);
-    border-radius: var(--radius);
+    color: #1b2a37;
   }
 
-  .addcol-btn:hover { background: #f5f8fa; color: var(--text); }
-  .addcol-btn .nb-ico { width: 15px; height: 15px; }
-
-  .th-sort { display: inline-flex; align-items: center; gap: 4px; color: #1e2a35; }
-  .th-sort .arrow { font-size: 10px; }
+  .th-sort { display: inline-flex; align-items: center; gap: 10px; color: #1b2a37; }
+  .th-sort .arrow { font-size: 13px; }
 
   tbody td {
-    padding: 14px 16px;
-    font-size: 13.5px;
-    border-bottom: 1px solid #edf2f7;
+    padding: 13px 18px;
+    font-size: 14px;
+    border-bottom: 1px solid #e6e6e6;
     white-space: nowrap;
-    color: var(--text);
+    color: #3a4550;
   }
 
   tbody tr:last-child td { border-bottom: none; }
   tbody tr:hover { background: #f8fbfd; }
 
+  /* Rounded-square checkbox drawn from scratch, since the native control
+     can't be given a radius. */
   .rowcheck {
-    width: 15px; height: 15px;
-    accent-color: var(--link);
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    flex: 0 0 18px;
+    border: 1.5px solid #cbd6e2;
+    border-radius: 4px;
+    background: #fff;
+    display: inline-block;
+    vertical-align: middle;
   }
 
-  .who { display: flex; align-items: center; gap: 10px; }
+  .rowcheck:checked {
+    background: var(--table-link);
+    border-color: var(--table-link);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m3.5 8.4 3 3 6-6' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-size: 14px 14px;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
 
-  .row-chev { color: var(--text-muted); font-size: 11px; flex: 0 0 auto; }
+  .who { display: flex; align-items: center; gap: 12px; }
+
+  .row-chev { width: 16px; height: 16px; flex: 0 0 16px; color: #3a4550; display: block; }
 
   .avatar {
-    width: 26px; height: 26px;
-    flex: 0 0 26px;
+    width: 30px; height: 30px;
+    flex: 0 0 30px;
     border-radius: 50%;
-    background: #dfe3eb;
-    color: #516f90;
+    background: #e5e5e5;
+    color: #4a4a4a;
     display: grid; place-items: center;
-    font-size: 10.5px; font-weight: 600;
+    font-size: 11px; font-weight: 600;
   }
 
-  .name { color: var(--link); font-weight: 400; }
-  .elink { color: var(--link); }
-  .elink .ext { font-size: 10px; opacity: .7; margin-left: 3px; }
+  .name { color: var(--table-link); font-weight: 600; text-decoration: underline; }
+
+  .elink {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--table-link);
+  }
+
+  .elink span { text-decoration: underline; }
+  .elink .ext { width: 14px; height: 14px; flex: 0 0 14px; }
+
   .muted { color: var(--text-muted); }
 
   .card-footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 16px;
-    font-size: 13px;
-    color: var(--text-muted);
+    padding: 14px 18px;
+    font-size: 14px;
+    color: #1b2a37;
     border-top: 1px solid var(--border);
     background: #fff;
   }
 
-  .footer-actions { display: flex; align-items: center; gap: 8px; }
+  /* The record count reads as a grey chip rather than loose text. */
+  .count-chip {
+    background: #f0f0f0;
+    border-radius: 999px;
+    padding: 7px 16px;
+    font-weight: 600;
+    color: #1b2a37;
+  }
+
+  .footer-actions { display: flex; align-items: center; gap: 10px; }
 
   .footer-btn {
-    padding: 6px 12px;
-    font-size: 12.5px;
-    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    font-size: 14px;
+    color: #1b2a37;
     border: 1px solid #cbd6e2;
-    border-radius: 20px;
+    border-radius: 999px;
     background: #fff;
   }
 
   .footer-btn:hover { background: #f5f8fa; }
 
   .footer-icon {
-    width: 28px; height: 28px;
+    width: 36px; height: 36px;
     border: 1px solid #cbd6e2;
     border-radius: 50%;
     background: #fff;
     display: grid;
     place-items: center;
-    font-size: 12px;
-    color: var(--text-muted);
+    color: #1b2a37;
   }
 
   .footer-icon:hover { background: #f5f8fa; }
@@ -1507,44 +1651,6 @@
     margin: 0 0 14px;
   }
 
-  /* ---------- Quota usage banner ---------- */
-  /* A full-width strip between the top nav and the page body, showing how
-     close the account is to its record limit. Its numbers come from
-     render() — see renderQuotaBanner() in the script below. */
-
-  .quota-banner {
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 12px 28px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    font-size: 14px;
-    color: var(--text);
-  }
-
-  .quota-banner-text strong { font-weight: 600; }
-
-  /* ---------- Marketing contact overage banner (T11) ---------- */
-
-  .overage-banner {
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 12px 28px;
-    background: #fff7ed;
-    border-bottom: 1px solid #fed7aa;
-    font-size: 14px;
-    color: #7a4a12;
-  }
-
-  .overage-countdown { margin-left: 10px; font-weight: 600; color: #9a5b13; }
-  .overage-banner[hidden] { display: none; }
-
   .toast.success { background: #17663f; }
   .toast.warning { background: #a3510c; }
 
@@ -1690,22 +1796,6 @@
     </div>
   </header>
 
-  <!-- ============ Quota usage banner ============ -->
-  <div class="quota-banner" id="quotaBanner">
-    <div class="quota-banner-text" id="quotaBannerText"></div>
-    <button class="btn btn-outline" id="quotaUpgradeBtn" type="button">Upgrade</button>
-  </div>
-
-  <!-- ============ Marketing contact overage banner (T11) ============ -->
-  <!-- Hidden whenever state.contactCount is at or under CONFIG.contactLimit. -->
-  <div class="overage-banner" id="overageBanner" hidden>
-    <div class="overage-banner-text">
-      <span id="overageBannerText"></span>
-      <span class="overage-countdown" id="overageCountdown"></span>
-    </div>
-    <button class="btn btn-dark btn-sm" id="freeUpCapacityBtn" type="button">Free up capacity</button>
-  </div>
-
   <div class="body">
 
     <!-- ============ Sidebar ============ -->
@@ -1719,6 +1809,7 @@
           </svg>
           Home
         </a>
+        <div class="nav-divider"></div>
         <a class="nav-item active" href="#" id="sidebarContactsItem">
           <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <circle cx="10" cy="7" r="2.75" stroke="currentColor" stroke-width="1.5"/>
@@ -1830,7 +1921,13 @@
 
       <div class="setup-card">
         <p>Complete your setup and reach your goals faster.</p>
-        <button type="button">Continue</button>
+        <button type="button">
+          <svg class="nav-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <circle cx="10" cy="10" r="7.25" stroke="currentColor" stroke-width="1.5"/>
+            <path d="m13 7-1.9 4.1L7 13l1.9-4.1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+          Continue
+        </button>
       </div>
     </aside>
 
@@ -1841,12 +1938,12 @@
       <div class="page" id="contactsPage">
 
       <div class="page-header">
-        <div class="page-title">Contacts <span class="caret">▾</span></div>
+        <div class="page-title">Contacts <svg class="tb-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="m5 8 5 5 5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="page-actions">
-          <button class="icon-btn" type="button" title="More">⋮</button>
-          <button class="icon-btn" type="button" title="View">⛃</button>
+          <button class="icon-btn" type="button" title="More"><svg class="tb-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="10" cy="4.5" r="1.35" fill="currentColor"/><circle cx="10" cy="10" r="1.35" fill="currentColor"/><circle cx="10" cy="15.5" r="1.35" fill="currentColor"/></svg></button>
+          <button class="icon-btn" type="button" title="View"><svg class="tb-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="7.5" y="2.5" width="5" height="4" rx=".8" stroke="currentColor" stroke-width="1.4"/><rect x="2.5" y="13.5" width="5" height="4" rx=".8" stroke="currentColor" stroke-width="1.4"/><rect x="12.5" y="13.5" width="5" height="4" rx=".8" stroke="currentColor" stroke-width="1.4"/><path d="M10 6.5v4M5 13.5v-3h10v3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           <div class="dropdown-wrap" id="addContactsWrap">
-            <button class="btn btn-dark" id="addContactsBtn" type="button" aria-haspopup="true" aria-expanded="false">
+            <button class="btn btn-black" id="addContactsBtn" type="button" aria-haspopup="true" aria-expanded="false">
               Add contacts <span class="caret">▾</span>
             </button>
             <div class="dropdown-menu" id="addContactsMenu" role="menu">
@@ -1858,28 +1955,37 @@
       </div>
 
       <div class="tabs">
-        <span class="tab active">All contacts</span>
-        <span class="tab">My contacts</span>
-        <span class="tab">Unassigned contacts</span>
-        <span class="tab-add">+</span>
+        <span class="tab active"><svg class="tb-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="2.5" y="3.5" width="15" height="13" rx="1.2" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 7.5h15M7.5 7.5v9" stroke="currentColor" stroke-width="1.4"/></svg> All contacts</span>
+        <span class="tab"><svg class="tb-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="2.5" y="3.5" width="15" height="13" rx="1.2" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 7.5h15M7.5 7.5v9" stroke="currentColor" stroke-width="1.4"/></svg> My contacts</span>
+        <span class="tab"><svg class="tb-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="2.5" y="3.5" width="15" height="13" rx="1.2" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 7.5h15M7.5 7.5v9" stroke="currentColor" stroke-width="1.4"/></svg> Unassigned contacts</span>
+        <span class="tab-add"><svg class="tb-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M10 4.5v11M4.5 10h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
       </div>
 
       <div class="toolbar" id="contactsToolbar">
-        <div class="search-input"><span>⌕</span> Search ( / )</div>
-        <div class="pill">☰ Filter</div>
-        <div class="pill">↕ Sort by</div>
-        <div class="toolbar-divider"></div>
-        <div class="filter-text">Contact owner <span class="caret">▾</span></div>
-        <div class="filter-text">Create date <span class="caret">▾</span></div>
-        <div class="filter-text">Last activity date <span class="caret">▾</span></div>
-        <div class="filter-text">Lead status <span class="caret">▾</span></div>
-        <button class="pill" id="marketingStatusFilterBtn" type="button">Marketing contact status: All <span class="caret">▾</span></button>
-        <button class="toolbar-icon round" type="button">+</button>
-        <button class="toolbar-icon round" type="button">✎</button>
-        <a class="adv-filters" href="#">Advanced filters</a>
-        <div class="toolbar-spacer"></div>
-        <button class="toolbar-icon" type="button">▦</button>
-        <button class="toolbar-icon" type="button">⚙</button>
+        <div class="toolbar-row">
+          <div class="search-input"><span>Search ( / )</span><svg class="tb-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="9" cy="9" r="5.5" stroke="currentColor" stroke-width="1.5"/><line x1="13.2" y1="13.2" x2="17" y2="17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          <div class="pill filled"><svg class="tb-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M3 5.5h14M5.5 10h9M8 14.5h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> Filter</div>
+          <div class="pill"><svg class="tb-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4.5 3.5v13M4.5 16.5 2 14M4.5 16.5 7 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 5.5h7M10 10h5M10 14.5h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> Sort by</div>
+          <div class="toolbar-spacer"></div>
+          <div class="view-switch">
+            <button type="button" title="Board view"><svg class="tb-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="2.5" y="3.5" width="15" height="13" rx="1.2" stroke="currentColor" stroke-width="1.4"/><path d="M7.5 3.5v13M12.5 3.5v13" stroke="currentColor" stroke-width="1.4"/></svg></button>
+            <button class="active" type="button" title="Table view"><svg class="tb-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="2.5" y="3.5" width="15" height="13" rx="1.2" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 7.5h15M7.5 7.5v9" stroke="currentColor" stroke-width="1.4"/></svg></button>
+          </div>
+          <div class="toolbar-divider"></div>
+          <button class="toolbar-icon round" type="button" title="Settings"><svg class="tb-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="10" cy="10" r="2.6" stroke="currentColor" stroke-width="1.4"/><path d="M10 2.5v2M10 15.5v2M2.5 10h2M15.5 10h2M4.7 4.7l1.4 1.4M13.9 13.9l1.4 1.4M15.3 4.7l-1.4 1.4M6.1 13.9l-1.4 1.4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+          <button class="toolbar-icon round" type="button" title="Collapse"><svg class="tb-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="m5 12 5-5 5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+        <div class="filter-row">
+          <div class="filter-text">Contact owner <span class="caret">▾</span></div>
+          <div class="filter-text">Create date <span class="caret">▾</span></div>
+          <div class="filter-text">Last activity date <span class="caret">▾</span></div>
+          <div class="filter-text">Lead status <span class="caret">▾</span></div>
+          <button class="filter-text" id="marketingStatusFilterBtn" type="button">Marketing contact status: All <span class="caret">▾</span></button>
+          <div class="toolbar-divider"></div>
+          <button class="toolbar-icon round" type="button" title="Add filter"><svg class="tb-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M10 4.5v11M4.5 10h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+          <button class="toolbar-icon round" type="button" title="Edit filters"><svg class="tb-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="m12.7 4.3 3 3L7.9 15.1l-3.6.6.6-3.6z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></button>
+          <a class="adv-filters" href="#"><svg class="tb-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M3 5.5h14M5.5 10h9M8 14.5h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> Advanced filters</a>
+        </div>
       </div>
 
       <div class="bulk-bar" id="bulkBar" hidden>
@@ -1914,7 +2020,7 @@
                   <th>Marketing contact status</th>
                   <th>Lead Status</th>
                   <th><span class="th-sort">Create Date <span class="arrow">↓</span></span></th>
-                  <th class="addcol"><button class="addcol-btn" type="button" title="Add column"><svg class="nb-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M10 4.5v11M4.5 10h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button></th>
+                  <th class="addcol"><button class="addcol-btn" type="button" title="Add column"><svg class="tb-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M10 4.5v11M4.5 10h11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button></th>
                 </tr>
               </thead>
               <tbody id="contactRows"></tbody>
@@ -1922,11 +2028,11 @@
           </div>
 
           <div class="card-footer">
-            <span><span id="footerCount"></span> <span id="footerCountLabel"></span></span>
+            <span class="count-chip"><span id="footerCount"></span> <span id="footerCountLabel"></span></span>
             <div class="footer-actions">
-              <button class="footer-icon" type="button" title="Refresh">↻</button>
-              <button class="footer-btn" type="button">Export</button>
-              <button class="footer-btn" type="button">Clone</button>
+              <button class="footer-icon" type="button" title="Refresh"><svg class="tb-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M16 10a6 6 0 1 1-1.9-4.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M16 3v3.2h-3.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <button class="footer-btn" type="button"><svg class="tb-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M10 12.5V3.5M7 6.5 10 3.5l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 12v3.5a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> Export</button>
+              <button class="footer-btn" type="button"><svg class="tb-ico" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="7" y="3.5" width="9.5" height="9.5" rx="1.2" stroke="currentColor" stroke-width="1.5"/><path d="M13 15.3v.2a1 1 0 0 1-1 1H4.5a1 1 0 0 1-1-1V7.5a1 1 0 0 1 1-1h.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> Clone</button>
             </div>
           </div>
         </div>
@@ -2476,9 +2582,6 @@
     proactiveNudgeThreshold: 0.95,
     proactiveNudgeDelayMs: 900,
 
-    // The product name the quota banner offers as the upgrade path.
-    bannerUpgradeProduct: 'Starter Customer Platform',
-
     // Per-mode starting point ("baseline") for the counter pill, plus the
     // label that pill uses — Free and Starter track two different kinds
     // of limit (all contacts vs. marketing contacts), so the wording
@@ -2657,36 +2760,9 @@
 
   function render() {
     renderPage();
-    renderQuotaBanner();
     renderCounterPill();
     renderContactsTable();
-    renderOverageBanner();
     checkProactiveNudge();
-  }
-
-  // The banner text is built from a template so the two numbers in it
-  // (used vs. limit) always match whatever render() was last called with.
-  function renderQuotaBanner() {
-    const textEl = document.getElementById('quotaBannerText');
-    textEl.innerHTML =
-      `You've used <strong>${state.contactCount.toLocaleString()}</strong> of ${CONFIG.contactLimit.toLocaleString()} contacts.  ` +
-      `Create more contacts with ${CONFIG.bannerUpgradeProduct}.`;
-  }
-
-  // Shows the amber "over your limit" banner whenever the marketing
-  // count exceeds the tier limit (T11) — hidden the rest of the time.
-  function renderOverageBanner() {
-    const overage = state.contactCount - CONFIG.contactLimit;
-    const isOverLimit = overage > 0;
-    document.getElementById('overageBanner').hidden = !isOverLimit;
-    if (!isOverLimit) return;
-
-    document.getElementById('overageBannerText').textContent =
-      `You're ${overage.toLocaleString()} marketing contacts over your limit. Free up capacity before 12:00 AM to avoid a ${CONFIG.overageMonthlyCostLabel}/month upgrade.`;
-
-    const hours = Math.floor(state.overageCountdownMinutes / 60);
-    const minutes = state.overageCountdownMinutes % 60;
-    document.getElementById('overageCountdown').textContent = `${hours}h ${minutes}m`;
   }
 
   // Shows whichever page matches state.view and hides the rest. This is
@@ -2793,6 +2869,23 @@
     document.getElementById('footerCountLabel').textContent = modeConfig.counterLabel;
   }
 
+  // Renders a create-date the way HubSpot's list does: "Aug 19, 2026
+  // 2:27 PM GMT+10", with the offset read from the viewer's own zone.
+  function formatCreateDate(timestamp) {
+    const date = new Date(timestamp);
+    const day = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const time = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+
+    // getTimezoneOffset counts minutes *behind* UTC, so the sign flips.
+    const offsetMinutes = -date.getTimezoneOffset();
+    const sign = offsetMinutes < 0 ? '-' : '+';
+    const hours = Math.floor(Math.abs(offsetMinutes) / 60);
+    const minutes = Math.abs(offsetMinutes) % 60;
+    const offset = minutes ? `${hours}:${String(minutes).padStart(2, '0')}` : `${hours}`;
+
+    return `${day} ${time} GMT${sign}${offset}`;
+  }
+
   // Turns "Sarah Jenkins" into "SJ" for the little round avatar badge.
   function initials(name) {
     return name.split(' ').map(part => part[0]).join('').slice(0, 2).toUpperCase();
@@ -2834,14 +2927,14 @@
         <td><input class="rowcheck" type="checkbox" data-id="${c.id}" ${state.selectedContactIds.includes(c.id) ? 'checked' : ''} /></td>
         <td>
           <div class="who">
-            <span class="row-chev" aria-hidden="true">›</span>
+            <svg class="row-chev" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="m8 5 5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             <span class="avatar">${initials(c.name)}</span>
             <span class="name">${c.name}</span>
           </div>
         </td>
-        <td><span class="elink">${c.email}<span class="ext">↗</span></span></td>
-        <td class="muted">${c.phone}</td>
-        <td class="muted">${c.owner}</td>
+        <td><span class="elink"><span>${c.email}</span><svg class="ext" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M11.5 3.5H16v4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 3.5 9.5 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M15 12v3.5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></td>
+        <td>${c.phone}</td>
+        <td>${c.owner}</td>
         <td>${c.company}</td>
         <td><span class="status-badge ${c.marketingStatus === 'Marketing' ? 'marketing' : 'non-marketing'}">${c.marketingStatus}</span></td>
         <td>${c.leadStatus || '--'}</td>
@@ -3225,8 +3318,8 @@
 
   // Edge-triggered so this fires once per above-threshold stretch, not on
   // every render() call. Called from render() itself, after every state
-  // change — the same way renderQuotaBanner/renderOverageBanner already
-  // stay in sync with state.contactCount.
+  // change — the same way renderCounterPill already stays in sync with
+  // state.contactCount.
   function checkProactiveNudge() {
     const threshold = Math.ceil(CONFIG.contactLimit * CONFIG.proactiveNudgeThreshold);
     // Only the 95%-to-100% band is this nudge's territory — at or under
@@ -3955,20 +4048,6 @@
     // pending.
     showToast(`${appliedCount} webinar leads set as marketing. You're now over your limit — a ${CONFIG.overageMonthlyCostLabel}/mo upgrade is pending.`);
   }
-
-  document.getElementById('freeUpCapacityBtn').addEventListener('click', event => {
-    triageOrigin = 'breach-recovery';
-    openInterceptModal(event.target, runTriageAiScan);
-  });
-
-  // Ticks the countdown down once a minute purely for display — this is
-  // the "illustrative, non-firing" timer the brief called for. It never
-  // reaches zero and does anything; it's not wired to a real clock.
-  setInterval(() => {
-    if (state.overageCountdownMinutes === null) return;
-    if (state.overageCountdownMinutes > 0) state.overageCountdownMinutes -= 1;
-    renderOverageBanner();
-  }, 60000);
 
   /* =========================================================================
      SECTION 10: DATA INTEGRATION HUB (T2)

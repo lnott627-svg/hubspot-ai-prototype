@@ -1,14 +1,10 @@
 {
   "name": "hubspot-ai-prototype",
   "version": "1.0.0",
-  "description": "",
+  "description": "Proactive Breeze AI diagnostic prototype — HubSpot Starter quota intercept, live Gemini triage with silent fallback.",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "engines": {
-    "node": ">=18"
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
