@@ -1299,8 +1299,25 @@
     padding: 0;
     flex: 0 0 auto;
     white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
   .toast-undo-btn:hover { opacity: .85; }
+
+  /* The seconds remaining in the undo window, as a small ring beside the
+     label so the deadline is legible without reading a sentence. */
+  .toast-undo-count {
+    width: 20px; height: 20px;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(255, 255, 255, .5);
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    text-decoration: none;
+  }
 
   .btn-outline { background: #fff; color: var(--text); border: 1px solid #cbd6e2; }
   .btn-outline:hover { background: #f5f8fa; }
@@ -2267,7 +2284,7 @@
         <div class="page-header">
           <div>
             <a class="id-breadcrumb" href="#" id="optDbBackLink">‹ Back to Contacts</a>
-            <div class="page-title">Optimize Database</div>
+            <div class="page-title">Optimise Database</div>
           </div>
         </div>
 
@@ -2290,7 +2307,7 @@
 
         <div class="opt-db-footer">
           <span class="opt-db-footer-count" id="optDbFooterCount">0 selected</span>
-          <button class="btn btn-primary-orange" id="optDbActionBtn" type="button" disabled>Select contacts to optimize</button>
+          <button class="btn btn-primary-orange" id="optDbActionBtn" type="button" disabled>Select contacts to optimise</button>
         </div>
 
       </div>
@@ -2924,27 +2941,50 @@
   // it calls opts.undo() and dismisses immediately. A toast with Undo stays
   // up longer (8s vs. 3.6s) since reading + deciding takes a beat longer
   // than reading a plain confirmation.
+  // How long an undoable action stays undoable. The number is shown
+  // ticking down next to Undo, so the window is visible rather than
+  // implied — when it hits zero the toast goes and the action stands.
+  const UNDO_WINDOW_SECONDS = 8;
+
   function showToast(message, variant, opts) {
     const toast = document.getElementById('toast');
     const hasUndo = Boolean(opts && typeof opts.undo === 'function');
 
+    // A new toast always cancels whatever the last one had running —
+    // including the countdown fired by the action being undone.
+    clearTimeout(showToast._t);
+    clearInterval(showToast._i);
+
     toast.innerHTML = `
       <span class="toast-message">${escapeHtml(message)}</span>
-      ${hasUndo ? '<button type="button" class="toast-undo-btn">Undo</button>' : ''}
+      ${hasUndo ? `<button type="button" class="toast-undo-btn">Undo <span class="toast-undo-count">${UNDO_WINDOW_SECONDS}</span></button>` : ''}
     `;
+
     if (hasUndo) {
+      let secondsLeft = UNDO_WINDOW_SECONDS;
+      const counter = toast.querySelector('.toast-undo-count');
+
+      showToast._i = setInterval(() => {
+        secondsLeft -= 1;
+        counter.textContent = secondsLeft;
+        if (secondsLeft <= 0) {
+          clearInterval(showToast._i);
+          toast.classList.remove('show');
+        }
+      }, 1000);
+
       toast.querySelector('.toast-undo-btn').addEventListener('click', () => {
-        clearTimeout(showToast._t);
+        clearInterval(showToast._i);
         toast.classList.remove('show');
         opts.undo();
       });
+    } else {
+      showToast._t = setTimeout(() => toast.classList.remove('show'), 3600);
     }
 
     toast.classList.remove('success', 'warning');
     if (variant) toast.classList.add(variant);
     toast.classList.add('show');
-    clearTimeout(showToast._t);
-    showToast._t = setTimeout(() => toast.classList.remove('show'), hasUndo ? 8000 : 3600);
   }
 
   /* =========================================================================
@@ -3292,7 +3332,7 @@
       <p>Setting these ${selectedCount} contacts as marketing will push you to ${prospectiveTotal.toLocaleString()} / ${CONFIG.contactLimit.toLocaleString()}. Your subscription will automatically upgrade by ${CONFIG.overageMonthlyCostLabel}/month tonight at 12:00 AM.</p>
       <div class="intercept-actions">
         <button class="btn btn-primary-orange" id="acceptUpgradeBtn" type="button">Continue &amp; Accept Upgrade</button>
-        <button class="btn btn-outline" id="optimizeDbBtn" type="button">Optimize Database to Save ${CONFIG.overageMonthlyCostLabel}/mo</button>
+        <button class="btn btn-outline" id="optimizeDbBtn" type="button">Optimise Database to Save ${CONFIG.overageMonthlyCostLabel}/mo</button>
       </div>
     `;
 
@@ -3611,8 +3651,8 @@
     document.getElementById('optDbFooterCount').textContent = `${n.toLocaleString()} selected`;
     btn.disabled = n === 0;
     btn.textContent = n > 0
-      ? `Optimize ${n.toLocaleString()} Contact${n === 1 ? '' : 's'}`
-      : 'Select contacts to optimize';
+      ? `Optimise ${n.toLocaleString()} Contact${n === 1 ? '' : 's'}`
+      : 'Select contacts to optimise';
   }
 
   document.getElementById('optDbBackLink').addEventListener('click', event => {
